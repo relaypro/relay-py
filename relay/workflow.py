@@ -1,8 +1,12 @@
 import asyncio
 import json
+import logging
 import time
 import uuid
 import websockets
+
+
+logger = logging.getLogger(__name__)
 
 
 class Workflow:
@@ -18,11 +22,17 @@ class Workflow:
         self.websocket = websocket
 
         async for m in websocket:
+            logger.debug(f'recv: {m}')
             e = json.loads(m)
             _id = e.get('_id', None)
+
             if _id:
                 fut = self.id_futures.pop(_id)
-                fut.set_result(e)
+                if fut:
+                    fut.set_result(e)
+
+                else:
+                    logger.warning(f'found response for unknown _id {_id}')
 
             else:
                 t = e['_type']
@@ -41,7 +51,7 @@ class Workflow:
                         asyncio.create_task(h(self.relay))
 
                 else:
-                    print(f"no handler found for {e['_type']}")
+                    logger.warning(f"no handler found for _type {e['_type']}")
 
  
     def on_start(self, func):
@@ -63,7 +73,7 @@ class Workflow:
 
         # TODO: ibot add responses to all _request events? if so, await them here ... and check for error responses
 
-        await self.websocket.send(json.dumps(obj))
+        await self._send(json.dumps(obj))
 
 
     async def sendReceive(self, obj):
@@ -73,7 +83,9 @@ class Workflow:
         fut = asyncio.get_event_loop().create_future()
         self.id_futures[_id] = fut
 
-        await self.websocket.send(json.dumps(obj))
+        await self._send(json.dumps(obj))
+
+        # wait on the response
         await fut
 
         rsp = fut.result()
@@ -81,6 +93,11 @@ class Workflow:
             raise WorkflowException(rsp['error'])
 
         return fut.result()
+
+
+    async def _send(self, s):
+        logger.debug(f'send: {s}')
+        await self.websocket.send(s)
 
 
 class WorkflowException(Exception):

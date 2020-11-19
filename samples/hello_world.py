@@ -1,8 +1,17 @@
 #!/usr/bin/env python
 
 import asyncio
+import logging
+import logging.config
+import yaml
 
 import relay.workflow
+
+
+with open('logging.yml', 'r') as f:
+    config = yaml.safe_load(f.read())
+    logging.config.dictConfig(config)
+
 
 wf = relay.workflow.Workflow('localhost', 8765)
 

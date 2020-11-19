@@ -3,6 +3,7 @@
 import asyncio
 import json
 import websockets
+import yaml
 
 
 async def send(ws, e):

@@ -54,7 +54,7 @@ asyncio.get_event_loop().run_forever()
 
 ```bash
 git clone git@bitbucket.org:republicwireless/relay_py.git
-cd relay_python
+cd relay_py
 virtualenv venv
 . venv/bin/activate
 pip install -e .
@@ -63,11 +63,16 @@ pip install -e .
 Run an example:
 in terminal 1...
 ```bash
-python samples/hello_world.py
+cd relay_py
+. venv/bin/activate
+cd samples
+python hello_world.py
 ```
 
 in terminal 2...
 ```bash
+cd relay_py
+. venv/bin/activate
 python tests/hello_world_test.py
 ```
 
