@@ -2,10 +2,58 @@
 
 Draft of a Python SDK for Relay Workflows.
 
+## Installation
+
+Install into a virtual environment (Python 3.6.1+).
+
+```bash
+pip install git+ssh://git@bitbucket.org/republicwireless/relay-py.git#egg=relay-py
+```
+
+## Usage
+
+```python
+#!/usr/bin/env python
+
+import asyncio
+import relay.workflow
+
+wf = relay.workflow.Workflow('localhost', 8765)
+
+@wf.on_start
+async def start_handler(relay):
+    greeting = await relay.get_var('greeting')
+    name = await relay.get_device_name()
+    await relay.say('What is your name?')
+    user = await relay.listen([])
+    await relay.say(f'Hello {user}! {greeting} {name}')
+    await relay.terminate()
+
+
+@wf.on_button
+async def handle_button(relay, button, taps):
+    # button: action, channel
+    # taps: single, double, triple
+    await relay.say('Please say your name while holding the button down.')
+
+
+@wf.on_notification
+async def handle_notification(relay, source, event):
+    await relay.say(f'Received notification {event} from {source}')
+
+
+@wf.on_timer
+async def handle_timer(relay):
+    await relay.say('Received timer event')
+
+
+asyncio.get_event_loop().run_forever()
+```
+
 ## Development
 
 ```bash
-git clone git@bitbucket.org:republicwireless/relay_python.git
+git clone git@bitbucket.org:republicwireless/relay_py.git
 cd relay_python
 virtualenv venv
 . venv/bin/activate
