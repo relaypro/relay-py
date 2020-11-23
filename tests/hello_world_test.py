@@ -19,7 +19,7 @@ async def recv(ws):
 
 
 async def simple():
-    uri = "ws://localhost:8765"
+    uri = "ws://localhost:8765/hello"
     async with websockets.connect(uri) as ws:
         await send(ws, {
             '_type': 'wf_api_start_event'
@@ -57,6 +57,56 @@ async def simple():
         e = await recv(ws)
         assert e['_type'] == 'wf_api_listen_request'
         assert e['phrases'] == []
+
+
+        # diversion: button: action/single
+        await send(ws, {
+            '_type': 'wf_api_button_event',
+            'button': 'action',
+            'taps': 'single'
+        })
+
+        ex = await recv(ws)
+        assert ex['_type'] == 'wf_api_say_request'
+        assert ex['text'] == 'action button, single tap'
+        # end diversion
+
+        # diversion: button: action/double
+        await send(ws, {
+            '_type': 'wf_api_button_event',
+            'button': 'action',
+            'taps': 'double'
+        })
+
+        ex = await recv(ws)
+        assert ex['_type'] == 'wf_api_say_request'
+        assert ex['text'] == 'action button, any tap'
+        # end diversion
+
+        # diversion: button: channel/double
+        await send(ws, {
+            '_type': 'wf_api_button_event',
+            'button': 'channel',
+            'taps': 'double'
+        })
+
+        ex = await recv(ws)
+        assert ex['_type'] == 'wf_api_say_request'
+        assert ex['text'] == 'any button, double tap'
+        # end diversion
+
+        # diversion: button: channel/single
+        await send(ws, {
+            '_type': 'wf_api_button_event',
+            'button': 'channel',
+            'taps': 'single'
+        })
+
+        ex = await recv(ws)
+        assert ex['_type'] == 'wf_api_say_request'
+        assert ex['text'] == 'any button, any tap'
+        # end diversion
+
 
         await send(ws, {
             '_id': e['_id'],

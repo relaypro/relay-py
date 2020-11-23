@@ -1,4 +1,5 @@
 venv/
 relay_py.egg-info/
 *.pyc
+*.swp
 

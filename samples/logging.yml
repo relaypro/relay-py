@@ -13,6 +13,10 @@ loggers:
     level: DEBUG
     handlers: [console]
     propagate: no
+  websockets.server:
+    level: DEBUG
+    handlers: [console]
+    propagate: no
 root:
   level: DEBUG
   handlers: [console]
