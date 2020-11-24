@@ -50,14 +50,14 @@ in terminal 1...
 cd relay_py
 . venv/bin/activate
 cd samples
-python hello_world.py
+python app.py
 ```
 
 in terminal 2...
 ```bash
 cd relay_py
 . venv/bin/activate
-python tests/hello_world_test.py
+python tests/all_features_test.py
 ```
 
 ## License

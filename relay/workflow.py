@@ -47,74 +47,61 @@ class Workflow:
         self.type_handlers = {}  # {(type, args): func}
 
 
+
     def on_start(self, func):
-        key = ('wf_api_start_event')
-        self.type_handlers[key] = func
+        self.type_handlers[('wf_api_start_event')] = func
 
     def on_button(self, _func=None, *, button='*', taps='*'):
-        def decorator_on_button(func):
-            key = ('wf_api_button_event', button, taps)
-            self.type_handlers[key] = func
+        def on_button_decorator(func):
+            self.type_handlers[('wf_api_button_event', button, taps)] = func
 
         if _func:
-            return decorator_on_button(_func)
+            return on_button_decorator(_func)
 
         else:
-            return decorator_on_button
+            return on_button_decorator
     
     def on_notification(self, _func=None, *, event='*', source='*'):
-        def decorator_on_notification(func):
-            key = ('wf_api_notification_event', event, source)
-            self.type_handlers[key] = func
+        def on_notification_decorator(func):
+            self.type_handlers[('wf_api_notification_event', event, source)] = func
 
         if _func:
-            return decorator_on_notification(_func)
+            return on_notification_decorator(_func)
 
         else:
-            return decorator_on_notification
+            return on_notification_decorator
 
-
-#    def on_notification(self, func):
-#        key = ('wf_api_notification_event')
-#        self.type_handlers[key] = func
 
     def on_timer(self, func):
-        key = ('wf_api_timer_event')
-        self.type_handlers[key] = func
+        self.type_handlers[('wf_api_timer_event')] = func
 
 
     def get_handler(self, event):
         t = event['_type']
 
-        # assume simple handler; if not, check with args
-        key = (t)
-        h = self.type_handlers.get(key, None)
+        # assume no-arg handler; if not, check the handlers that require args
+        # for args, check for handler registered with specific values first; if not, then check variations with wildcard values
+        h = self.type_handlers.get((t), None)
         if not h:
             if t == 'wf_api_button_event':
-                key = (t, event['button'], event['taps'])
-                h = self.type_handlers.get(key, None)
+                h = self.type_handlers.get((t, event['button'], event['taps']), None)
                 if not h:
-                    key = (t, event['button'], '*')
-                    h = self.type_handlers.get(key, None)
+                    # prefer button match over taps
+                    h = self.type_handlers.get((t, event['button'], '*'), None)
                     if not h:
-                        key = (t, '*', event['taps'])
-                        h = self.type_handlers.get(key, None)
+                        h = self.type_handlers.get((t, '*', event['taps']), None)
                         if not h:
-                            key = (t, '*', '*')
-                            h = self.type_handlers.get(key, None)
+                            h = self.type_handlers.get((t, '*', '*'), None)
 
             elif t == 'wf_api_notification_event':
-                key = (t, event['event'], event['source'])
-                h = self.type_handlers.get(key, None)
+                h = self.type_handlers.get((t, event['event'], event['source']), None)
                 if not h:
-                    key = (t, event['event'], '*')
-                    h = self.type_handlers.get(key, None)
+                    # prefer event match over source
+                    h = self.type_handlers.get((t, event['event'], '*'), None)
                     if not h:
-                        key = (t, '*', event['source'])
-                        h = self.type_handlers.get(key, None)
+                        h = self.type_handlers.get((t, '*', event['source']), None)
                         if not h:
-                            key = (t, '*', '*')
-                            h = self.type_handlers.get(key, None)
+                            h = self.type_handlers.get((t, '*', '*'), None)
 
         return h
 
@@ -136,42 +123,50 @@ class Relay:
 
         try:
             async for m in websocket:
-                logger.debug(f'recv: {m}')
+                logger.debug(f'{self.workflow.name} - recv: {m}')
                 e = json.loads(m)
                 _id = e.get('_id', None)
     
                 if _id:
-                    fut = self.id_futures.pop(_id)
+                    fut = self.id_futures.pop(_id, None)
                     if fut:
                         fut.set_result(e)
     
                     else:
-                        logger.warning(f'found response for unknown _id {_id}')
+                        logger.warning(f'{self.workflow.name} - found response for unknown _id {_id}')
     
                 else:
                     h = self.workflow.get_handler(e)
                     if h:
                         t = e['_type']
                         if t == 'wf_api_start_event':
-                            asyncio.create_task(h(self))
+                            asyncio.create_task(self.wrapper(h))
     
                         elif t == 'wf_api_button_event':
-                            asyncio.create_task(h(self, e['button'], e['taps']))
+                            asyncio.create_task(self.wrapper(h, e['button'], e['taps']))
     
                         elif t == 'wf_api_notification_event':
-                            asyncio.create_task(h(self, e['source'], e['event']))
+                            asyncio.create_task(self.wrapper(h, e['source'], e['event']))
     
                         elif t == 'wf_api_timer_event':
-                            asyncio.create_task(h(self))
+                            asyncio.create_task(self.wrapper(h))
     
                     else:
-                        logger.warning(f'no handler found for _type {e["_type"]}')
+                        logger.warning(f'{self.workflow.name} - no handler found for _type {e["_type"]}')
 
         except Exception as x:
-            logger.error(x, exc_info=True)
+            logger.error(f'{self.workflow.name} - {x}', exc_info=True)
 
         finally:
-            logger.debug('websocket closed')            
+            logger.debug(f'{self.workflow.name} - websocket closed')
+
+
+    # run handlers with exception logging; needed since we cannot await handlers
+    async def wrapper(self, h, *args):
+        try:
+            await h(self, *args)
+        except Exception as x:
+            logger.error(f'{self.workflow.name} - {x}', exc_info=True)
 
 
     async def send(self, obj):
@@ -203,7 +198,7 @@ class Relay:
 
 
     async def _send(self, s):
-        logger.debug(f'send: {s}')
+        logger.debug(f'{self.workflow.name} - send: {s}')
         await self.websocket.send(s)
 
 
@@ -221,10 +216,13 @@ class Relay:
             'name': name,
             'value': value
         }
-        await self.send(event)
+        await self.sendReceive(event)
 
 
-    async def listen(self, phrases):
+    async def listen(self, phrases=None):
+        if not phrases:
+            phrases = []
+
         event = {
             '_type': 'wf_api_listen_request',
             'phrases': phrases,
@@ -296,10 +294,10 @@ class Relay:
 
 
     async def set_device_name(self, name):
-        await _set_device_info('name', name)
+        await self._set_device_info('name', name)
 
     async def set_device_channel(self, channel: str):
-        await _set_device_info('channel', channel)
+        await self._set_device_info('channel', channel)
 
     async def _set_device_info(self, field, value):
         event = {
@@ -321,7 +319,7 @@ class Relay:
 
     # convenience functions
     async def set_led_on(self, color):
-        await self.set_led('static', {'colors':{'ring':color}})
+        await self.set_led('static', {'colors':{'ring': color}})
 
     async def set_led_rainbow(self, rotations=-1):
         await self.set_led('rainbow', {'rotations': rotations})
@@ -380,7 +378,7 @@ class Relay:
 
     async def resolve_incident(self):
         event = {
-            '_type': 'wf_api_create_incident_request'
+            '_type': 'wf_api_resolve_incident_request'
         }
         await self.send(event)
 
