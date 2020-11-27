@@ -1,19 +1,9 @@
 #!/usr/bin/env python
 
-import asyncio
-import logging
-import logging.config
-import yaml
-
 import relay.workflow
 
 
-with open('logging.yml', 'r') as f:
-    config = yaml.safe_load(f.read())
-    logging.config.dictConfig(config)
-
-
-wf = relay.workflow.Workflow('localhost', 8765)
+wf = relay.workflow.Workflow(__name__)
 
 @wf.on_start
 async def start_handler(relay):
@@ -22,14 +12,14 @@ async def start_handler(relay):
     await relay.start_timer(interval)
     await relay.say('starting timer')
 
+@wf.on_button(button='action', taps='single')
+async def stop_handler(relay, button, taps):
+    await relay.say('stopping timer')
+    await relay.terminate()
+
 @wf.on_button
 async def button_handler(relay, button, taps):
-    if button == 'action' && taps == 'single':
-        await relay.say('stopping timer')
-        await relay.terminate()
-
-    else:
-        await relay.say('dude ! stop pressing buttons')
+    await relay.say('dude ! stop pressing buttons')
 
 @wf.on_timer
 async def timer_handler(relay):
@@ -42,7 +32,4 @@ async def timer_handler(relay):
     else:
         await relay.say(str(ticks))
         await relay.set_var('tick_num', str(num+1))
-
-
-asyncio.get_event_loop().run_forever()
 

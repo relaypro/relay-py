@@ -3,7 +3,16 @@ import logging.config
 import yaml
 
 import relay.workflow
-import all_features
+
+import deviceinfo_demo_wf as deviceinfo
+import hello_world_wf as helloworld
+import interval_timer_wf as timer
+import led_demo_wf as led
+import login_wf as login
+import notification_wf as notification
+import panic_wf as panic
+import transcribe_wf as transcribe
+import vibrate_demo_wf as vibrate
 
 
 with open('logging.yml', 'r') as f:
@@ -13,11 +22,20 @@ with open('logging.yml', 'r') as f:
 
 def main():
     server = relay.workflow.Server('localhost', 8765)
-    server.register(all_features.wf, '/hello')
+
+    server.register(deviceinfo.wf, '/deviceinfo')
+    server.register(helloworld.wf, '/hello')
+    server.register(timer.wf, '/timer')
+    server.register(led.wf, '/led')
+    server.register(login.wf, '/login')
+    server.register(notification.wf, '/notification')
+    server.register(panic.wf, '/panic')
+    server.register(transcribe.wf, '/transcribe')
+    server.register(vibrate.wf, '/vibrate')
+
     server.start()
     
 
 if __name__ == "__main__":
     main()
-
 

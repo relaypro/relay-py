@@ -23,7 +23,12 @@ class Server:
     def start(self):
         start_server = websockets.serve(self.handler, self.host, self.port)
         asyncio.get_event_loop().run_until_complete(start_server)
-        asyncio.get_event_loop().run_forever()
+
+        try:
+            asyncio.get_event_loop().run_forever()
+
+        except KeyboardInterrupt:
+            logger.debug('server terminated')
 
     async def handler(self, websocket, path):
         workflow = self.workflows.get(path, None)
@@ -46,8 +51,6 @@ class Workflow:
         self.name = name
         self.type_handlers = {}  # {(type, args): func}
 
-
-
     def on_start(self, func):
         self.type_handlers[('wf_api_start_event')] = func
 
@@ -60,6 +63,7 @@ class Workflow:
 
         else:
             return on_button_decorator
+
     
     def on_notification(self, _func=None, *, event='*', source='*'):
         def on_notification_decorator(func):

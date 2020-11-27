@@ -2,8 +2,27 @@
 
 import asyncio
 import json
+import pytest
 import websockets
-import yaml
+
+
+@pytest.fixture(scope='module')
+def wf_server():
+    import relay.workflow
+    import all_features
+
+    import threading
+
+    server = relay.workflow.Server('localhost', 8765)
+    server.register(all_features.wf, '/hello')
+
+    def wrapped_start():
+        asyncio.set_event_loop(asyncio.new_event_loop())
+        server.start()
+
+    thread = threading.Thread(target=wrapped_start)
+    thread.daemon = True
+    thread.start()
 
 
 async def send(ws, e):
@@ -198,6 +217,19 @@ async def send_timer(ws):
 
 
 
+async def handle_set_device_name(ws, xvalue):
+    await _handle_set_device_info(ws, 'name', xvalue)
+
+async def _handle_set_device_info(ws, xfield, xvalue):
+    e = await recv(ws)
+    check(e, 'wf_api_set_device_info_request', field=xfield, value=xvalue)
+
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_set_device_info_response',
+    })
+
+
 async def simple():
     uri = "ws://localhost:8765/hello"
     async with websockets.connect(uri) as ws:
@@ -220,7 +252,23 @@ async def simple():
         await handle_get_device_indoor_location(ws, False, 'l')
         await handle_get_device_battery(ws, False, 90)
 
-        await handle_set_device_name(ws, 'n')
+
+        # receive next request, but inject a button event before response
+        # this verifies that the workflow can handle asynchronous requests
+        e = await recv(ws)
+        check(e, 'wf_api_set_device_info_request', field='name', value='n')
+
+        # inject button event
+        await send_button(ws, 'action', 'single')
+        await handle_say(ws, 'handle_action_single_tap(action, single)')
+
+        # complete the above request
+        await send(ws, {
+            '_id': e['_id'],
+            '_type': 'wf_api_set_device_info_response',
+        })
+
+
         await handle_set_device_channel(ws, 'c')
 
         await handle_set_led_on(ws, '00FF00')
@@ -264,6 +312,6 @@ async def simple():
         await handle_say(ws, 'handle_timer()')
 
 
-asyncio.get_event_loop().run_until_complete(simple())
-
+def test_simple(wf_server):
+    asyncio.get_event_loop().run_until_complete(simple())
 

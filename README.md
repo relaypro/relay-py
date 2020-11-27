@@ -44,8 +44,7 @@ virtualenv venv
 pip install -e .
 ```
 
-Run an example:
-in terminal 1...
+Start demo workflow server:
 ```bash
 cd relay_py
 . venv/bin/activate
@@ -53,11 +52,12 @@ cd samples
 python app.py
 ```
 
-in terminal 2...
+Run tests:
 ```bash
 cd relay_py
 . venv/bin/activate
-python tests/all_features_test.py
+pip install -e .[testing]
+pytest
 ```
 
 ## License
