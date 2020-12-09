@@ -15,7 +15,7 @@ async def start_handler(relay):
 async def demo_handler(relay, button, taps):
     num = int(await relay.get_var('effect_num'))
     await relay.set_var('effect_num', str(num+1))
-    await effects[num]()
+    await effects[num](relay)
 
 @wf.on_button(button='action', taps='double')
 async def stop_handler(relay, button, taps):
