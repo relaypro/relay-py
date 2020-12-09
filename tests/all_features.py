@@ -22,7 +22,8 @@ async def start_handler(relay):
     await relay.alert('t', ['d1', 'd2'])
 
     await relay.get_device_name()
-    await relay.get_device_location()
+    await relay.get_device_address()
+    await relay.get_device_latlong()
     await relay.get_device_indoor_location()
     await relay.get_device_battery()
 

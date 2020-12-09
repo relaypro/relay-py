@@ -105,8 +105,11 @@ async def handle_notification(ws, xtype, xtext, xtarget):
 async def handle_get_device_name(ws, xrefresh, name):
     await _handle_get_device_info(ws, 'name', xrefresh, name=name)
  
-async def handle_get_device_location(ws, xrefresh, address, latlong):
-    await _handle_get_device_info(ws, 'location', xrefresh, address=address, latlong=latlong)
+async def handle_get_device_address(ws, xrefresh, address):
+    await _handle_get_device_info(ws, 'address', xrefresh, address=address)
+
+async def handle_get_device_latlong(ws, xrefresh, latlong):
+    await _handle_get_device_info(ws, 'latlong', xrefresh, latlong=latlong)
 
 async def handle_get_device_indoor_location(ws, xrefresh, indoor_location):
     await _handle_get_device_info(ws, 'indoor_location', xrefresh, indoor_location=indoor_location)
@@ -265,7 +268,8 @@ async def simple():
         await handle_notification(ws, 'foreground', 't', ['d1', 'd2'])
 
         await handle_get_device_name(ws, False, 't')
-        await handle_get_device_location(ws, False, 'a', [1,2])
+        await handle_get_device_address(ws, False, 'a')
+        await handle_get_device_latlong(ws, False, [1,2])
         await handle_get_device_indoor_location(ws, False, 'l')
         await handle_get_device_battery(ws, False, 90)
 

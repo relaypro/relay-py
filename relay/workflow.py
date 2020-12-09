@@ -274,10 +274,13 @@ class Relay:
         v = await self._get_device_info('name', False)
         return v['name']
 
-    async def get_device_location(self):
-        # TODO: also return latlong?
-        v = await self._get_device_info('location', False)
+    async def get_device_address(self):
+        v = await self._get_device_info('address', False)
         return v['address']
+
+    async def get_device_latlong(self):
+        v = await self._get_device_info('latlong', False)
+        return v['latlong']
 
     async def get_device_indoor_location(self):
         v = await self._get_device_info('indoor_location', False)
