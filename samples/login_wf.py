@@ -15,3 +15,5 @@ async def start_handler(relay):
     else:
         await relay.say('I did not get a new name for this device. please login with a name')
 
+    relay.terminate()
+
