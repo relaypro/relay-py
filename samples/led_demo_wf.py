@@ -22,27 +22,27 @@ async def stop_handler(relay, button, taps):
     await relay.say('stopping led demo')
     await relay.terminate()
 
-async def rainbow():
+async def rainbow(relay):
     await relay.say('first up is the rainbow effect')
     await relay.set_led_rainbow()
 
-async def rotate():
+async def rotate(relay):
     await relay.say('rotate effect')
     await relay.set_led_rotate('FF0000')
 
-async def flash():
+async def flash(relay):
     await relay.say('flash effect')
     await relay.set_led_flash('00FF00')
 
-async def breathe():
+async def breathe(relay):
     await relay.say('breathe effect')
     await relay.set_led_breathe('0000FF')
 
-async def on():
+async def on(relay):
     await relay.say('setting leds to green')
     await relay.set_led_on('00FF00')
 
-async def off():
+async def off(relay):
     await relay.say('switching all leds off')
     await relay.set_led_off()
     await relay.say('stopping led demo')
