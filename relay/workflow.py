@@ -241,14 +241,14 @@ class Relay:
             '_type': 'wf_api_play_request',
             'filename': fname
         }
-        await self.send(event)
+        await self.sendReceive(event)
 
     async def say(self, text):
         event = {
             '_type': 'wf_api_say_request',
             'text': text
         }
-        await self.send(event)
+        await self.sendReceive(event)
 
 
     async def broadcast(self, text: str, targets):
@@ -267,7 +267,7 @@ class Relay:
             'text': text,
             'target': targets
         }
-        await self.send(event)
+        await self.sendReceive(event)
 
 
     async def get_device_name(self):
@@ -319,7 +319,7 @@ class Relay:
             'effect': effect,
             'args': args
         }
-        await self.send(event)
+        await self.sendReceive(event)
 
     # convenience functions
     async def set_led_on(self, color):
@@ -349,7 +349,7 @@ class Relay:
             '_type': 'wf_api_vibrate_request',
             'pattern': pattern
         }
-        await self.send(event)
+        await self.sendReceive(event)
 
 
     async def start_timer(self, timeout: int):
@@ -357,20 +357,20 @@ class Relay:
             '_type': 'wf_api_start_timer_request',
             'timeout': timeout
         }
-        await self.send(event)
+        await self.sendReceive(event)
 
     async def stop_timer(self):
         event = {
             '_type': 'wf_api_stop_timer_request'
         }
-        await self.send(event)
+        await self.sendReceive(event)
 
 
     async def terminate(self):
         event = {
             '_type': 'wf_api_terminate_request'
         }
-        await self.send(event)
+        await self.sendReceive(event)
 
 
     async def create_incident(self, itype):

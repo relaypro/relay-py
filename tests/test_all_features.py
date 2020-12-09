@@ -79,19 +79,27 @@ async def handle_play(ws, xname):
     e = await recv(ws)
     check(e, 'wf_api_play_request', filename=xname)
 
-    # TODO: add response, when available
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_play_response'})
+
 
 async def handle_say(ws, xtext):
     e = await recv(ws)
     check(e, 'wf_api_say_request', text=xtext)
 
-    # TODO: add response, when available
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_say_response'})
+
 
 async def handle_notification(ws, xtype, xtext, xtarget):
     e = await recv(ws)
     check(e, 'wf_api_notification_request', type=xtype, text=xtext, target=xtarget)
 
-    # TODO: add response, when available
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_say_response'})
 
 
 async def handle_get_device_name(ws, xrefresh, name):
@@ -154,27 +162,36 @@ async def _handle_set_led(ws, xeffect, xargs):
     e = await recv(ws)
     check(e, 'wf_api_set_led_request', effect=xeffect, args=xargs)
 
-    # TODO: add response, when available
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_set_led_response'})
 
 
 async def handle_vibrate(ws, xpattern):
     e = await recv(ws)
     check(e, 'wf_api_vibrate_request', pattern=xpattern)
 
-    # TODO: add response, when available
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_vibrate_response'})
 
 
 async def handle_start_timer(ws, xtimeout):
     e = await recv(ws)
     check(e, 'wf_api_start_timer_request', timeout=xtimeout)
 
-    # TODO: add response, when available
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_start_timer_response'})
+
 
 async def handle_stop_timer(ws):
     e = await recv(ws)
     check(e, 'wf_api_stop_timer_request')
   
-    # TODO: add response, when available
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_stop_timer_response'})
 
 
 async def handle_create_incident(ws, xtype):
