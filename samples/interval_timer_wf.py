@@ -30,6 +30,6 @@ async def timer_handler(relay):
         await relay.terminate()
 
     else:
-        await relay.say(str(ticks))
+        await relay.say(str(num))
         await relay.set_var('tick_num', str(num+1))
 
