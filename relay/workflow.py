@@ -270,7 +270,8 @@ class Relay:
         await self.sendReceive(event)
 
 
-    async def get_device_name(self):
+    async def get_device_label(self):
+        # TODO: ibot will change to label at some point; change here to match
         v = await self._get_device_info('name', False)
         return v['name']
 
@@ -300,8 +301,8 @@ class Relay:
         return v
 
 
-    async def set_device_name(self, name):
-        await self._set_device_info('name', name)
+    async def set_device_label(self, label):
+        await self._set_device_info('label', label)
 
     async def set_device_channel(self, channel: str):
         await self._set_device_info('channel', channel)
@@ -373,7 +374,7 @@ class Relay:
         event = {
             '_type': 'wf_api_terminate_request'
         }
-        await self.sendReceive(event)
+        await self.send(event)
 
 
     async def create_incident(self, itype):

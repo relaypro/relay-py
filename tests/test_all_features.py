@@ -102,8 +102,8 @@ async def handle_notification(ws, xtype, xtext, xtarget):
         '_type': 'wf_api_say_response'})
 
 
-async def handle_get_device_name(ws, xrefresh, name):
-    await _handle_get_device_info(ws, 'name', xrefresh, name=name)
+async def handle_get_device_label(ws, xrefresh, label):
+    await _handle_get_device_info(ws, 'name', xrefresh, name=label)
  
 async def handle_get_device_address(ws, xrefresh, address):
     await _handle_get_device_info(ws, 'address', xrefresh, address=address)
@@ -127,8 +127,8 @@ async def _handle_get_device_info(ws, xquery, xrefresh, **kwargs):
         **kwargs})
 
 
-async def handle_set_device_name(ws, xvalue):
-    await _handle_set_device_info(ws, 'name', xvalue)
+async def handle_set_device_label(ws, xvalue):
+    await _handle_set_device_info(ws, 'label', xvalue)
 
 async def handle_set_device_channel(ws, xvalue):
     await _handle_set_device_info(ws, 'channel', xvalue)
@@ -237,8 +237,8 @@ async def send_timer(ws):
 
 
 
-async def handle_set_device_name(ws, xvalue):
-    await _handle_set_device_info(ws, 'name', xvalue)
+async def handle_set_device_label(ws, xvalue):
+    await _handle_set_device_info(ws, 'label', xvalue)
 
 async def _handle_set_device_info(ws, xfield, xvalue):
     e = await recv(ws)
@@ -267,7 +267,7 @@ async def simple():
         await handle_notification(ws, 'background', 't', ['d1', 'd2'])
         await handle_notification(ws, 'foreground', 't', ['d1', 'd2'])
 
-        await handle_get_device_name(ws, False, 't')
+        await handle_get_device_label(ws, False, 't')
         await handle_get_device_address(ws, False, 'a')
         await handle_get_device_latlong(ws, False, [1,2])
         await handle_get_device_indoor_location(ws, False, 'l')
@@ -277,7 +277,7 @@ async def simple():
         # receive next request, but inject a button event before response
         # this verifies that the workflow can handle asynchronous requests
         e = await recv(ws)
-        check(e, 'wf_api_set_device_info_request', field='name', value='n')
+        check(e, 'wf_api_set_device_info_request', field='label', value='n')
 
         # inject button event
         await send_button(ws, 'action', 'single')
