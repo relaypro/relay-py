@@ -1,0 +1,7 @@
+# assumes env vars: ibot, subscriber_id, token
+
+alias r_dev='curl -s -H "authorization: Bearer $token" "https://$ibot/ibot/device/$user_id?subscriber_id=$subscriber_id"'
+
+alias r_wf='curl -s -H "authorization: Bearer $token" "https://$ibot/ibot/workflow?subscriber_id=$subscriber_id"'
+alias r_wf_del='r_wf | jq -r -c ".results[].workflow_id" | xargs -t -L 1 -I %id curl -s -X DELETE -H "authorization: Bearer $token" "https://$ibot/ibot/workflow/%id?subscriber_id=$subscriber_id"'
+

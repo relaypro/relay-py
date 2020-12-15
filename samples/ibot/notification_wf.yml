@@ -1,0 +1,9 @@
+trigger:
+    on_phrase: notify
+    start:
+        workflow: wss://awh.relaypro.com/wf/notification
+        args:
+            text: my notification
+            targets: bear
+            type: alert
+

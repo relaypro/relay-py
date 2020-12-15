@@ -1,0 +1,7 @@
+trigger:
+    on_phrase: panic
+    start:
+        workflow: wss://awh.relaypro.com/wf/panic
+        args:
+            incident_type: demo
+

@@ -1,0 +1,7 @@
+trigger:
+    on_phrase: hello
+    start:
+        workflow: wss://awh.relaypro.com/wf/hello
+        args:
+            greeting: Hello product team from 
+

@@ -7,9 +7,9 @@ wf = relay.workflow.Workflow(__name__)
 
 @wf.on_start
 async def start_handler(relay):
-    await listen()
+    await listen(relay)
 
-async def listen():
+async def listen(relay):
     await relay.say('speak your sentence')
     text = await relay.listen()
     await relay.say(f'transcribed text is {text}')
@@ -17,7 +17,7 @@ async def listen():
 
 @wf.on_button(button='action', taps='single')
 async def tap_handler(relay, button, taps):
-    await listen()
+    await listen(relay)
 
 @wf.on_button(button='action', taps='double')
 async def double_tap_handler(relay, button, taps):
