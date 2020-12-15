@@ -13,12 +13,13 @@ async def start_handler(relay):
 
     if ntype == 'broadcast':
         await relay.broadcast(text, targets)
+        await relay.terminate()
 
     elif ntype == 'notify':
         await relay.notify(text, targets)
 
     elif ntype == 'alert':
-        await relay.notify(text, targets)
+        await relay.alert(text, targets)
 
 @wf.on_notification(event='ack_event')
 async def ack_handler(relay, source, event):

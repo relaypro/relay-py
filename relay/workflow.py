@@ -255,10 +255,10 @@ class Relay:
         await self._notify('broadcast', text, targets)
 
     async def notify(self, text: str, targets):
-        await self._notify('background', text, targets)
+        await self._notify('notify', text, targets)
 
     async def alert(self, text: str, targets):
-        await self._notify('foreground', text, targets)
+        await self._notify('alert', text, targets)
 
     async def _notify(self, ntype, text, targets):
         event = {
