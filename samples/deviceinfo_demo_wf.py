@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import relay.workflow
+from relay.workflow import WorkflowException
 
 
 wf = relay.workflow.Workflow(__name__)
@@ -21,7 +22,7 @@ async def start_handler(relay):
         indoor_location = await relay.get_device_indoor_location()
         await relay.say(f"The device's indoor location is {indoor_location}")
 
-    except relay.workflow.WorkflowException:
+    except WorkflowException:
         await relay.say('failed to get indoor location')
 
     await relay.terminate()
