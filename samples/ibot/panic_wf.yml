@@ -1,7 +1,12 @@
 trigger:
     on_phrase: panic
     start:
-        workflow: wss://awh.relaypro.com/wf/panic
+        workflow:
+            uri: wss://awh.relaypro.com/wf/panic
+            transient: false
         args:
-            incident_type: demo
+            incident_type: Panic Alert
+            targets: bear
+            emergency_group: security
+            audible_confirmation_for_originator: true
 

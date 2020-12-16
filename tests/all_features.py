@@ -18,10 +18,11 @@ async def start_handler(relay):
     await relay.play('f')
     await relay.say('t')
 
-    await relay.broadcast('n', 't', ['d1', 'd2'])
-    await relay.notify('n', 't', ['d1', 'd2'])
-    await relay.alert('n', 't', ['d1', 'd2'])
-    await relay.cancel('n', 't', ['d1', 'd2'])
+    await relay.broadcast('t', ['d1', 'd2'])
+    await relay.notify('t', ['d1', 'd2'])
+    await relay.alert('t', ['d1', 'd2'])
+    await relay.alert('t', ['d1', 'd2'], name='n')
+    await relay.cancel_notification('n', ['d1', 'd2'])
 
     await relay.set_channel('c', ['d1', 'd2'])
 

@@ -3,7 +3,7 @@ trigger:
     start:
         workflow: wss://awh.relaypro.com/wf/notification
         args:
-            text: my notification
-            targets: bear
-            type: broadcast
+            text: this is a notify message
+            targets: bear,red bear
+            type: notify
 

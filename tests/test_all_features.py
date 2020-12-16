@@ -93,7 +93,19 @@ async def handle_say(ws, xtext):
         '_type': 'wf_api_say_response'})
 
 
-async def handle_notification(ws, xtype, xname, xtext, xtarget):
+async def handle_broadcast(ws, xtext, xtarget):
+    await _handle_notification(ws, 'broadcast', '', xtext, xtarget)
+
+async def handle_notify(ws, xtext, xtarget):
+    await _handle_notification(ws, 'notify', '', xtext, xtarget)
+
+async def handle_alert(ws, xtext, xtarget, xname=''):
+    await _handle_notification(ws, 'alert', xname, xtext, xtarget)
+
+async def handle_cancel_notification(ws, xname, xtarget):
+    await _handle_notification(ws, 'cancel', xname, '', xtarget)
+
+async def _handle_notification(ws, xtype, xname, xtext, xtarget):
     e = await recv(ws)
     check(e, 'wf_api_notification_request', name=xname, type=xtype, text=xtext, target=xtarget)
 
@@ -245,7 +257,7 @@ async def send_notification(ws, source, name, event, state):
         'source': source,
         'event': event,
         'name': name,
-        'state': state})
+        'notification_state': state})
 
 
 async def send_timer(ws):
@@ -280,10 +292,11 @@ async def simple():
         await handle_play(ws, 'f')
         await handle_say(ws, 't')
 
-        await handle_notification(ws, 'broadcast', 'n', 't', ['d1', 'd2'])
-        await handle_notification(ws, 'notify', 'n', 't', ['d1', 'd2'])
-        await handle_notification(ws, 'alert', 'n', 't', ['d1', 'd2'])
-        await handle_notification(ws, 'cancel', 'n', 't', ['d1', 'd2'])
+        await handle_broadcast(ws, 't', ['d1', 'd2'])
+        await handle_notify(ws, 't', ['d1', 'd2'])
+        await handle_alert(ws, 't', ['d1', 'd2'])
+        await handle_alert(ws, 't', ['d1', 'd2'], 'n')
+        await handle_cancel_notification(ws, 'n', ['d1', 'd2'])
 
         await handle_set_channel(ws, 'c', ['d1', 'd2'])
 

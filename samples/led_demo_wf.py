@@ -19,8 +19,7 @@ async def demo_handler(relay, button, taps):
 
 @wf.on_button(button='action', taps='double')
 async def stop_handler(relay, button, taps):
-    await relay.say('stopping led demo')
-    await relay.terminate()
+    await off(relay)
 
 async def rainbow(relay):
     await relay.say('first up is the rainbow effect')

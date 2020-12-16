@@ -150,7 +150,7 @@ class Relay:
                             asyncio.create_task(self.wrapper(h, e['button'], e['taps']))
     
                         elif t == 'wf_api_notification_event':
-                            asyncio.create_task(self.wrapper(h, e['source'], e['name'], e['event'], e['state']))
+                            asyncio.create_task(self.wrapper(h, e['source'], e['name'], e['event'], e['notification_state']))
     
                         elif t == 'wf_api_timer_event':
                             asyncio.create_task(self.wrapper(h))
@@ -251,17 +251,17 @@ class Relay:
         await self.sendReceive(event)
 
 
-    async def broadcast(self, name: str, text: str, targets):
-        await self._notify('broadcast', name, text, targets)
+    async def broadcast(self, text: str, targets):
+        await self._notify('broadcast', '', text, targets)
 
-    async def notify(self, name: str, text: str, targets):
-        await self._notify('notify', name, text, targets)
+    async def notify(self, text: str, targets):
+        await self._notify('notify', '', text, targets)
 
-    async def alert(self, name: str, text: str, targets):
+    async def alert(self, text: str, targets, name=''):
         await self._notify('alert', name, text, targets)
 
-    async def cancel(self, name: str, text: str, targets):
-        await self._notify('cancel', name, text, targets)
+    async def cancel_notification(self, name: str, targets):
+        await self._notify('cancel', name, '', targets)
 
     async def _notify(self, ntype, name, text, targets):
         event = {
