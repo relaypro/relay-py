@@ -65,9 +65,9 @@ class Workflow:
             return on_button_decorator
 
     
-    def on_notification(self, _func=None, *, event='*', source='*'):
+    def on_notification(self, _func=None, *, name='*', event='*'):
         def on_notification_decorator(func):
-            self.type_handlers[('wf_api_notification_event', event, source)] = func
+            self.type_handlers[('wf_api_notification_event', name, event)] = func
 
         if _func:
             return on_notification_decorator(_func)
@@ -98,12 +98,12 @@ class Workflow:
                             h = self.type_handlers.get((t, '*', '*'), None)
 
             elif t == 'wf_api_notification_event':
-                h = self.type_handlers.get((t, event['event'], event['source']), None)
+                h = self.type_handlers.get((t, event['name'], event['event']), None)
                 if not h:
-                    # prefer event match over source
-                    h = self.type_handlers.get((t, event['event'], '*'), None)
+                    # prefer name match over event
+                    h = self.type_handlers.get((t, event['name'], '*'), None)
                     if not h:
-                        h = self.type_handlers.get((t, '*', event['source']), None)
+                        h = self.type_handlers.get((t, '*', event['event']), None)
                         if not h:
                             h = self.type_handlers.get((t, '*', '*'), None)
 
@@ -150,7 +150,7 @@ class Relay:
                             asyncio.create_task(self.wrapper(h, e['button'], e['taps']))
     
                         elif t == 'wf_api_notification_event':
-                            asyncio.create_task(self.wrapper(h, e['source'], e['event']))
+                            asyncio.create_task(self.wrapper(h, e['source'], e['name'], e['event'], e['state']))
     
                         elif t == 'wf_api_timer_event':
                             asyncio.create_task(self.wrapper(h))
@@ -251,20 +251,33 @@ class Relay:
         await self.sendReceive(event)
 
 
-    async def broadcast(self, text: str, targets):
-        await self._notify('broadcast', text, targets)
+    async def broadcast(self, name: str, text: str, targets):
+        await self._notify('broadcast', name, text, targets)
 
-    async def notify(self, text: str, targets):
-        await self._notify('notify', text, targets)
+    async def notify(self, name: str, text: str, targets):
+        await self._notify('notify', name, text, targets)
 
-    async def alert(self, text: str, targets):
-        await self._notify('alert', text, targets)
+    async def alert(self, name: str, text: str, targets):
+        await self._notify('alert', name, text, targets)
 
-    async def _notify(self, ntype, text, targets):
+    async def cancel(self, name: str, text: str, targets):
+        await self._notify('cancel', name, text, targets)
+
+    async def _notify(self, ntype, name, text, targets):
         event = {
             '_type': 'wf_api_notification_request',
             'type': ntype,
+            'name': name,
             'text': text,
+            'target': targets
+        }
+        await self.sendReceive(event)
+
+
+    async def set_channel(self, channel_name: str, targets):
+        event = {
+            '_type': 'wf_api_set_channel_request',
+            'channel_name': channel_name,
             'target': targets
         }
         await self.sendReceive(event)
@@ -382,12 +395,15 @@ class Relay:
             '_type': 'wf_api_create_incident_request',
             'type': itype
         }
-        await self.send(event)
+        v = await self.sendReceive(event)
+        return v['incident_id']
 
-    async def resolve_incident(self):
+    async def resolve_incident(self, incident_id, reason):
         event = {
-            '_type': 'wf_api_resolve_incident_request'
+            '_type': 'wf_api_resolve_incident_request',
+            'incident_id': incident_id,
+            'reason': reason
         }
-        await self.send(event)
+        await self.sendReceive(event)
 
 

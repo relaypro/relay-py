@@ -93,13 +93,22 @@ async def handle_say(ws, xtext):
         '_type': 'wf_api_say_response'})
 
 
-async def handle_notification(ws, xtype, xtext, xtarget):
+async def handle_notification(ws, xtype, xname, xtext, xtarget):
     e = await recv(ws)
-    check(e, 'wf_api_notification_request', type=xtype, text=xtext, target=xtarget)
+    check(e, 'wf_api_notification_request', name=xname, type=xtype, text=xtext, target=xtarget)
 
     await send(ws, {
         '_id': e['_id'],
         '_type': 'wf_api_say_response'})
+
+
+async def handle_set_channel(ws, xchannel_name, xtarget):
+    e = await recv(ws)
+    check(e, 'wf_api_set_channel_request', channel_name=xchannel_name, target=xtarget)
+
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_set_channel_response'})
 
 
 async def handle_get_device_label(ws, xrefresh, label):
@@ -197,17 +206,23 @@ async def handle_stop_timer(ws):
         '_type': 'wf_api_stop_timer_response'})
 
 
-async def handle_create_incident(ws, xtype):
+async def handle_create_incident(ws, xtype, incident_id):
     e = await recv(ws)
     check(e, 'wf_api_create_incident_request', type=xtype)
     
-    # TODO: add response, when available
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_create_incident_response',
+        'incident_id': incident_id})
 
-async def handle_resolve_incident(ws):
+
+async def handle_resolve_incident(ws, xincident_id, xreason):
     e = await recv(ws)
-    check(e, 'wf_api_resolve_incident_request')
+    check(e, 'wf_api_resolve_incident_request', incident_id=xincident_id, reason=xreason)
 
-    # TODO: add response, when available
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_resolve_incident_response'})
 
 
 async def handle_terminate(ws):
@@ -224,11 +239,13 @@ async def send_button(ws, button, taps):
         'taps': taps})
 
     
-async def send_notification(ws, source, event):
+async def send_notification(ws, source, name, event, state):
     await send(ws, {
         '_type': 'wf_api_notification_event',
         'source': source,
-        'event': event})
+        'event': event,
+        'name': name,
+        'state': state})
 
 
 async def send_timer(ws):
@@ -263,9 +280,12 @@ async def simple():
         await handle_play(ws, 'f')
         await handle_say(ws, 't')
 
-        await handle_notification(ws, 'broadcast', 't', ['d1', 'd2'])
-        await handle_notification(ws, 'background', 't', ['d1', 'd2'])
-        await handle_notification(ws, 'foreground', 't', ['d1', 'd2'])
+        await handle_notification(ws, 'broadcast', 'n', 't', ['d1', 'd2'])
+        await handle_notification(ws, 'notify', 'n', 't', ['d1', 'd2'])
+        await handle_notification(ws, 'alert', 'n', 't', ['d1', 'd2'])
+        await handle_notification(ws, 'cancel', 'n', 't', ['d1', 'd2'])
+
+        await handle_set_channel(ws, 'c', ['d1', 'd2'])
 
         await handle_get_device_label(ws, False, 't')
         await handle_get_device_address(ws, False, 'a')
@@ -309,8 +329,8 @@ async def simple():
         await handle_start_timer(ws, 10)
         await handle_stop_timer(ws)
 
-        await handle_create_incident(ws, 'i')
-        await handle_resolve_incident(ws)
+        await handle_create_incident(ws, 'i', 'iid')
+        await handle_resolve_incident(ws, 'iid', 'r')
 
         await handle_terminate(ws)
 
@@ -326,8 +346,8 @@ async def simple():
         await send_button(ws, 'channel', 'single')
         await handle_say(ws, 'handle_button(channel, single)')
 
-        await send_notification(ws, 's1', 'e1')
-        await handle_say(ws, 'handle_notification(s1, e1)')
+        await send_notification(ws, 's1', 'n', 'e1', 'state')
+        await handle_say(ws, 'handle_notification(s1, n, e1, state)')
 
         await send_timer(ws)
         await handle_say(ws, 'handle_timer()')

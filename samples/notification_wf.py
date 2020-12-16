@@ -22,7 +22,7 @@ async def start_handler(relay):
         await relay.alert(text, targets)
 
 @wf.on_notification(event='ack_event')
-async def ack_handler(relay, source, event):
+async def ack_handler(relay, source, name, event, state):
     await relay.say(f'ack ack baby ! {source} acknowledged the alert')
     await relay.terminate()
 

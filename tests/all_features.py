@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import inspect
+import json
 
 import relay.workflow
 
@@ -17,9 +18,12 @@ async def start_handler(relay):
     await relay.play('f')
     await relay.say('t')
 
-    await relay.broadcast('t', ['d1', 'd2'])
-    await relay.notify('t', ['d1', 'd2'])
-    await relay.alert('t', ['d1', 'd2'])
+    await relay.broadcast('n', 't', ['d1', 'd2'])
+    await relay.notify('n', 't', ['d1', 'd2'])
+    await relay.alert('n', 't', ['d1', 'd2'])
+    await relay.cancel('n', 't', ['d1', 'd2'])
+
+    await relay.set_channel('c', ['d1', 'd2'])
 
     await relay.get_device_label()
     await relay.get_device_address()
@@ -47,8 +51,8 @@ async def start_handler(relay):
     await relay.start_timer(10)
     await relay.stop_timer()
 
-    await relay.create_incident('i')
-    await relay.resolve_incident()
+    incident_id = await relay.create_incident('i')
+    await relay.resolve_incident(incident_id, 'r')
 
     await relay.terminate()
 
@@ -76,8 +80,8 @@ async def handle_button(relay, button, taps):
 
 
 @wf.on_notification
-async def handle_notification(relay, source, event):
-    await relay.say(f'{inspect.currentframe().f_code.co_name}({source}, {event})')
+async def handle_notification(relay, source, event, name, state):
+    await relay.say(f'{inspect.currentframe().f_code.co_name}({source}, {event}, {name}, {state})')
 
 
 @wf.on_timer
