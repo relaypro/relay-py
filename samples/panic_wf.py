@@ -15,7 +15,7 @@ async def start_handler(relay):
     address = await relay.get_device_address()
     label = await relay.get_device_label()
 
-    await relay.alert('initial_alert', f'alert for {label} at {address}', targets)
+    await relay.alert(f'alert for {label} at {address}', targets, name='initial_alert')
 
     confirm = await relay.get_var('audible_confirmation_for_originator', 'true') == 'true'
     if confirm:

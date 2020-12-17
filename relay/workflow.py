@@ -5,6 +5,8 @@ import time
 import uuid
 import websockets
 
+from functools import singledispatch
+
 
 logger = logging.getLogger(__name__)
 
@@ -116,6 +118,19 @@ class WorkflowException(Exception):
         super().__init__(self.message)
 
 
+@singledispatch
+def remove_null(obj):
+    return obj
+
+@remove_null.register(list)
+def _process_list(l):
+    return [remove_null(v) for v in l]
+
+@remove_null.register(dict)
+def _process_list(d):
+    return {k:remove_null(v) for k,v in d.items() if v is not None}
+
+
 class Relay:
     def __init__(self, workflow):
         self.workflow = workflow
@@ -189,7 +204,8 @@ class Relay:
         fut = asyncio.get_event_loop().create_future()
         self.id_futures[_id] = fut
 
-        await self._send(json.dumps(obj))
+        # TODO: ibot currently loads null as the string 'null'
+        await self._send(json.dumps(remove_null(obj)))
 
         # wait on the response
         await fut
@@ -252,16 +268,16 @@ class Relay:
 
 
     async def broadcast(self, text: str, targets):
-        await self._notify('broadcast', '', text, targets)
+        await self._notify('broadcast', None, text, targets)
 
     async def notify(self, text: str, targets):
-        await self._notify('notify', '', text, targets)
+        await self._notify('notify', None, text, targets)
 
-    async def alert(self, text: str, targets, name=''):
+    async def alert(self, text: str, targets, name=None):
         await self._notify('alert', name, text, targets)
 
-    async def cancel_notification(self, name: str, targets):
-        await self._notify('cancel', name, '', targets)
+    async def cancel_notification(self, name: str, targets=None):
+        await self._notify('cancel', name, None, targets)
 
     async def _notify(self, ntype, name, text, targets):
         event = {
@@ -288,20 +304,20 @@ class Relay:
         v = await self._get_device_info('name', False)
         return v['name']
 
-    async def get_device_address(self):
-        v = await self._get_device_info('address', False)
+    async def get_device_address(self, refresh=False):
+        v = await self._get_device_info('address', refresh)
         return v['address']
 
-    async def get_device_latlong(self):
-        v = await self._get_device_info('latlong', False)
+    async def get_device_latlong(self, refresh=False):
+        v = await self._get_device_info('latlong', refresh)
         return v['latlong']
 
-    async def get_device_indoor_location(self):
-        v = await self._get_device_info('indoor_location', False)
+    async def get_device_indoor_location(self, refresh=False):
+        v = await self._get_device_info('indoor_location', refresh)
         return v['indoor_location']
 
-    async def get_device_battery(self):
-        v = await self._get_device_info('battery', False)
+    async def get_device_battery(self, refresh=False):
+        v = await self._get_device_info('battery', refresh)
         return v['battery']
 
     async def _get_device_info(self, query, refresh):
@@ -398,12 +414,11 @@ class Relay:
         v = await self.sendReceive(event)
         return v['incident_id']
 
-    async def resolve_incident(self, incident_id, reason):
+    async def resolve_incident(self, incident_id=None, reason=None):
         event = {
             '_type': 'wf_api_resolve_incident_request',
             'incident_id': incident_id,
             'reason': reason
         }
         await self.sendReceive(event)
-
 
