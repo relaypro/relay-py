@@ -9,6 +9,7 @@ from functools import singledispatch
 
 
 logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
 
 
 class Server:
@@ -39,7 +40,8 @@ class Server:
             await relay.handle(websocket)
 
         else:
-            raise ServerException(f'no workflow registered for path {path}')
+            websocket.close()
+            logger.warning(f'ignoring request for unregistered path {path}')
 
 
 class ServerException(Exception):
@@ -132,12 +134,8 @@ def _process_list(d):
 
 
 class CustomAdapter(logging.LoggerAdapter):
-    """
-    This example adapter expects the passed in dict-like object to have a
-    'connid' key, whose value in brackets is prepended to the log message.
-    """
     def process(self, msg, kwargs):
-        return f'{self.extra["wf_name"]}:{self.extra["ws_id"]} {msg}', kwargs
+        return f'[{self.extra["cid"]}] {msg}', kwargs
 
 
 class Relay:
@@ -145,15 +143,20 @@ class Relay:
         self.workflow = workflow
         self.websocket = None
         self.id_futures = {}  # {_id: future}
-        self.adapter = None
+        self.logger = None
+
+    def get_cid(self):
+        return f'{self.workflow.name}:{id(self.websocket)}'
 
     async def handle(self, websocket):
         self.websocket = websocket
-        self.adapter = CustomAdapter(logger, {'wf_name': self.workflow.name, 'ws_id': id(self.websocket)})
+        self.logger = CustomAdapter(logger, {'cid': self.get_cid()})
+
+        self.logger.info(f'workflow started from {self.websocket.path}')
 
         try:
             async for m in websocket:
-                self.adapter.debug(f'recv: {m}')
+                self.logger.debug(f'recv: {m}')
                 e = json.loads(m)
                 _id = e.get('_id', None)
     
@@ -163,7 +166,7 @@ class Relay:
                         fut.set_result(e)
     
                     else:
-                        logger.warning(f'found response for unknown _id {_id}')
+                        self.logger.warning(f'found response for unknown _id {_id}')
     
                 else:
                     h = self.workflow.get_handler(e)
@@ -182,17 +185,17 @@ class Relay:
                             asyncio.create_task(self.wrapper(h))
     
                     else:
-                        self.adapter.warning(f'no handler found for _type {e["_type"]}')
+                        self.logger.warning(f'no handler found for _type {e["_type"]}')
 
         except websockets.exceptions.ConnectionClosedError:
             # ibot closes the connection on terminate(); this is expected
             pass
 
         except Exception as x:
-            self.adapter.error(f'{x}', exc_info=True)
+            self.logger.error(f'{x}', exc_info=True)
 
         finally:
-            self.adapter.debug(f'websocket closed')
+            self.logger.info('workflow terminated')
 
 
     # run handlers with exception logging; needed since we cannot await handlers
@@ -200,7 +203,7 @@ class Relay:
         try:
             await h(self, *args)
         except Exception as x:
-            self.adapter.error(f'{x}', exc_info=True)
+            self.logger.error(f'{x}', exc_info=True)
 
 
     async def send(self, obj):
@@ -233,7 +236,7 @@ class Relay:
 
 
     async def _send(self, s):
-        self.adapter.debug(f'send: {s}')
+        self.logger.debug(f'send: {s}')
         await self.websocket.send(s)
 
 

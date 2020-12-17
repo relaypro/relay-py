@@ -2,6 +2,11 @@ import logging
 import logging.config
 import yaml
 
+with open('logging.yml', 'r') as f:
+    config = yaml.safe_load(f.read())
+    logging.config.dictConfig(config)
+
+
 import relay.workflow
 
 import deviceinfo_demo_wf as deviceinfo
@@ -13,11 +18,6 @@ import notification_wf as notification
 import panic_wf as panic
 import transcribe_wf as transcribe
 import vibrate_demo_wf as vibrate
-
-
-with open('logging.yml', 'r') as f:
-    config = yaml.safe_load(f.read())
-    logging.config.dictConfig(config)
 
 
 def main():
