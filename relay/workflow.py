@@ -173,6 +173,10 @@ class Relay:
                     else:
                         logger.warning(f'{self.workflow.name} - no handler found for _type {e["_type"]}')
 
+        except websockets.exceptions.ConnectionClosedError:
+            # ibot closes the connection on terminate(); this is expected
+            pass
+
         except Exception as x:
             logger.error(f'{self.workflow.name} - {x}', exc_info=True)
 
