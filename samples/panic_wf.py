@@ -38,7 +38,7 @@ async def ack_handler(relay, source, name, event, state):
 
     confirm = await relay.get_var('audible_confirmation_for_originator', 'true') == 'true'
     if confirm:
-        await relay.alert('acknowledge_response', f'alert acknowledged by {source}', [ await relay.get_device_label() ])
+        await relay.alert(f'alert acknowledged by {source}', [ await relay.get_device_label() ], name='acknowledge_response')
 
     else:
         relay.resolve_incident()
