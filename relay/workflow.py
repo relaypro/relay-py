@@ -131,18 +131,29 @@ def _process_list(d):
     return {k:remove_null(v) for k,v in d.items() if v is not None}
 
 
+class CustomAdapter(logging.LoggerAdapter):
+    """
+    This example adapter expects the passed in dict-like object to have a
+    'connid' key, whose value in brackets is prepended to the log message.
+    """
+    def process(self, msg, kwargs):
+        return f'{self.extra["wf_name"]}:{self.extra["ws_id"]} {msg}', kwargs
+
+
 class Relay:
     def __init__(self, workflow):
         self.workflow = workflow
         self.websocket = None
         self.id_futures = {}  # {_id: future}
+        self.adapter = None
 
     async def handle(self, websocket):
         self.websocket = websocket
+        self.adapter = CustomAdapter(logger, {'wf_name': self.workflow.name, 'ws_id': id(self.websocket)})
 
         try:
             async for m in websocket:
-                logger.debug(f'{self.workflow.name} - recv: {m}')
+                self.adapter.debug(f'recv: {m}')
                 e = json.loads(m)
                 _id = e.get('_id', None)
     
@@ -152,7 +163,7 @@ class Relay:
                         fut.set_result(e)
     
                     else:
-                        logger.warning(f'{self.workflow.name} - found response for unknown _id {_id}')
+                        logger.warning(f'found response for unknown _id {_id}')
     
                 else:
                     h = self.workflow.get_handler(e)
@@ -171,17 +182,17 @@ class Relay:
                             asyncio.create_task(self.wrapper(h))
     
                     else:
-                        logger.warning(f'{self.workflow.name} - no handler found for _type {e["_type"]}')
+                        self.adapter.warning(f'no handler found for _type {e["_type"]}')
 
         except websockets.exceptions.ConnectionClosedError:
             # ibot closes the connection on terminate(); this is expected
             pass
 
         except Exception as x:
-            logger.error(f'{self.workflow.name} - {x}', exc_info=True)
+            self.adapter.error(f'{x}', exc_info=True)
 
         finally:
-            logger.debug(f'{self.workflow.name} - websocket closed')
+            self.adapter.debug(f'websocket closed')
 
 
     # run handlers with exception logging; needed since we cannot await handlers
@@ -189,7 +200,7 @@ class Relay:
         try:
             await h(self, *args)
         except Exception as x:
-            logger.error(f'{self.workflow.name} - {x}', exc_info=True)
+            self.adapter.error(f'{x}', exc_info=True)
 
 
     async def send(self, obj):
@@ -222,7 +233,7 @@ class Relay:
 
 
     async def _send(self, s):
-        logger.debug(f'{self.workflow.name} - send: {s}')
+        self.adapter.debug(f'send: {s}')
         await self.websocket.send(s)
 
 

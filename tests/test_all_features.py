@@ -94,16 +94,42 @@ async def handle_say(ws, xtext):
 
 
 async def handle_broadcast(ws, xtext, xtarget):
-    await _handle_notification(ws, 'broadcast', '', xtext, xtarget)
+    e = await recv(ws)
+    check(e, 'wf_api_notification_request', type='broadcast', text=xtext, target=xtarget)
+
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_say_response'})
 
 async def handle_notify(ws, xtext, xtarget):
-    await _handle_notification(ws, 'notify', '', xtext, xtarget)
+    e = await recv(ws)
+    check(e, 'wf_api_notification_request', type='notify', text=xtext, target=xtarget)
 
-async def handle_alert(ws, xtext, xtarget, xname=''):
-    await _handle_notification(ws, 'alert', xname, xtext, xtarget)
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_say_response'})
 
-async def handle_cancel_notification(ws, xname, xtarget):
-    await _handle_notification(ws, 'cancel', xname, '', xtarget)
+async def handle_alert(ws, xtext, xtarget, xname=None):
+    e = await recv(ws)
+    if xname:
+        check(e, 'wf_api_notification_request', type='alert', text=xtext, target=xtarget, name=xname)
+    else:
+        check(e, 'wf_api_notification_request', type='alert', text=xtext, target=xtarget)
+
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_say_response'})
+
+async def handle_cancel_notification(ws, xname, xtarget=None):
+    e = await recv(ws)
+    if xtarget:
+        check(e, 'wf_api_notification_request', type='cancel', name=xname, target=xtarget)
+    else:
+        check(e, 'wf_api_notification_request', type='cancel', name=xname)
+
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_say_response'})
 
 async def _handle_notification(ws, xtype, xname, xtext, xtarget):
     e = await recv(ws)
