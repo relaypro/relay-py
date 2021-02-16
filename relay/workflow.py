@@ -54,6 +54,7 @@ class Workflow:
     def __init__(self, name):
         self.name = name
         self.type_handlers = {}  # {(type, args): func}
+        self.closed_handler = None
 
     def on_start(self, func):
         self.type_handlers[('wf_api_start_event')] = func
@@ -82,6 +83,10 @@ class Workflow:
 
     def on_timer(self, func):
         self.type_handlers[('wf_api_timer_event')] = func
+
+
+    def on_closed(self, func):
+        self.closed_handler = func
 
 
     def get_handler(self, event):
@@ -142,6 +147,7 @@ class Relay:
     def __init__(self, workflow):
         self.workflow = workflow
         self.websocket = None
+        self.closed_callback = None
         self.id_futures = {}  # {_id: future}
         self.logger = None
 
@@ -196,6 +202,13 @@ class Relay:
 
         finally:
             self.logger.info('workflow terminated')
+            try:
+                if self.workflow.closed_handler:
+                    asyncio.create_task(self.wrapper(self.workflow.closed_handler))
+                    self.logger.debug('invoked closed_callback')
+
+            except Exception as x:
+                self.logger.error(f'{x}', exc_info=True)
 
 
     # run handlers with exception logging; needed since we cannot await handlers
@@ -236,8 +249,13 @@ class Relay:
 
 
     async def _send(self, s):
-        self.logger.debug(f'send: {s}')
-        await self.websocket.send(s)
+        if self.websocket.open:
+            await self.websocket.send(s)
+            self.logger.debug(f'send: {s}')
+
+        else:
+            self.logger.debug('_send invoked with websocket no longer open')
+            raise WorkflowException('websocket is not open')
 
 
     async def get_var(self, name: str, default=None):

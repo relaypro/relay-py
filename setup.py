@@ -8,7 +8,8 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires=[
         'websockets',
-        'pyyaml'
+        'pyyaml',
+        'flask'
     ],
     extras_require={
         'testing': [

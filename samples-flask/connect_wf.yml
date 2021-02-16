@@ -1,0 +1,7 @@
+trigger:
+    on_phrase: connect
+    start:
+        workflow:
+            uri: wss://awh.relaypro.com/test/connect
+            transient: false
+
