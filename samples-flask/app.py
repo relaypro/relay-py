@@ -48,8 +48,8 @@ async def start_handler(relay):
     await relay.listen(['disconnect'])
     await relay.terminate()
 
-@wf.on_closed
-async def closed_handler(relay):
+@wf.on_end
+async def end_handler(relay):
     relays.discard(relay)
 
 

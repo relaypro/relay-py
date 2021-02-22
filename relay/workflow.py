@@ -54,7 +54,7 @@ class Workflow:
     def __init__(self, name):
         self.name = name
         self.type_handlers = {}  # {(type, args): func}
-        self.closed_handler = None
+        self.end_handler = None
 
     def on_start(self, func):
         self.type_handlers[('wf_api_start_event')] = func
@@ -85,8 +85,8 @@ class Workflow:
         self.type_handlers[('wf_api_timer_event')] = func
 
 
-    def on_closed(self, func):
-        self.closed_handler = func
+    def on_end(self, func):
+        self.end_handler = func
 
 
     def get_handler(self, event):
@@ -147,7 +147,7 @@ class Relay:
     def __init__(self, workflow):
         self.workflow = workflow
         self.websocket = None
-        self.closed_callback = None
+        self.end_callback = None
         self.id_futures = {}  # {_id: future}
         self.logger = None
 
@@ -203,9 +203,9 @@ class Relay:
         finally:
             self.logger.info('workflow terminated')
             try:
-                if self.workflow.closed_handler:
-                    asyncio.create_task(self.wrapper(self.workflow.closed_handler))
-                    self.logger.debug('invoked closed_callback')
+                if self.workflow.end_handler:
+                    asyncio.create_task(self.wrapper(self.workflow.end_handler))
+                    self.logger.debug('invoked end_callback')
 
             except Exception as x:
                 self.logger.error(f'{x}', exc_info=True)
