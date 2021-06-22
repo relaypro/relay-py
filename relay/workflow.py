@@ -183,7 +183,7 @@ class Relay:
     
                         elif t == 'wf_api_timer_event':
                             asyncio.create_task(self.wrapper(h))
-    
+
                     else:
                         self.logger.warning(f'no handler found for _type {e["_type"]}')
 
@@ -440,3 +440,12 @@ class Relay:
         }
         await self.sendReceive(event)
 
+    async def set_timer(self, type, name, timeout=60, timeout_type='secs'):
+        event = {
+            '_type': 'wf_api_set_timer_request',
+            'type': type,
+            'name': name,
+            'timeout': timeout,
+            'timeout_type': timeout_type
+        }
+        await self.sendReceive(event)

@@ -304,6 +304,15 @@ async def _handle_set_device_info(ws, xfield, xvalue):
         '_type': 'wf_api_set_device_info_response',
     })
 
+async def handle_set_timer(ws, xtype, xname):
+    e = await recv(ws)
+    check(e, 'wf_api_set_timer_request', type=xtype, name=xname, timeout=60, timeout_type='secs')
+
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_set_timer_response'
+    })
+
 
 async def simple():
     uri = "ws://localhost:8765/hello"
@@ -371,6 +380,8 @@ async def simple():
         await handle_create_incident(ws, 'i', 'iid')
         await handle_resolve_incident(ws, 'iid', 'r')
 
+        await handle_set_timer(ws, 'timeout', 'test_timer')
+
         await handle_terminate(ws)
 
         await send_button(ws, 'action', 'single')
@@ -390,7 +401,6 @@ async def simple():
 
         await send_timer(ws)
         await handle_say(ws, 'handle_timer()')
-
 
 def test_simple(wf_server):
     asyncio.get_event_loop().run_until_complete(simple())
