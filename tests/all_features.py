@@ -55,6 +55,8 @@ async def start_handler(relay):
     incident_id = await relay.create_incident('i')
     await relay.resolve_incident(incident_id, 'r')
 
+    await relay.restart_device()  
+
     await relay.terminate()
 
 

@@ -439,4 +439,11 @@ class Relay:
             'reason': reason
         }
         await self.sendReceive(event)
+    
+    async def restart_device(self):
+        event = {
+            '_type': 'wf_api_device_power_off_request',
+            'restart': True
+        }
+        await self.sendReceive(event)
 
