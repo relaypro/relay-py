@@ -312,6 +312,14 @@ async def handle_restart_device(ws):
         '_id': e['_id'],
         '_type': 'wf_api_device_power_off_response'})
 
+async def handle_power_down_device(ws):
+    e = await recv(ws)
+    check(e, 'wf_api_device_power_off_request')
+
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_device_power_off_response'})
+
 
 async def simple():
     uri = "ws://localhost:8765/hello"
@@ -380,6 +388,7 @@ async def simple():
         await handle_resolve_incident(ws, 'iid', 'r')
 
         await handle_restart_device(ws)
+        await handle_power_down_device(ws)
 
         await handle_terminate(ws)
 
