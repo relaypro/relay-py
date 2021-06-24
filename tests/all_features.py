@@ -57,7 +57,10 @@ async def start_handler(relay):
 
     await relay.restart_device()
 
-    await relay.power_down_device()  
+    await relay.power_down_device()
+
+    await relay.stop_playback('1839')
+    await relay.stop_playback(['1839', '1840', '1850', '1860'])
 
     await relay.terminate()
 

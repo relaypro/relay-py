@@ -462,7 +462,7 @@ class Relay:
                 'ids': id
             }
         elif type(id) == str:
-            id = list(id)
+            id = [id]
             event = {
                 '_type': 'wf_api_stop_playback_request',
                 'ids': id
