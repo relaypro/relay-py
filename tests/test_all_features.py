@@ -339,6 +339,14 @@ async def handle_stop_playback_multiple(ws, xid):
         '_type': 'wf_api_stop_playback_response',
         'ids': xid})
 
+async def handle_stop_playback_none(ws):
+    e = await recv(ws)
+    check(e, 'wf_api_stop_playback_request')
+
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_stop_playback_response'})
+
 
 async def simple():
     uri = "ws://localhost:8765/hello"
@@ -411,6 +419,7 @@ async def simple():
 
         await handle_stop_playback_single(ws, ['1839'])
         await handle_stop_playback_multiple(ws, ['1839', '1840', '1850', '1860'])
+        await handle_stop_playback_none(ws)
 
         await handle_terminate(ws)
 
