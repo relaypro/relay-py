@@ -454,7 +454,7 @@ class Relay:
         }
         await self.sendReceive(event)
     
-    async def stop_playback(self, id):
+    async def stop_playback(self, id=None):
         event = None
         if type(id) == list:
             event = {
@@ -467,7 +467,7 @@ class Relay:
                 '_type': 'wf_api_stop_playback_request',
                 'ids': id
             }
-        else:
+        elif id is None:
             event = {
                 '_type': 'wf_api_stop_playback_request'
             }
