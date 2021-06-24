@@ -320,6 +320,17 @@ async def handle_power_down_device(ws):
         '_id': e['_id'],
         '_type': 'wf_api_device_power_off_response'})
 
+async def handle_stop_playback(ws, xid=None):
+    e = await recv(ws)
+    if xid:
+        check(e, 'wf_api_stop_playback_request', ids=xid)
+    else:
+        check(e, 'wf_api_stop_playback_request')
+
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_stop_playback_response',
+        'ids': xid})
 
 async def simple():
     uri = "ws://localhost:8765/hello"
@@ -389,6 +400,10 @@ async def simple():
 
         await handle_restart_device(ws)
         await handle_power_down_device(ws)
+
+        await handle_stop_playback(ws, ['1839'])
+        await handle_stop_playback(ws, ['1839', '1840', '1850', '1860'])
+        await handle_stop_playback(ws)
 
         await handle_terminate(ws)
 
