@@ -335,18 +335,18 @@ async def handle_stop_playback(ws, xid=None):
 async def handle_translate(ws, xtext, xfrom=None, xto=None):
     e = await recv(ws)
     if xfrom and xto:
-        check(e, 'wf_api_translate_request', text=xtext, from_lang=xfrom, to=xto)
+        check(e, 'wf_api_translate_request', text=xtext, from_lang=xfrom, to_lang=xto)
     elif xfrom:
-        check(e, 'wf_api_translate_request', text=xtext, from_lang=xfrom, to='es-ES')
+        check(e, 'wf_api_translate_request', text=xtext, from_lang=xfrom, to_lang='es-ES')
     elif not xfrom and not xto:
-        check(e, 'wf_api_translate_request', text=xtext, from_lang='en-US', to='es-ES')
+        check(e, 'wf_api_translate_request', text=xtext, from_lang='en-US', to_lang='es-ES')
 
     await send(ws, {
         '_id': e['_id'],
         '_type': 'wf_api_translate_response',
         'text': xtext,
         'from_lang': xfrom,
-        'to': xto
+        'to_lang': xto
     })
 
 async def simple():

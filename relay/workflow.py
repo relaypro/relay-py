@@ -478,7 +478,7 @@ class Relay:
             '_type': 'wf_api_translate_request',
             'text': text,
             'from_lang': from_lang,
-            'to': to
+            'to_lang': to
         }
         translatedText = await self.sendReceive(event)
         return translatedText
