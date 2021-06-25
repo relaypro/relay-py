@@ -473,11 +473,11 @@ class Relay:
             }
         await self.sendReceive(event)
 
-    async def translate(self, text, from='en-US', to='es-ES'):
+    async def translate(self, text, from_lang='en-US', to='es-ES'):
         event = {
             '_type': 'wf_api_translate_request',
             'text': text,
-            'from_lang': from,
+            'from_lang': from_lang,
             'to_lang': to
         }
         translatedText = await self.sendReceive(event)
