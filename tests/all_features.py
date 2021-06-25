@@ -64,7 +64,7 @@ async def start_handler(relay):
     await relay.stop_playback()
 
     await relay.translate('Hello')
-    #await relay.translate("こんにちは", 'ja-JP')
+    await relay.translate("こんにちは", 'ja-JP')
     #await relay.translate("Bonjour", 'fr-FR', 'en-US')
 
     await relay.terminate()

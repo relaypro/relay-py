@@ -346,7 +346,7 @@ async def handle_translate(ws, xtext, xfrom=None, xto=None):
         '_type': 'wf_api_translate_response',
         'text': xtext,
         'from_lang': xfrom,
-        'to_lang': xto
+        'to': xto
     })
 
 async def simple():
@@ -424,7 +424,7 @@ async def simple():
 
         await handle_translate(ws, "Hello")
         await handle_translate(ws, "こんにちは", 'ja-JP')
-        await handle_translate(ws, "Bonjour", 'fr-FR', 'en-US')
+        #await handle_translate(ws, "Bonjour", 'fr-FR', 'en-US')
 
         await handle_terminate(ws)
 
