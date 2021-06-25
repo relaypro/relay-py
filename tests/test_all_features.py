@@ -424,7 +424,7 @@ async def simple():
 
         await handle_translate(ws, "Hello")
         await handle_translate(ws, "こんにちは", 'ja-JP')
-        #await handle_translate(ws, "Bonjour", 'fr-FR', 'en-US')
+        await handle_translate(ws, "Bonjour", 'fr-FR', 'en-US')
 
         await handle_terminate(ws)
 
