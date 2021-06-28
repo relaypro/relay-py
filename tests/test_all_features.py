@@ -193,6 +193,9 @@ async def _handle_set_device_info(ws, xfield, xvalue):
 async def handle_set_led_on(ws, xcolor):
     await _handle_set_led(ws, 'static', {'colors':{'ring': xcolor}})
 
+async def handle_set_single_led_on(ws, xcolor, xindex):
+    await _handle_set_led(ws, 'static', {'colors':{'%s' %(xindex): xcolor}})
+
 async def handle_set_led_rainbow(ws, xrotations):
     await _handle_set_led(ws, 'rainbow', {'rotations': xrotations})
 
@@ -379,6 +382,7 @@ async def simple():
         await handle_set_device_channel(ws, 'c')
 
         await handle_set_led_on(ws, '00FF00')
+        await handle_set_single_led_on(ws, '00FF00', 3)
         await handle_set_led_rainbow(ws, -1)
         await handle_set_led_rainbow(ws, 5)
         await handle_set_led_flash(ws, '00FF00', -1)
