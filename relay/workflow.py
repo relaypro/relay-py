@@ -338,6 +338,10 @@ class Relay:
         v = await self._get_device_info('battery', refresh)
         return v['battery']
 
+    async def get_device_type(self):
+        v = await self._get_device_info('type', False)
+        return v['type']
+
     async def _get_device_info(self, query, refresh):
         event = {
             '_type': 'wf_api_get_device_info_request',
