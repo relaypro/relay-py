@@ -26,13 +26,13 @@ async def start_handler(relay):
 
     await relay.set_channel('c', ['d1', 'd2'])
 
-    await relay.get_device_label()
+    await relay.get_device_name()
     await relay.get_device_address()
     await relay.get_device_latlong()
     await relay.get_device_indoor_location()
     await relay.get_device_battery()
 
-    await relay.set_device_label('n')
+    await relay.set_device_name('n')
     await relay.set_device_channel('c')
 
     await relay.set_led_on('00FF00')
