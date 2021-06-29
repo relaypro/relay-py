@@ -317,8 +317,7 @@ class Relay:
         await self.sendReceive(event)
 
 
-    async def get_device_label(self):
-        # TODO: ibot will change to label at some point; change here to match
+    async def get_device_name(self):
         v = await self._get_device_info('name', False)
         return v['name']
 
@@ -348,8 +347,8 @@ class Relay:
         return v
 
 
-    async def set_device_label(self, label):
-        await self._set_device_info('label', label)
+    async def set_device_name(self, name):
+        await self._set_device_info('label', name)
 
     async def set_device_channel(self, channel: str):
         await self._set_device_info('channel', channel)
