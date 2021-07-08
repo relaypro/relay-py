@@ -379,6 +379,9 @@ class Relay:
     async def set_led_on(self, color):
         await self.set_led('static', {'colors':{'ring': color}})
 
+    async def set_single_led_on(self, index, color):
+        await self.set_led('static', {'colors':{f'{index}': color}})
+
     async def set_led_rainbow(self, rotations=-1):
         await self.set_led('rainbow', {'rotations': rotations})
 

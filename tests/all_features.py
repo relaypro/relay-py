@@ -37,6 +37,7 @@ async def start_handler(relay):
     await relay.set_device_channel('c')
 
     await relay.set_led_on('00FF00')
+    await relay.set_single_led_on(3, '00FF00')
     await relay.set_led_rainbow()
     await relay.set_led_rainbow(5)
     await relay.set_led_flash('00FF00')
