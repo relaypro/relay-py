@@ -194,7 +194,7 @@ async def handle_set_led_on(ws, xcolor):
     await _handle_set_led(ws, 'static', {'colors':{'ring': xcolor}})
 
 async def handle_set_single_led_on(ws, xcolor, xindex):
-    await _handle_set_led(ws, 'static', {'colors':{'%s' %(xindex): xcolor}})
+    await _handle_set_led(ws, 'static', {'colors':{f'{xindex}': xcolor}})
 
 async def handle_set_led_rainbow(ws, xrotations):
     await _handle_set_led(ws, 'rainbow', {'rotations': xrotations})
