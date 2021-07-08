@@ -164,6 +164,9 @@ async def handle_get_device_indoor_location(ws, xrefresh, indoor_location):
 async def handle_get_device_battery(ws, xrefresh, battery):
     await _handle_get_device_info(ws, 'battery', xrefresh, battery=battery)
 
+async def handle_get_device_type(ws, xrefresh, type):
+    await _handle_get_device_info(ws, 'type', xrefresh, type=type)
+
 async def _handle_get_device_info(ws, xquery, xrefresh, **kwargs):
     e = await recv(ws)
     check(e, 'wf_api_get_device_info_request', query=xquery, refresh=xrefresh)
@@ -358,6 +361,7 @@ async def simple():
         await handle_get_device_latlong(ws, False, [1,2])
         await handle_get_device_indoor_location(ws, False, 'l')
         await handle_get_device_battery(ws, False, 90)
+        await handle_get_device_type(ws, False, 't')
 
 
         # receive next request, but inject a button event before response
