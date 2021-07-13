@@ -340,6 +340,10 @@ class Relay:
     async def get_device_type(self):
         v = await self._get_device_info('type', False)
         return v['type']
+    
+    async def get_device_id(self):
+        v = await self._get_device_info('id', False)
+        return v['id']
 
     async def _get_device_info(self, query, refresh):
         event = {
