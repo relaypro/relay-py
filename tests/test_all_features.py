@@ -417,7 +417,7 @@ async def simple():
         await handle_stop_playback(ws, ['1839', '1840', '1850', '1860'])
         await handle_stop_playback(ws)
 
-        await handle_translate(ws, "Bonjour", 'fr-FR', 'en-US')
+        await handle_translate(ws, 'Bonjour', 'fr-FR', 'en-US')
 
         await handle_terminate(ws)
 
