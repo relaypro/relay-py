@@ -366,6 +366,13 @@ class Relay:
         v = await self.sendReceive(event)
         return event
 
+    async def set_device_mode(self, mode, targets):
+        event = {
+            '_type': 'wf_api_set_device_mode_request',
+            'mode': mode,
+            'target': targets
+        }
+        await self.sendReceive(event)
 
     async def set_led(self, effect: str, args):
         event = {
