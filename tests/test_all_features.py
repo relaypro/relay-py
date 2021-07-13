@@ -71,7 +71,7 @@ async def handle_unset_var(ws, xname):
 
     await send(ws, {
         '_id': e['_id'],
-        '_type': 'wf_api_set_var_response',
+        '_type': 'wf_api_unset_var_response',
         'name': xname
     })
 
