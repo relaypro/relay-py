@@ -65,6 +65,16 @@ async def handle_set_var(ws, xname, xvalue, vtype):
         'value': xvalue,
         'type': vtype})
 
+async def handle_unset_var(ws, xname):
+    e = await recv(ws)
+    check(e, 'wf_api_unset_var_request', name=xname)
+
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_set_var_response',
+        'name': xname
+    })
+
 async def handle_listen(ws, xphrases, text, audio=''):
     e = await recv(ws)
     check(e, 'wf_api_listen_request', phrases=xphrases, transcribe=True, timeout=60)
@@ -357,6 +367,7 @@ async def simple():
 
         await handle_get_var(ws, 'k', 'v')
         await handle_set_var(ws, 'k', 'v', 'string')
+        await handle_unset_var(ws, 'k')
 
         await handle_listen(ws, [], 't')
         await handle_listen(ws, ['p1', 'p2'], 't')
