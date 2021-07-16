@@ -366,11 +366,11 @@ class Relay:
         v = await self.sendReceive(event)
         return event
 
-    async def set_device_mode(self, mode, targets):
+    async def set_device_mode(self, mode, target=None):
         event = {
             '_type': 'wf_api_set_device_mode_request',
             'mode': mode,
-            'target': targets
+            'target': target
         }
         await self.sendReceive(event)
 
