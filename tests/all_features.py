@@ -12,6 +12,7 @@ wf = relay.workflow.Workflow(__name__)
 async def start_handler(relay):
     await relay.get_var('k')
     await relay.set_var('k', 'v')
+    await relay.unset_var('k')
 
     await relay.listen()
     await relay.listen(['p1', 'p2'])

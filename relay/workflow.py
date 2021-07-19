@@ -256,6 +256,13 @@ class Relay:
         }
         await self.sendReceive(event)
 
+    async def unset_var(self, name: str):
+        event = {
+            '_type': 'wf_api_unset_var_request',
+            'name': name
+        }
+        await self.sendReceive(event)
+
 
     async def listen(self, phrases=None):
         if not phrases:
