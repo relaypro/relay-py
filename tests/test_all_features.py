@@ -144,9 +144,9 @@ async def handle_cancel_notification(ws, xname, xtarget=None):
 async def handle_cancel_alert(ws, xname, xtarget=None):
     e = await recv(ws)
     if xtarget:
-        check(e, 'wf_api_alert_request', type='cancel', name=xname, target=xtarget)
+        check(e, 'wf_api_notification_request', type='cancel', name=xname, target=xtarget)
     else:
-        check(e, 'wf_api_alert_request', type='cancel', name=xname)
+        check(e, 'wf_api_notification_request', type='cancel', name=xname)
 
     await send(ws, {
         '_id': e['_id'],
@@ -155,9 +155,9 @@ async def handle_cancel_alert(ws, xname, xtarget=None):
 async def handle_cancel_broadcast(ws, xname, xtarget=None):
     e = await recv(ws)
     if xtarget:
-        check(e, 'wf_api_broadcast_request', type='cancel', name=xname, target=xtarget)
+        check(e, 'wf_api_notification_request', type='cancel', name=xname, target=xtarget)
     else:
-        check(e, 'wf_api_broadcast_request', type='cancel', name=xname)
+        check(e, 'wf_api_notification_request', type='cancel', name=xname)
 
     await send(ws, {
         '_id': e['_id'],
@@ -416,6 +416,8 @@ async def simple():
         await handle_alert(ws, 't', ['d1', 'd2'])
         await handle_alert(ws, 't', ['d1', 'd2'], 'n')
         await handle_cancel_notification(ws, 'n', ['d1', 'd2'])
+        await handle_cancel_alert(ws, 'a', ['d1', 'd2'])
+        await handle_cancel_broadcast(ws, 'b', ['d1', 'd2'])
 
         await handle_set_channel(ws, 'c', ['d1', 'd2'])
 
