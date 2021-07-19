@@ -294,14 +294,20 @@ class Relay:
 
     async def broadcast(self, text: str, targets):
         await self._notify('broadcast', None, text, targets)
+    
+    async def cancel_broadcast(self, name: str, targets=None):
+        await self._notify('cancel', name, None, targets)
 
     async def notify(self, text: str, targets):
         await self._notify('notify', None, text, targets)
+    
+    async def cancel_notification(self, name: str, targets=None):
+        await self._notify('cancel', name, None, targets)
 
     async def alert(self, text: str, targets, name=None):
         await self._notify('alert', name, text, targets)
-
-    async def cancel_notification(self, name: str, targets=None):
+    
+    async def cancel_alert(self, name: str, targets=None):
         await self._notify('cancel', name, None, targets)
 
     async def _notify(self, ntype, name, text, targets):
