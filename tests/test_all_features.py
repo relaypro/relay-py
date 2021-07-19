@@ -195,6 +195,18 @@ async def _handle_set_device_info(ws, xfield, xvalue):
         '_type': 'wf_api_set_device_info_response',
     })
 
+async def handle_set_device_mode(ws, xmode, xtarget=None):
+    e = await recv(ws)
+    if xtarget:
+        check(e, 'wf_api_set_device_mode_request', mode=xmode, target=xtarget)
+    else:
+        check(e, 'wf_api_set_device_mode_request', mode=xmode)
+
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_set_device_mode_response',
+    })
+
 
 async def handle_set_led_on(ws, xcolor):
     await _handle_set_led(ws, 'static', {'colors':{'ring': xcolor}})
@@ -400,6 +412,9 @@ async def simple():
 
 
         await handle_set_device_channel(ws, 'c')
+
+        await handle_set_device_mode(ws, 'm')
+        await handle_set_device_mode(ws, 'm', ['d1', 'd2'])
 
         await handle_set_led_on(ws, '00FF00')
         await handle_set_single_led_on(ws, '00FF00', 3)
