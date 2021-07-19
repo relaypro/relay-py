@@ -141,6 +141,17 @@ async def handle_cancel_notification(ws, xname, xtarget=None):
         '_id': e['_id'],
         '_type': 'wf_api_say_response'})
 
+async def handle_cancel_alert(ws, xname, xtarget=None):
+    e = await recv(ws)
+    if xtarget:
+        check(e, 'wf_api_alert_request', type='cancel', name=xname, target=xtarget)
+    else:
+        check(e, 'wf_api_alert_request', type='cancel', name=xname)
+
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_say_response'})
+
 async def _handle_notification(ws, xtype, xname, xtext, xtarget):
     e = await recv(ws)
     check(e, 'wf_api_notification_request', name=xname, type=xtype, text=xtext, target=xtarget)
