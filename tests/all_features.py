@@ -24,6 +24,8 @@ async def start_handler(relay):
     await relay.alert('t', ['d1', 'd2'])
     await relay.alert('t', ['d1', 'd2'], name='n')
     await relay.cancel_notification('n', ['d1', 'd2'])
+    await relay.cancel_alert('a', ['d1', 'd2'])
+    await relay.cancel_broadcast('b', ['d1', 'd2'])
 
     await relay.set_channel('c', ['d1', 'd2'])
 

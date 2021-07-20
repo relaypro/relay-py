@@ -141,6 +141,12 @@ async def handle_cancel_notification(ws, xname, xtarget=None):
         '_id': e['_id'],
         '_type': 'wf_api_say_response'})
 
+async def handle_cancel_alert(ws, xname, xtarget=None):
+    await handle_cancel_notification(ws, xname, xtarget)
+
+async def handle_cancel_broadcast(ws, xname, xtarget=None):
+    await handle_cancel_notification(ws, xname, xtarget)
+
 async def _handle_notification(ws, xtype, xname, xtext, xtarget):
     e = await recv(ws)
     check(e, 'wf_api_notification_request', name=xname, type=xtype, text=xtext, target=xtarget)
@@ -394,6 +400,8 @@ async def simple():
         await handle_alert(ws, 't', ['d1', 'd2'])
         await handle_alert(ws, 't', ['d1', 'd2'], 'n')
         await handle_cancel_notification(ws, 'n', ['d1', 'd2'])
+        await handle_cancel_alert(ws, 'a', ['d1', 'd2'])
+        await handle_cancel_broadcast(ws, 'b', ['d1', 'd2'])
 
         await handle_set_channel(ws, 'c', ['d1', 'd2'])
 
