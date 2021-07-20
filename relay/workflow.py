@@ -513,3 +513,13 @@ class Relay:
         translatedText = await self.sendReceive(event)
         return translatedText
 
+    def _build_call_id_request_or_throw(self, arg):
+        if type(arg) is str:
+            return {"call_id": arg}
+        elif type(arg) is dict:
+            if type(arg["call_id"]) is str:
+                return {"call_id": arg.call_id}
+            else:
+                raise Exception('missing required parameter')
+        else:
+            raise Exception('invalid argument type')
