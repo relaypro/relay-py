@@ -73,6 +73,8 @@ async def start_handler(relay):
 
     await relay.translate('Bonjour', 'fr-FR', 'en-US')
 
+    await relay.place_call('c')
+
     await relay.terminate()
 
 

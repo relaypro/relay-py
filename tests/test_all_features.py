@@ -381,6 +381,16 @@ async def handle_translate(ws, xtext, xfrom, xto):
         'to_lang': xto
     })
 
+async def handle_place_call(ws, xcall):
+    e = await recv(ws)
+    check(e, 'wf_api_call_request', call=xcall)
+
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_call_response',
+        'call': xcall,
+    })
+
 async def simple():
     uri = "ws://localhost:8765/hello"
     async with websockets.connect(uri) as ws:
@@ -464,6 +474,8 @@ async def simple():
         await handle_stop_playback(ws)
 
         await handle_translate(ws, 'Bonjour', 'fr-FR', 'en-US')
+
+        await handle_place_call(ws, 'c')
 
         await handle_terminate(ws)
 
