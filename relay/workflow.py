@@ -513,3 +513,9 @@ class Relay:
         translatedText = await self.sendReceive(event)
         return translatedText
 
+    async def place_call(self, call):
+        event = {
+            '_type': 'wf_api_call_request',
+            'call': call
+        }
+        await self.sendReceive(event)
