@@ -381,14 +381,24 @@ async def handle_translate(ws, xtext, xfrom, xto):
         'to_lang': xto
     })
 
-async def handle_place_call(ws, xcall):
+async def handle_place_call_by_id(ws, xdevice_id):
     e = await recv(ws)
-    check(e, 'wf_api_call_request', call=xcall)
+    check(e, 'wf_api_call_request', device_id=xdevice_id)
 
     await send(ws, {
         '_id': e['_id'],
         '_type': 'wf_api_call_response',
-        'call': xcall,
+        'device_id': xdevice_id,
+    })
+
+async def handle_place_call_by_name(ws, xdevice_name):
+    e = await recv(ws)
+    check(e, 'wf_api_call_request', device_name=xdevice_name)
+
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_call_response',
+        'device_name': xdevice_name,
     })
 
 async def simple():
@@ -475,7 +485,8 @@ async def simple():
 
         await handle_translate(ws, 'Bonjour', 'fr-FR', 'en-US')
 
-        await handle_place_call(ws, 'c')
+        await handle_place_call_by_id(ws, '15')
+        await handle_place_call_by_name(ws, 'n')
 
         await handle_terminate(ws)
 
