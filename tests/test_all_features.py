@@ -401,6 +401,16 @@ async def handle_place_call_by_name(ws, xdevice_name):
         'device_name': xdevice_name,
     })
 
+async def handle_answer_call(ws, xcall_id):
+    e = await recv(ws)
+    check(e, 'wf_api_answer_request', call_id=xcall_id)
+
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_answer_response',
+        'call_id': xcall_id,
+    })
+
 async def simple():
     uri = "ws://localhost:8765/hello"
     async with websockets.connect(uri) as ws:
@@ -487,6 +497,8 @@ async def simple():
 
         await handle_place_call_by_id(ws, '15')
         await handle_place_call_by_name(ws, 'n')
+
+        await handle_answer_call(ws, '15')
 
         await handle_terminate(ws)
 
