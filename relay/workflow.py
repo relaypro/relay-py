@@ -526,3 +526,10 @@ class Relay:
             'device_name': device_name
         }
         await self.sendReceive(event)
+    
+    async def answer_call(self, call_id: str):
+        event = {
+            '_type': 'wf_api_answer_request',
+            'call_id': call_id
+        }
+        await self.sendReceive(event)
