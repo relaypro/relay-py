@@ -533,3 +533,10 @@ class Relay:
             'call_id': call_id
         }
         await self.sendReceive(event)
+    
+    async def hangup_call(self, call_id: str):
+        event = {
+            '_type': 'wf_api_hangup_request',
+            'call_id': call_id
+        }
+        await self.sendReceive(event)
