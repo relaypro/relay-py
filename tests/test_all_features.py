@@ -411,6 +411,16 @@ async def handle_answer_call(ws, xcall_id):
         'call_id': xcall_id,
     })
 
+async def handle_hangup_call(ws, xcall_id):
+    e = await recv(ws)
+    check(e, 'wf_api_hangup_request', call_id=xcall_id)
+
+    await send(ws, {
+        '_id': e['_id'],
+        '_type': 'wf_api_hangup_response',
+        'call_id': xcall_id,
+    })
+
 async def simple():
     uri = "ws://localhost:8765/hello"
     async with websockets.connect(uri) as ws:
@@ -499,6 +509,7 @@ async def simple():
         await handle_place_call_by_name(ws, 'n')
 
         await handle_answer_call(ws, '15')
+        await handle_hangup_call(ws, '15')
 
         await handle_terminate(ws)
 

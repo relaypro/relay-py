@@ -77,6 +77,7 @@ async def start_handler(relay):
     await relay.place_call_by_name('n')
 
     await relay.answer_call('15')
+    await relay.hangup_call('15')
 
     await relay.terminate()
 
