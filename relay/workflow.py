@@ -4,13 +4,19 @@ import logging
 import time
 import uuid
 import websockets
+import sys
+import ssl
 
 from functools import singledispatch
 
-
+logging.basicConfig(format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
-logger.addHandler(logging.NullHandler())
-
+logger.setLevel(logging.DEBUG)
+# without a specific handler, it will log to the console. Uncomment below to not send to console.
+# logger.addHandler(logging.NullHandler())
+use_ssl = True
+ssl_key_filename = '/etc/letsencrypt/live/myhost.mydomain.com/privkey.pem'
+ssl_cert_filename = '/etc/letsencrypt/live/myhost.mydomain.com/fullchain.pem'
 
 class Server:
     def __init__(self, host, port):
@@ -24,7 +30,18 @@ class Server:
         self.workflows[path] = workflow
 
     def start(self):
-        start_server = websockets.serve(self.handler, self.host, self.port)
+        ws_logger = logging.getLogger('websockets.server')
+        ws_logger.setLevel(logging.DEBUG)
+
+        if use_ssl:
+            ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            ssl_context.load_cert_chain(ssl_cert_filename, ssl_key_filename)
+            start_server = websockets.serve(self.handler, self.host, self.port, ssl=ssl_context)
+            logger.info(f'Relay workflow server ({__name__}) listening on {self.host} port {self.port} with ssl_context {ssl_context}')
+        else:
+            start_server = websockets.serve(self.handler, self.host, self.port)
+            logger.info(f'Relay workflow server ({__name__}) listening on {self.host} port {self.port} with plaintext')
+
         asyncio.get_event_loop().run_until_complete(start_server)
 
         try:
@@ -34,14 +51,16 @@ class Server:
             logger.debug('server terminated')
 
     async def handler(self, websocket, path):
+        logger.debug('received new request')
         workflow = self.workflows.get(path, None)
         if workflow:
+            logger.debug(f'handling request on path {path}')
             relay = Relay(workflow)
             await relay.handle(websocket)
 
         else:
-            websocket.close()
             logger.warning(f'ignoring request for unregistered path {path}')
+            websocket.close()
 
 
 class ServerException(Exception):
@@ -57,6 +76,17 @@ class Workflow:
 
     def on_start(self, func):
         self.type_handlers[('wf_api_start_event')] = func
+
+    def on_stop(self, func):
+        self.type_handlers[('wf_api_stop_event')] = func
+
+    ####### TODO: should this be simply on_prompt_event like the message is?
+
+    def on_prompt_start(self, func):
+        self.type_handlers[('wf_api_prompt_start_event')] = func
+
+    def on_prompt_stop(self, func):
+        self.type_handlers[('wf_api_prompt_stop_event')] = func
 
     def on_button(self, _func=None, *, button='*', taps='*'):
         def on_button_decorator(func):
@@ -81,8 +111,56 @@ class Workflow:
 
 
     def on_timer(self, func):
+        # unnamed timer
         self.type_handlers[('wf_api_timer_event')] = func
 
+    ###### TODO: test all the ones from here down
+
+    def on_timer_fired(self, func):
+        # named timer
+        self.type_handlers[('wf_api_timer_fired_event')] = func
+
+    def on_speech(self, func):
+        self.type_handlers[('wf_api_speech_event')] = func
+
+    def on_progress(self, func):
+        self.type_handlers[('wf_api_progress_event')] = func
+
+    def on_play_inbox_message(self, func):
+        self.type_handlers[('wf_api_play_inbox_message_event')] = func
+
+    def on_call_connected(self, func):
+        self.type_handlers[('wf_api_call_connected_event')] = func
+
+    def on_call_disconnected(self, func):
+        self.type_handlers[('wf_api_call_disconnected_event')] = func
+
+    def on_call_failed(self, func):
+        self.type_handlers[('wf_api_call_failed_event')] = func
+
+    def on_call_received(self, func):
+        self.type_handlers[('wf_api_call_received_event')] = func
+
+    def on_call_ringing(self, func):
+        self.type_handlers[('wf_api_call_ringing_event')] = func
+
+    def on_call_start_request(self, func):
+        self.type_handlers[('wf_api_call_start_request_event')] = func
+
+    def on_call_progressing(self, func):
+        self.type_handlers[('wf_api_call_progressing_event')] = func
+
+    def on_sms(self, func):
+        self.type_handlers[('wf_api_sms_event')] = func
+
+    def on_incident(self, func):
+        self.type_handlers[('wf_api_incident_event')] = func
+
+    def on_interaction_lifecycle(self, func):
+        self.type_handlers[('wf_api_interaction_lifecycle_event')] = func
+
+    def on_resume(self, func):
+        self.type_handlers[('wf_api_resume_event')] = func
 
     def get_handler(self, event):
         t = event['_type']
@@ -110,6 +188,12 @@ class Workflow:
                         h = self.type_handlers.get((t, '*', event['event']), None)
                         if not h:
                             h = self.type_handlers.get((t, '*', '*'), None)
+
+            elif t == 'wf_prompt_event':
+                if event['type'] == 'started':
+                    h = self.type_handlers.get(('wf_api_prompt_start_event'), None)
+                elif event['type'] == 'stopped' or event['type'] == 'failed':
+                    h = self.type_handlers.get(('wf_api_prompt_stop_event'), None)
 
         return h
 
@@ -148,6 +232,29 @@ class Relay:
     def get_cid(self):
         return f'{self.workflow.name}:{id(self.websocket)}'
 
+    def fromJson(self, websocketMessage):
+        dictMessage = json.loads(websocketMessage)
+        return self.cleanIntArrays(dictMessage)
+
+    def cleanIntArrays(self, dictMessage):
+        # work around the JSON formatting issue in iBot
+        # that gives us an array of ints instead of a string:
+        # will be fixed in iBot 3.9 via PE-17571
+
+        if isinstance(dictMessage, dict):
+            for key in dictMessage.keys():
+                if isinstance(dictMessage[key], (list, dict)):
+                    dictMessage[key] = self.cleanIntArrays(dictMessage[key])
+        elif isinstance(dictMessage, list):
+            allInt = True;
+            for item in dictMessage:
+                if not isinstance(item, int):
+                    allInt = false;
+                    break;
+            if allInt and (len(dictMessage) > 0):
+                dictMessage = "".join(chr(i) for i in dictMessage)
+        return dictMessage
+
     async def handle(self, websocket):
         self.websocket = websocket
         self.logger = CustomAdapter(logger, {'cid': self.get_cid()})
@@ -157,7 +264,7 @@ class Relay:
         try:
             async for m in websocket:
                 self.logger.debug(f'recv: {m}')
-                e = json.loads(m)
+                e = self.fromJson(m)
                 _id = e.get('_id', None)
     
                 if _id:
@@ -173,16 +280,93 @@ class Relay:
                     if h:
                         t = e['_type']
                         if t == 'wf_api_start_event':
-                            asyncio.create_task(self.wrapper(h))
+                            logger.debug(f"handle start_event with trigger: {e['trigger']}")
+                            asyncio.create_task(self.wrapper(h, e['trigger']))
+
+                        elif t == 'wf_api_stop_event':
+                            logger.debug(f"handle stop_event with reason: {e['reason']}")
+                            asyncio.create_task(self.wrapper(h, e['reason']))
+    
+                        elif t == 'wf_api_prompt_start_event':
+                            logger.debug(f"handle prompt_start_event with source_uri: {e['source_uri']}, id: {e['id']}")
+                            asyncio.create_task(self.wrapper(h, e['source_uri']))
+
+                        elif e['type'] == 'wf_api_prompt_stop_event':
+                            logger.debug(f"handle prompt_stop_event with source_uri: {e['source_uri']}, id: {e['id']}")
+                            asyncio.create_task(self.wrapper(h, e['source_uri']))
+
     
                         elif t == 'wf_api_button_event':
-                            asyncio.create_task(self.wrapper(h, e['button'], e['taps']))
+                            logger.debug(f"wf_api_button_event with button: {e['button']}, taps: {e['taps']}, source_uri: {e['source_uri']}")
+                            asyncio.create_task(self.wrapper(h, e['button'], e['taps'], e['source_uri']))
     
                         elif t == 'wf_api_notification_event':
-                            asyncio.create_task(self.wrapper(h, e['source'], e['name'], e['event'], e['notification_state']))
+                            logger.debug(f"wf_api_notification_event with source_uri: {e['source_uri']}, name: {e['name']}, notification_state: {e['notification_state']}")
+                            asyncio.create_task(self.wrapper(h, e['event'], e['name'], e['notification_state'], e['source_uri']))
     
                         elif t == 'wf_api_timer_event':
+                            logger.debug(f"wf_api_timer_event")
                             asyncio.create_task(self.wrapper(h))
+
+                        elif t == 'wf_api_timer_fired_event':
+                            logger.debug(f"wf_api_timer_fired_event, name={e['name']}")
+                            asyncio.create_task(self.wrapper(h, e['name']))
+
+                        elif t == 'wf_api_speech_event':
+                            logger.debug(f"wf_api_speech_event: text: {text}, audio: {audio}, lang: {lang}, request_id: {request_id}, source_uri{source_uri}")
+                            asyncio.create_task(self.wrapper(h, e['text'], e['audio'], e['lang'], e['request_id'], e['source_uri']))
+
+                        elif t == 'wf_api_progress_event':
+                            logger.debug(f"wf_api_progress_event: _id: {_id}")
+                            asyncio.create_task(self.wrapper(h))
+
+                        elif t == 'wf_api_play_inbox_message_event':
+                            logger.debug(f"wf_api_play_inbox_message_event with action: {e['action']}")
+                            asyncio.create_task(self.wrapper(h, e['action']))
+
+                        elif t == 'wf_api_call_connected_event':
+                            logger.debug(f"wf_api_call_connected_event with e: {e}")
+                            asyncio.create_task(self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'], e['uri'], e['onnet'], e['start_time_epoch'], e['connect_time_epoch']))
+
+                        elif t == 'wf_api_call_disconnected_event':
+                            logger.debug(f"wf_api_call_disconnected_event with e: {e}")
+                            asyncio.create_task(self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'], e['uri'], e['onnet'], e['reason'], e['start_time_epoch'], e['connect_time_epoch'], e['end_time_epoch']))
+
+                        elif t == 'wf_api_call_failed_event':
+                            logger.debug(f"wf_api_call_failed_event with e: {e}")
+                            asyncio.create_task(self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'], e['uri'], e['onnet'], e['reason'], e['start_time_epoch'], e['connect_time_epoch'], e['end_time_epoch']))
+    
+                        elif t == 'wf_api_call_received_event':
+                            logger.debug(f"wf_api_call_received_event with e: {e}")
+                            asyncio.create_task(self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'], e['uri'], e['onnet'], e['start_time_epoch']))
+    
+                        elif t == 'wf_api_call_ringing_event':
+                            logger.debug(f"wf_api_call_ringing_event with e: {e}")
+                            asyncio.create_task(self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'], e['uri'], e['onnet'], e['start_time_epoch']))
+    
+                        elif t == 'wf_api_call_progressing_event':
+                            logger.debug(f"wf_api_call_progressing_event with e: {e}")
+                            asyncio.create_task(self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'], e['uri'], e['onnet'], e['start_time_epoch'], e['connect_time_epoch']))
+    
+                        elif t == 'wf_api_call_start_request_event':
+                            logger.debug(f"wf_api_call_start_request_event with uri: {e['uri']}")
+                            asyncio.create_task(self.wrapper(h, e['uri']))
+    
+                        elif t == 'wf_api_sms_event':
+                            logger.debug(f"wf_api_sms_event with id: {e['id']}, event: {e['event']}")
+                            asyncio.create_task(self.wrapper(h, e['id'], e['event']))
+    
+                        elif t == 'wf_api_incident_event':
+                            logger.debug(f"wf_api_incident_event with type: {e['type']}, id: {e['id']}, reason: {e['reason']}")
+                            asyncio.create_task(self.wrapper(h, e['type'], e['id'], e['reason']))
+    
+                        elif t == 'wf_api_interaction_lifecycle_event':
+                            logger.debug(f"wf_api_interaction_lifecycle_event with type: {e['type']}, reason: {e['reason']}, source_uri: {e['source_uri']}")
+                            asyncio.create_task(self.wrapper(h, e['type'], e['reason'], e['source_uri']))
+    
+                        elif t == 'wf_api_resume_event':
+                            logger.debug(f"wf_api_resume_event with trigger: {e['trigger']}")
+                            asyncio.create_task(self.wrapper(h, e['trigger']))
     
                     else:
                         self.logger.warning(f'no handler found for _type {e["_type"]}')
@@ -196,7 +380,6 @@ class Relay:
 
         finally:
             self.logger.info('workflow terminated')
-
 
     # run handlers with exception logging; needed since we cannot await handlers
     async def wrapper(self, h, *args):
@@ -241,6 +424,7 @@ class Relay:
 
 
     async def get_var(self, name: str, default=None):
+        ### TODO: look in self.workflow.state to see all of what is available
         event = {
             '_type': 'wf_api_get_var_request',
             'name': name
@@ -254,6 +438,14 @@ class Relay:
             'name': name,
             'value': value
         }
+        response = await self.sendReceive(event)
+        return response['value']
+
+    async def unset_var(self, name: str):
+        event = {
+            '_type': 'wf_api_unset_var_request',
+            'name': name
+        }
         await self.sendReceive(event)
 
     async def unset_var(self, name: str):
@@ -263,104 +455,167 @@ class Relay:
         }
         await self.sendReceive(event)
 
+    async def interaction_options(color="0000ff", input_types=[], home_channel="suspend"):
+        options = {
+            'color': color,
+            'input_types': input_types,
+            'home_channel': home_channel
+        }
+        return options
 
-    async def listen(self, phrases=None):
-        if not phrases:
-            phrases = []
+    async def start_interaction(self, target, name: str, options=None):
+        event = {
+            '_type': 'wf_api_start_interaction_request',
+            '_target': target,
+            'name': name,
+            'options': options
+        }
+        await self.sendReceive(event)
+
+    async def end_interaction(self, target, name: str):
+        event = {
+            '_type': 'wf_api_end_interaction_request',
+            '_target': target,
+            'name': name
+        }
+        await self.sendReceive(event)
+
+    async def listen(self, target, request_id, phrases=None, transcribe=True, timeout=60, alt_lang=None):
+        if phrases is None:
+            phrases = [ ]
+        if instanceof(phrases, str):
+            phrases = [ phrases ]
 
         event = {
             '_type': 'wf_api_listen_request',
+            '_target': target,
+            'request_id': request_id,
             'phrases': phrases,
-            'transcribe': True,
-            'timeout': 60
+            'transcribe': transcribe,
+            'timeout': timeout,
+            'alt_lang': alt_lang
         }
-        v = await self.sendReceive(event)
-        return v['text']
+        await self.sendReceive(event)
 
-    async def play(self, fname):
+    async def play(self, target, filename):
         event = {
             '_type': 'wf_api_play_request',
-            'filename': fname
+            '_target': target,
+            'filename': filename
         }
-        await self.sendReceive(event)
+        response = await self.sendReceive(event)
+        return response['id']
 
-    async def say(self, text):
+    async def say(self, target, text, lang):
         event = {
             '_type': 'wf_api_say_request',
-            'text': text
+            '_target': target,
+            'text': text,
+            'lang': lang
         }
-        await self.sendReceive(event)
+        response = await self.sendReceive(event)
+        return response['id']
 
+    # target properties: uri: array of string ids
 
-    async def broadcast(self, text: str, targets):
-        await self._notify('broadcast', None, text, targets)
+    async def push_options(self, priority='normal', title=None, body=None, sound='default'):
+        # values for priority: "normal", "high", "critical"
+        # values for sound: "default", "sos"
+        options = { 
+            'priority': priority,
+            'sound': sound
+        }
+        if title is not None:
+            options['title'] = title
+        if body is not None:
+            options['body'] = body 
+        
+
+    async def broadcast(self, target, originator: str, text: str, targets, name=None, push_options=None):
+        await self._notify(target, originator, 'broadcast', name, text, targets, push_options)
     
-    async def cancel_broadcast(self, name: str, targets=None):
-        await self._notify('cancel', name, None, targets)
+    async def cancel_broadcast(self, target, name: str, targets):
+        await self._notify(target, None, 'cancel', name, None, targets, None)
 
-    async def notify(self, text: str, targets):
-        await self._notify('notify', None, text, targets)
+    async def notify(self, target, originator: str, text: str, targets, name=None, push_options=None):
+        await self._notify(target, originator, 'notify', name, text, targets, push_options)
     
-    async def cancel_notification(self, name: str, targets=None):
-        await self._notify('cancel', name, None, targets)
+    async def cancel_notification(self, target, name: str, targets):
+        await self._notify(target, None, 'cancel', name, None, targets, None)
 
-    async def alert(self, text: str, targets, name=None):
-        await self._notify('alert', name, text, targets)
+    async def alert(self, target, originator: str, text: str, targets, name=None, push_options=None):
+        await self._notify(target, originator, 'alert', name, text, targets, push_options)
     
-    async def cancel_alert(self, name: str, targets=None):
-        await self._notify('cancel', name, None, targets)
+    async def cancel_alert(self, target, name: str, targets):
+        await self._notify(target, None, 'cancel', name, None, targets, None)
 
-    async def _notify(self, ntype, name, text, targets):
+    # text is used for creating an "ibot" notification. push_opts allows the developer to customize the push notification sent to a virtual device receiving the created notification
+
+    async def _notify(self, target, originator, ntype, name, text, targets, push_options=None):
         event = {
             '_type': 'wf_api_notification_request',
+            '_target': target,
+            'originator': originator,
             'type': ntype,
             'name': name,
             'text': text,
-            'target': targets
+            'target': targets,
+            'push_opts': push_options
         }
         await self.sendReceive(event)
 
 
-    async def set_channel(self, channel_name: str, targets):
+    async def set_channel(self, target, channel_name: str, suppress_tts=False, disable_home_channel=False):
         event = {
             '_type': 'wf_api_set_channel_request',
+            '_target': target,
             'channel_name': channel_name,
-            'target': targets
+            'suppress_tts': suppress_tts,
+            'disable_home_channel': disable_home_channel
         }
         await self.sendReceive(event)
 
 
-    async def get_device_name(self):
-        v = await self._get_device_info('name', False)
+    async def get_device_name(self, target, refresh=False):
+        v = await self._get_device_info(target, 'name', refresh)
         return v['name']
 
-    async def get_device_address(self, refresh=False):
-        v = await self._get_device_info('address', refresh)
+    async def get_device_address(self, target, refresh=False):
+        v = await self._get_device_info(target, 'address', refresh)
         return v['address']
 
-    async def get_device_latlong(self, refresh=False):
-        v = await self._get_device_info('latlong', refresh)
+    async def get_device_latlong(self, target, refresh=False):
+        v = await self._get_device_info(target, 'latlong', refresh)
         return v['latlong']
 
-    async def get_device_indoor_location(self, refresh=False):
-        v = await self._get_device_info('indoor_location', refresh)
+    async def get_device_indoor_location(self, target, refresh=False):
+        v = await self._get_device_info(target, 'indoor_location', refresh)
         return v['indoor_location']
 
-    async def get_device_battery(self, refresh=False):
-        v = await self._get_device_info('battery', refresh)
+    async def get_device_battery(self, target, refresh=False):
+        v = await self._get_device_info(target, 'battery', refresh)
         return v['battery']
 
-    async def get_device_type(self):
-        v = await self._get_device_info('type', False)
+    async def get_device_type(self, target, refresh=False):
+        v = await self._get_device_info(target, 'type', refresh)
         return v['type']
     
-    async def get_device_id(self):
-        v = await self._get_device_info('id', False)
+    async def get_device_id(self, target, refresh=False):
+        v = await self._get_device_info(target, 'id', refresh)
         return v['id']
 
-    async def _get_device_info(self, query, refresh):
+    async def get_device_username(self, target, refresh=False):
+        v = await self._get_device_info(target, 'username', refresh)
+        return v['username']
+
+    async def get_device_location_enabled(self, target, refresh=False):
+        v = await self._get_device_info(target, 'location_enabled', refresh)
+        return v['location_enabled']
+
+    async def _get_device_info(self, target, query, refresh):
         event = {
             '_type': 'wf_api_get_device_info_request',
+            '_target': target,
             'query': query,
             'refresh': refresh
         }
@@ -368,30 +623,53 @@ class Relay:
         return v
 
 
-    async def set_device_name(self, name):
-        await self._set_device_info('label', name)
+    async def set_device_name(self, target, name):
+        await self._set_device_info(target, 'label', name)
 
-    async def set_device_channel(self, channel: str):
-        await self._set_device_info('channel', channel)
+    async def set_device_channel(self, target, channel: str):
+        await self._set_device_info(target, 'channel', channel)
 
-    async def _set_device_info(self, field, value):
+    async def set_device_location_enabled(self, target, location_enabled: str):
+        await self._set_device_info(target, 'location_enabled', channel)
+
+    async def _set_device_info(self, target, field, value):
         event = {
             '_type': 'wf_api_set_device_info_request',
+            '_target': target,
             'field': field,
             'value': value
         }
         v = await self.sendReceive(event)
         return event
 
-    async def set_device_mode(self, mode, target=None):
+    async def set_device_mode(self, target, mode='none'):
+        # values for mode: "panic", "alarm", "none"
         event = {
             '_type': 'wf_api_set_device_mode_request',
+            'target': target,
             'mode': mode,
-            'target': target
         }
         await self.sendReceive(event)
 
-    async def set_led(self, effect: str, args):
+    async def led_info(self, rotations=None, count=None, duration=None, repeat_delay=None, pattern_repeats=None, colors=None):
+        info = { }
+        if rotations is not None:
+            info['rotations'] = rotations
+        if count is not None:
+            info['count'] = count
+        if duration is not None:
+            info['duration'] = duration
+        if repeat_delay is not None:
+            info['repeat_delay'] = repeat_delay
+        if pattern_repeats is not None:
+            info['pattern_repeats'] = pattern_repeats
+        if colors is not None:
+            info['colors'] = colors
+        return info
+
+    async def set_led(self, target, effect="flash", args=None):
+        # effect possible values: "rainbow", "rotate", "flash", "breathe", "static", "off"
+        # use led_info to create args
         event = {
             '_type': 'wf_api_set_led_request',
             'effect': effect,
@@ -422,17 +700,18 @@ class Relay:
         await self.set_led('off', {})
 
 
-    async def vibrate(self, pattern=None):
+    async def vibrate(self, target, pattern=None):
         if not pattern:
             pattern = [100, 500, 500, 500, 500, 500]
 
         event = {
             '_type': 'wf_api_vibrate_request',
+            '_target': target,
             'pattern': pattern
         }
         await self.sendReceive(event)
 
-
+    # unnamed timer
     async def start_timer(self, timeout: int):
         event = {
             '_type': 'wf_api_start_timer_request',
@@ -440,6 +719,7 @@ class Relay:
         }
         await self.sendReceive(event)
 
+    # unnamed timer
     async def stop_timer(self):
         event = {
             '_type': 'wf_api_stop_timer_request'
@@ -451,18 +731,21 @@ class Relay:
         event = {
             '_type': 'wf_api_terminate_request'
         }
+        # there is no response
         await self.send(event)
 
 
-    async def create_incident(self, itype):
+    async def create_incident(self, originator, itype):
+        # TODO: what are the values for itype?
         event = {
             '_type': 'wf_api_create_incident_request',
-            'type': itype
+            'type': itype,
+            'originator_uri': originator
         }
         v = await self.sendReceive(event)
         return v['incident_id']
 
-    async def resolve_incident(self, incident_id=None, reason=None):
+    async def resolve_incident(self, incident_id: str, reason: str):
         event = {
             '_type': 'wf_api_resolve_incident_request',
             'incident_id': incident_id,
@@ -470,36 +753,41 @@ class Relay:
         }
         await self.sendReceive(event)
     
-    async def restart_device(self):
+    async def restart_device(self, target):
         event = {
             '_type': 'wf_api_device_power_off_request',
+            '_target': target,
             'restart': True
         }
         await self.sendReceive(event)
     
-    async def power_down_device(self):
+    async def power_down_device(self, target):
         event = {
             '_type': 'wf_api_device_power_off_request',
+            '_target': target,
             'restart': False
         }
         await self.sendReceive(event)
     
-    async def stop_playback(self, id=None):
+    async def stop_playback(self, target, id=None):
         event = None
         if type(id) == list:
             event = {
                 '_type': 'wf_api_stop_playback_request',
+                '_target': target,
                 'ids': id
             }
         elif type(id) == str:
             id = [id]
             event = {
                 '_type': 'wf_api_stop_playback_request',
+                '_target': target,
                 'ids': id
             }
         elif id is None:
             event = {
-                '_type': 'wf_api_stop_playback_request'
+                '_type': 'wf_api_stop_playback_request',
+                '_target': target
             }
         await self.sendReceive(event)
 
@@ -510,33 +798,155 @@ class Relay:
             'from_lang': from_lang,
             'to_lang': to_lang
         }
-        translatedText = await self.sendReceive(event)
-        return translatedText
+        response = await self.sendReceive(event)
+        return response['text']
 
-    async def place_call_by_id(self, device_id: str):
+    async def place_call(self, target, uri: str):
         event = {
             '_type': 'wf_api_call_request',
-            'device_id': device_id
+            '_target': target,
+            'uri': uri
         }
-        await self.sendReceive(event)
+        response = await self.sendReceive(event)
+        return response['call_id']
 
-    async def place_call_by_name(self, device_name: str):
-        event = {
-            '_type': 'wf_api_call_request',
-            'device_name': device_name
-        }
-        await self.sendReceive(event)
-    
-    async def answer_call(self, call_id: str):
+    async def answer_call(self, target, call_id: str):
         event = {
             '_type': 'wf_api_answer_request',
+            '_target': target,
             'call_id': call_id
         }
         await self.sendReceive(event)
     
-    async def hangup_call(self, call_id: str):
+    async def hangup_call(self, target, call_id: str):
         event = {
             '_type': 'wf_api_hangup_request',
+            '_target': target,
             'call_id': call_id
+        }
+        await self.sendReceive(event)
+
+    ##### TODO: test me from this point down
+
+
+    ## TODO: has this one been superceded by wf_api_group_query_request?
+    async def list_group_members(self, group_name: str):
+        event = {
+            '_type': 'wf_api_list_group_members_request',
+            'group_name': group_name
+        }
+        await self.sendReceive(event)
+
+    async def group_query_members(self, group_uri: str):
+        event = {
+            '_type': 'wf_api_group_query_request',
+            'query': 'list_members',
+            'group_uri': group_uri
+        }
+        response = await self.sendReceive(event)
+        return response['member_uris']
+
+    async def group_query_is_member(self, group_uri: str):
+        event = {
+            '_type': 'wf_api_group_query_request',
+            'query': 'is_member',
+            'group_uri': group_uri
+        }
+        response = await self.sendReceive(event)
+        return response['is_member']
+        
+
+    async def set_user_profile(self, target: str, username: str, force=False):
+        event = {
+            '_type': 'wf_api_set_user_profile_request',
+            '_target': target,
+            'username': username,
+            'force': force
+        }
+        await self.sendReceive(event)
+
+    async def get_inbox_count(self, target):
+        event = {
+            '_type': 'wf_api_inbox_count_request',
+            '_target': target
+        }
+        response = await self.sendReceive(event)
+        return response['count']
+
+    async def play_inbox_messages(self, target):
+        event = {
+            '_type': 'wf_api_play_inbox_messages_request',
+            '_target': target
+        }
+        await self.sendReceive(event)
+
+    async def log_analytics_event(self, content: str, content_type: str, category: str, device_url=None):
+        event = {
+            '_type': 'wf_api_log_analytics_event_request',
+            'content': content,
+            'content_type': content_type,
+            'category': category,
+            'device_url': device_url
+        }
+        await self.sendReceive(event)
+
+    # named timer
+    async def set_timer(self, name: str, timeout: int, ttype: 'timeout'):
+        event = {
+            '_type': 'wf_api_set_timer_request',
+            'type': ttype,
+            'name': name,
+            'timeout': timeout
+        }
+        await self.sendReceive(event)
+
+    # named timer
+    async def clear_timer(self, name: str):
+        event = {
+            '_type': 'wf_api_clear_timer_request',
+            'name': name
+        }
+        await self.sendReceive(event)
+
+    async def sms(self, stype: str, text: str, uri: str):
+        event = {
+            '_type': 'wf_api_sms_request',
+            'type': stype,
+            'text': text,
+            'uri': uri
+        }
+        response = await self.sendReceive(event)
+        return response['message_id']
+
+    async def set_home_channel_state(self, target, enabled=True):
+        event = {
+            '_type': 'wf_api_set_home_channel_state_request',
+            '_target': target,
+            'enabled': enabled
+        }
+        await self.sendReceive(event)
+
+    async def register(self, target, uri: str, password: str, expires: int):
+        event = {
+            '_type': 'wf_api_register_request',
+            '_target': target,
+            'uri': uri,
+            'password': password,
+            'expires': expires
+        }
+        await self.sendReceive(event)
+
+    async def invalid_type(self):
+        event = {
+            '_type': 'wf_api_mkinard_breakage',
+            'device_id': 'TheQuickBrownFoxJumpsOverTheLazyDog',
+            'call_id': 'you can\'t catch me'
+        }
+        await self.sendReceive(event)
+
+    async def missing_type(self):
+        event = {
+            'device_id': 'NowIsTheTimeToComeToTheAidOfYourCountry',
+            'call_id': 'you can\'t catch me'
         }
         await self.sendReceive(event)
