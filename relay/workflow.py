@@ -20,6 +20,10 @@ logger.setLevel(logging.DEBUG)
 # logger.addHandler(logging.NullHandler())
 
 version = "relay-sdk-python/2.0.0"
+server_hostname = "all-main-qa-ibot.nocell.io"
+# server_hostname = "all-main-pro-ibot.nocell.io"
+auth_hostname = "auth.relaygo.info"
+# auth_hostname = "auth.relaygo.com"
 
 class Server:
     def __init__(self, host:str, port:int, **kwargs):
@@ -43,7 +47,7 @@ class Server:
 
         uname_result = platform.uname()
         custom_headers = { 'User-Agent': f'{version} (Python {platform.python_version()}; {uname_result.system} {uname_result.machine} {uname_result.release})' }
-        if self.ssl_key_filename and self.ssl_cert_filename:
+        if hasattr(self, 'ssl_key_filename') and hasattr(self, 'ssl_cert_filename') :
             if not os.access(self.ssl_cert_filename, os.R_OK):
                 raise ServerException(f"can't read ssl_cert_file {ssl_cert_filename}")
             if not os.access(self.ssl_key_filename, os.R_OK):
@@ -279,11 +283,11 @@ class Relay:
         }
         return target
 
-    def target_from_source_uri(self, source_uri:str):
-        target = {
+    def targets_from_source_uri(self, source_uri:str):
+        targets = {
             'uris': [ source_uri ]
         }
-        return target
+        return targets
 
     async def handle(self, websocket):
         self.websocket = websocket
@@ -635,6 +639,7 @@ class Relay:
         return response['id']
 
     async def say(self, target, text:str, lang:str='en-US'):
+        # target must be an interaction URI, not a device URI
         event = {
             '_type': 'wf_api_say_request',
             '_target': target,
@@ -645,6 +650,7 @@ class Relay:
         return response['id']
 
     async def say_and_wait(self, target, text:str, lang:str='en-US'):
+        # target must be an interaction URI, not a device URI
         _id = uuid.uuid4().hex
         event = {
             '_type': 'wf_api_say_request',
@@ -679,30 +685,30 @@ class Relay:
             options['body'] = body
         return options
 
-    # tone only
-    async def notify(self, target, originator:str, text:str, name:str=None, push_options:dict=None):
-        await self._notify(target, originator, 'notify', name, text, None, push_options)
-    
-    async def cancel_notification(self, target, name:str, targets:dict=None):
-        await self._notify(target, None, 'cancel', name, None, targets, None)
-
-    # tone plus tts
-    async def broadcast(self, target, originator:str, text:str, name:str=None, push_options:dict=None):
-        await self._notify(target, originator, 'broadcast', name, text, None, push_options)
-    
-    async def cancel_broadcast(self, target, name:str, targets:dict=None):
-        await self._notify(target, None, 'cancel', name, None, targets, None)
-
     # repeating tone plus tts until button press
-    async def alert(self, target, originator:str, text:str, name:str=None, push_options:dict=None):
+    async def alert(self, target, originator:str, text:str, name:str, push_options:dict={}):
         await self._notify(target, originator, 'alert', name, text, None, push_options)
     
     async def cancel_alert(self, target, name:str, targets:dict=None):
         await self._notify(target, None, 'cancel', name, None, targets, None)
 
+    # tone plus tts
+    async def broadcast(self, target, originator:str, text:str, name:str, push_options:dict={}):
+        await self._notify(target, originator, 'broadcast', name, text, None, push_options)
+    
+    async def cancel_broadcast(self, target, name:str, targets:dict=None):
+        await self._notify(target, None, 'cancel', name, None, targets, None)
+
+    # tone only
+    async def notify(self, target, originator:str, text:str, name:str, push_options:dict={}):
+        await self._notify(target, originator, 'notify', name, text, None, push_options)
+    
+    async def cancel_notification(self, target, name:str, targets:dict=None):
+        await self._notify(target, None, 'cancel', name, None, targets, None)
+
     # text is used for creating an "ibot" notification. push_opts allows the developer to customize the push notification sent to a virtual device receiving the created notification
 
-    async def _notify(self, target, originator, ntype:str, name:str, text:str, targets:dict, push_options:dict=None):
+    async def _notify(self, target, originator:str, ntype:str, name:str, text:str, targets:dict, push_options:dict=None):
         event = {
             '_type': 'wf_api_notification_request',
             '_target': target,
@@ -1109,7 +1115,7 @@ class Relay:
 
 
 def __update_access_token(refresh_token:str, client_id:str):
-    grant_url = 'https://auth.relaygo.info/oauth2/token'
+    grant_url = f'https://{auth_hostname}/oauth2/token'
     grant_headers = {
         'User-Agent': version
     }
@@ -1165,7 +1171,7 @@ def send_http_trigger(access_token:str, refresh_token:str, client_id:str, workfl
         to pass in to the workflow that gets started by this trigger.
     """
 
-    url = f'https://all-main-qa-ibot.nocell.io/ibot/workflow/{workflow_id}'
+    url = f'https://{server_hostname}/ibot/workflow/{workflow_id}'
     headers = {
         'Authorization': f'Bearer {access_token}',
         'User-Agent': version
@@ -1210,7 +1216,7 @@ def get_device_info(access_token:str, refresh_token:str, client_id:str, subscrib
 
         user_id: the IMEI of the target device, such as 990007560023456.
     """
-    url = f'https://all-main-qa-ibot.nocell.io/relaypro/api/v1/device/{user_id}'
+    url = f'https://{server_hostname}/relaypro/api/v1/device/{user_id}'
     headers = {
         'Authorization': f'Bearer {access_token}',
         'User-Agent': version
