@@ -8,9 +8,9 @@ Install into a virtual environment (Python 3.6.1+).
 
     python -m venv venv
     . venv/bin/activate
-    pip install -e .
-
     pip install git@github.com:relaypro/relay-py.git#egg=relay-py
+    cd relay-py
+    pip install -e .
 
 ## Usage
 
@@ -59,7 +59,9 @@ Run tests:
     pip install -e .[testing]
     pytest
 
+
 ## Deployment on ngrok
+
 
 ## Deployment on Heroku
 
@@ -158,40 +160,44 @@ the Relay server. For example, compare the "up" case to the "idle" case:
 If your dyno is idle, hit the URL with a web browser to wake it up. It will
 go idle again in a few minutes of non-use.
 
-## Registration on Heroku
-
-Use the Relay CLI to register your workflow application with the Relay server.
-
-- `$ relay whoami`<br>
-get the subscriber ID from the "Default Subscriber" column.
-
-- `$ relay workflow:create:phrase -n pythonphrase -u wss://remarkable-relay-12345.herokuapp.com/hellopath --trigger="python" --install=990007560023456`
-
-- If you get the error `missing_capability` then contact Relay Support to
-get your account updated so it can be modified to allow for workflows.
-In the `workflow:create` command note the use of the wss (web socket
-secure) protocol and the default port 443 in the URI for that protocol, as
-the Heroku infrastructure automatically provides a HTTPS endpoint on port
-443 in front of your application server.
-
-- `$ relay workflow:list -x`<br>
-get the workflow ID from the "ID" column.
-
-- `$ relay devices`<br>
-get the list of all the device IDs on your account. Pick
-one for the install command as follows. If you need help figuring out the ID
-of a named device, go into Dash in Account -> Users.
-
-- `$ relay workflow:install -w wf_pythonphrase_bN8RoR9BpGK41urSjGUdjsC -s ed2a4a98-0395-4612-8f60-bd1234567890 990007560123456`
 
 ## Deployment on AWS EC2
 
-- see the bullet below in the Registration section.  You must use the secure
-websocket protocol ("wss") in the URI when registering a workflow with the Relay
-server. This means that your AWS server will need to have an https endpoint with
-a certificate signed by a publicly-recognized CA (certificate authority).
-FYI in case this point steers you away from AWS EC2.
+- get an SSL certificate keypair for your server. This is because you must use
+the secure websocket protocol ("wss") in the URI when registering a workflow with
+the Relay server. This means that your EC2 server will need to have an HTTPS
+endpoint with a certificate signed by a publicly-recognized CA (certificate
+authority).
+  -  One potential source is [Let's Encrypt](letsencrypt.org).
+    - Be aware that Let's Encrypt has a
+      [policy](https://community.letsencrypt.org/t/policy-forbids-issuing-for-name-on-amazon-ec2-domain/12692)
+      against issuing certificates for hosts in the amazonaws.com DNS domain. So if
+      you want to use Let's Encrypt, the FQDN for your EC2 instance will need
+      to be referred to by another DNS domain.
+      This can be done in AWS via a Route53 public hosted zone, or a domain
+      hosted external to AWS to which you can add th IP address of your EC2
+      instance.
+    - If you add a new subdomain, it may take some time for propogation through
+      the DNS system so that the new subdomain is resolvable by the Let's Encrypt
+      servers. In the meantime, the Let's Encrypt CLI may return a SERVFAIL when
+      trying to access your server hostname.
+    - Let's Encrypt tool needs inbound access to port 80 of your EC2 instance
+      for ownership verification, which is not enabled by default, so you will
+      need to add that in the EC2 Security Group.
+    - If you use the `--standalone` option with the certbot tool, you don't
+      need to have an existing web server on this EC2 instance.
+    - The Let's Encrypt CLI will store the key and certificate in
+      /etc/letsencrypt/live/HOSTNAME/, so verify that your workflow app has
+      read access to these files, which is not the default.
 
+- open the desired inbound port in the EC2 Security Group for your workflow
+application (i.e., 3000)
+
+- configure the WebSocket server for SSL: *********** TODO add those steps here.
+    `openssl s_client -debug myserver.mydomain.com:3000`
+
+- login to the EC2 server and start the workflow application. The logs should
+appear in your remote shell session.
 - change the host and port for relay.workflow.Server in your workflow code to this:
 
 <pre>
@@ -204,25 +210,6 @@ FYI in case this point steers you away from AWS EC2.
 
     `$ scp -r myapp ubuntu@ec2-54-123-45-67.compute-1.amazonws.com:`
 
-- get an SSL certificate keypair for your server.
-  -  One potential source is [Let's Encrypt](letsencrypt.org).  However,
-     Let's Encrypt has a
-     [policy](https://community.letsencrypt.org/t/policy-forbids-issuing-for-name-on-amazon-ec2-domain/12692)
-     against issuing certificates for hosts in the amazonaws.com domain. So if
-     you want to use Let's Encrypt, you will need to use another DNS domain
-     (if you already have a domain, even if that domain is hosted outside AWS,
-     a new subdomain defined in AWS's Route53 as a "public hosted zone") should
-     work for this without additional cost from AWS). Also note that the
-     Let's Encrypt tool needs inbound access to port 80 of your EC2 instance,
-     which is not enabled by default, so you will need to add that in the
-     Security Group. The Let's Encrypt CLI will store the key and certificate
-     in /etc/letsencrypt/live/HOSTNAME/.
-
-- configure the WebSocket server for SSL: *********** TODO add those steps here.
-    `openssl s_client -debug python.marcel.sandbox.relaydev.sh:3000`
-
-- login to the EC2 server and start the workflow application. The logs should
-appear in your remote shell session.
 
 <pre>
     $ ssh myapp ubuntu@ec2-54-123-45-67.compute-1.amazonws.com
@@ -252,7 +239,8 @@ Use the Relay CLI to register your workflow application with the Relay server.
 the Relay server, you must use the secure websocket protocol ("wss") in the
 URI when registering a workflow with the Relay server. 
   - Heroku will by default provide an HTTPS front end for you automatically,
-    along with mapping to port 443.
+    along with mapping to port 443. You do NOT need to get your own HTTPS
+    certificate.
   - AWS EC2 does not provide HTTPS automatically. One way to get HTTPS on
     EC2 is to obtain a key/certificate pair signed by a publicly-recognized
     CA (certificate authority), and use that when invoking the server.
@@ -265,7 +253,7 @@ get the subscriber ID from the "Default Subscriber" column.
 - `$ relay workflow:create:phrase -n pythonphrase -u wss://ec2-54-123-45-67.compute-1.amazonws.com:3000/hellopath --trigger="python" --install=990007560023456`
 
 - If you get the error 'missing_capability' then contact Relay Support to
-get your account updated so it can be modified to allow for workflows.
+get your account updated so workflows can be registered on it.
 
 
 Note the use of the non-secure ws (web socket) protocol and the custom
