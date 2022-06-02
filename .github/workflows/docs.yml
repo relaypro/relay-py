@@ -25,7 +25,7 @@ jobs:
       - name: generate markdown and concatenate
         run: |
           cd src
-          cmd pydoc -w src
+          python test.py
       - uses: actions/checkout@v3
         with:
           ref: 'gh-pages'
