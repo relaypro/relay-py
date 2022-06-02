@@ -25,6 +25,7 @@ jobs:
       - name: generate markdown and concatenate
         run: |
           cd src
+          import pydoc
           pydoc -w src
       - uses: actions/checkout@v3
         with:
