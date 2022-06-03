@@ -24,9 +24,9 @@ jobs:
 
       - name: generate markdown and concatenate
         run: |
-          pwd
-          ls
           python -m pydoc -w src
+          apt install php-league-html-to-markdown
+          html-to-markdown src.html > src.md
       - uses: actions/checkout@v3
         with:
           ref: 'gh-pages'
@@ -35,7 +35,7 @@ jobs:
       - name: promote
         run: |
           cd web
-          cp ../src.html ./index.html
+          cp ../src.md ./index.md
       - uses: EndBug/add-and-commit@v9
         with:
           message: 'publish generated docs'
