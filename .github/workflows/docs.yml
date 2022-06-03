@@ -33,11 +33,11 @@ jobs:
       - name: promote
         run: |
           cd web
-          cp ../src.html ./index.md
+          cp ../src.html ./index.html
       - uses: EndBug/add-and-commit@v9
         with:
           message: 'publish generated docs'
-          add: '*.md'
+          add: 'index.html'
           cwd: './web/'
           author_name: 'Relay Pro builder'
           author_email: 'info@relaypro.com'
