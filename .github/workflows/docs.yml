@@ -34,7 +34,9 @@ jobs:
         run: |
           cd web
           mkdir index
-          cp -rp ../*.html index
+          cd ..
+          cp -rp *.html web/index
+          cd web
       - uses: EndBug/add-and-commit@v9
         with:
           message: 'publish generated docs'
