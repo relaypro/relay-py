@@ -24,7 +24,9 @@ jobs:
 
       - name: generate markdown and concatenate
         run: |
-          python -m pydoc -w src/*
+          mkdir pydocs
+          cd pydocs
+          python -m pydoc -w ../src/*
       - uses: actions/checkout@v3
         with:
           ref: 'gh-pages'
@@ -33,8 +35,7 @@ jobs:
       - name: promote
         run: |
           cd web
-          mkdir index
-          cp -rp ../src/* index
+          cp -rp ../pydocs index
       - uses: EndBug/add-and-commit@v9
         with:
           message: 'publish generated docs'
