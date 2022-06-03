@@ -34,7 +34,7 @@ jobs:
         run: |
           cd web
           mkdir index
-          cp ../src/* index
+          cp -rp ../src/* index
       - uses: EndBug/add-and-commit@v9
         with:
           message: 'publish generated docs'
