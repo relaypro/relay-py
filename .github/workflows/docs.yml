@@ -25,9 +25,7 @@ jobs:
       - name: generate markdown and concatenate
         run: |
           cd src
-          python -m pydoc -w ./relay/*
-          python -m pydoc -w ./samples/*
-          python -m pydoc -w ./tests/*
+          python -m pydoc3 -w ./*
           ls
       - uses: actions/checkout@v3
         with:
