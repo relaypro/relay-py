@@ -27,7 +27,6 @@ jobs:
           pwd
           ls
           python -m pydoc -w src
-          html-to-markdown ../src.html > src.md
       - uses: actions/checkout@v3
         with:
           ref: 'gh-pages'
@@ -36,7 +35,7 @@ jobs:
       - name: promote
         run: |
           cd web
-          cp ../src.md ./index.md
+          cp ../src.html ./index.html
       - uses: EndBug/add-and-commit@v9
         with:
           message: 'publish generated docs'
