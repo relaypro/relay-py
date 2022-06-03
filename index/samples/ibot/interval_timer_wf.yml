@@ -1,7 +1,0 @@
-trigger:
-    on_phrase: timer
-    start:
-        workflow: wss://awh.relaypro.com/wf/timer
-        args:
-            interval: 30
-

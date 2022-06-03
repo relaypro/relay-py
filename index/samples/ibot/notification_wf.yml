@@ -1,9 +1,0 @@
-trigger:
-    on_phrase: notify
-    start:
-        workflow: wss://awh.relaypro.com/wf/notification
-        args:
-            text: this is a notify message
-            targets: bear,red bear
-            type: notify
-

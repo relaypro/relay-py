@@ -1,5 +1,0 @@
-trigger:
-    on_phrase: lights
-    start:
-        workflow: wss://awh.relaypro.com/wf/led
-
