@@ -24,7 +24,7 @@ jobs:
 
       - name: generate markdown and concatenate
         run: |
-          python -m pydoc -w src
+          python -m pydoc -w src/*
       - uses: actions/checkout@v3
         with:
           ref: 'gh-pages'
@@ -33,11 +33,12 @@ jobs:
       - name: promote
         run: |
           cd web
-          cp ../src.html ./index.html
+          mkdir index
+          cp ../src/* index
       - uses: EndBug/add-and-commit@v9
         with:
           message: 'publish generated docs'
-          add: 'index.html'
+          add: 'index'
           cwd: './web/'
           author_name: 'Relay Pro builder'
           author_email: 'info@relaypro.com'
