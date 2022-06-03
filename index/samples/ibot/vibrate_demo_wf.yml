@@ -1,0 +1,5 @@
+trigger:
+    on_phrase: vibrate
+    start:
+        workflow: wss://awh.relaypro.com/wf/vibrate
+

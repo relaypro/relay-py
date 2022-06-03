@@ -1,0 +1,5 @@
+trigger:
+    on_phrase: device info
+    start:
+        workflow: wss://awh.relaypro.com/wf/deviceinfo
+
