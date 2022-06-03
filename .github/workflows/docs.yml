@@ -25,6 +25,7 @@ jobs:
       - name: generate markdown and concatenate
         run: |
           python -m pydoc -w src/*
+          ls
       - uses: actions/checkout@v3
         with:
           ref: 'gh-pages'
@@ -34,9 +35,11 @@ jobs:
         run: |
           cd web
           mkdir index
-          cd ..
-          cp -rp *.html web/index
-          cd web
+          cd ../
+          pwd
+          cp -rp ./*.html web/index
+          cd web/index
+          ls
       - uses: EndBug/add-and-commit@v9
         with:
           message: 'publish generated docs'
