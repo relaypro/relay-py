@@ -26,9 +26,7 @@ jobs:
         run: |
           cd src
           python
-          import pydoc
           quit()
-          pydoc -w src
       - uses: actions/checkout@v3
         with:
           ref: 'gh-pages'
