@@ -24,13 +24,11 @@ jobs:
 
       - name: generate markdown and concatenate
         run: |
-          cd src
-          cd relay
+          cd src/relay
           sudo apt install python3-pip
           pip3 install websockets
           pip3 install requests
           pydoc3 -w workflow
-          ls
       - uses: actions/checkout@v3
         with:
           ref: 'gh-pages'
@@ -39,9 +37,7 @@ jobs:
       - name: promote
         run: |
           cd web
-          mkdir index.html
           cp -rp ../src/relay/workflow.html index.html
-          ls
       - uses: EndBug/add-and-commit@v9
         with:
           message: 'publish generated docs'
