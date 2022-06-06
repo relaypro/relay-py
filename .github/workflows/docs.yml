@@ -26,7 +26,7 @@ jobs:
         run: |
           cd src
           cd relay
-          apt install python3-pip
+          sudo apt install python3-pip
           pip3 install websockets
           pydoc3 -w workflow
           ls
