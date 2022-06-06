@@ -28,6 +28,7 @@ jobs:
           cd relay
           sudo apt install python3-pip
           pip3 install websockets
+          pip3 install requests
           pydoc3 -w workflow
           ls
       - uses: actions/checkout@v3
@@ -38,12 +39,13 @@ jobs:
       - name: promote
         run: |
           cd web
-          cp -rp ../src/relay/*.html index
+          mkdir index.html
+          cp -rp ../src/relay/workflow.html index.html
           ls
       - uses: EndBug/add-and-commit@v9
         with:
           message: 'publish generated docs'
-          add: 'index'
+          add: 'index.html'
           cwd: './web/'
           author_name: 'Relay Pro builder'
           author_email: 'info@relaypro.com'
