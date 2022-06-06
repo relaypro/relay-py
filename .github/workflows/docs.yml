@@ -25,7 +25,8 @@ jobs:
       - name: generate markdown and concatenate
         run: |
           cd src
-          pydoc3 -w ./*
+          cd relay
+          pydoc3 -w workflow
           ls
       - uses: actions/checkout@v3
         with:
@@ -35,7 +36,7 @@ jobs:
       - name: promote
         run: |
           cd web
-          cp -rp ../src/*.html index
+          cp -rp ../src/relay/*.html index
           ls
       - uses: EndBug/add-and-commit@v9
         with:
