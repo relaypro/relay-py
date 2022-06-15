@@ -1020,9 +1020,6 @@ class Relay:
 
     # Helper methods for constructing a group/device URN
 
-    all_devices_on_account = f'urn:relay-resource:all:device'
-    INTERACTION_ROOT = 'urn:relay-resource:name:interaction'
-
     async def construct(self, resource_type:str, id_type:str, id_or_name:str):    
         uri = f'urn:relay-resource:{id_type}:{resource_type}:{id_or_name}'
         return uri
@@ -1078,7 +1075,7 @@ class Relay:
             if('%20' in id_or_name):
                 id_or_name = id_or_name.replace('%20', ' ')
             return id_or_name
-        elif(id_type =='name' and resource_type == 'interaction'):
+        elif(id_type == 'name' and resource_type == 'interaction'):
             [uri_full, root, id_type, resource_type, id_or_name] = uri.split('%3A')
             if('%20' in id_or_name):
                 id_or_name = id_or_name.replace('%20', ' ')
@@ -1092,7 +1089,7 @@ class Relay:
             if('%20' in id_or_name):
                 id_or_name = id_or_name.replace('%20', ' ')
             return id_or_name
-        elif(id_type =='name' and resource_type == 'interaction'):
+        elif(id_type == 'id' and resource_type == 'interaction'):
             [uri_full, root, id_type, resource_type, id_or_name] = uri.split('%3A')
             if('%20' in id_or_name):
                 id_or_name = id_or_name.replace('%20', ' ')
@@ -1101,7 +1098,7 @@ class Relay:
             self.logger.error('invalid device urn')
     
     async def is_interaction_uri(self, uri:str):
-        if('%' in uri and '3' in uri and 'A' in uri):
+        if('interaction' in uri and '%3' in uri):
             return True
         return False
     
