@@ -1075,7 +1075,7 @@ class Relay:
             if('%20' in id_or_name):
                 id_or_name = id_or_name.replace('%20', ' ')
             return id_or_name
-        elif(id_type == 'name' and resource_type == 'interaction'):
+        elif(id_type == 'name' and await self.is_interaction_uri(uri)):
             [uri_full, root, id_type, resource_type, id_or_name] = uri.split('%3A')
             if('%20' in id_or_name):
                 id_or_name = id_or_name.replace('%20', ' ')
@@ -1089,7 +1089,7 @@ class Relay:
             if('%20' in id_or_name):
                 id_or_name = id_or_name.replace('%20', ' ')
             return id_or_name
-        elif(id_type == 'id' and resource_type == 'interaction'):
+        elif(id_type == 'id' and await self.is_interaction_uri(uri)):
             [uri_full, root, id_type, resource_type, id_or_name] = uri.split('%3A')
             if('%20' in id_or_name):
                 id_or_name = id_or_name.replace('%20', ' ')
