@@ -687,28 +687,28 @@ class Relay:
 
     # repeating tone plus tts until button press
     async def alert(self, target, originator:str, text:str, name:str, push_options:dict={}):
-        await self._notify(target, originator, 'alert', name, text, None, push_options)
+        await self._send_notification(target, originator, 'alert', name, text, None, push_options)
     
     async def cancel_alert(self, target, name:str, targets:dict=None):
-        await self._notify(target, None, 'cancel', name, None, targets, None)
+        await self._send_notification(target, None, 'cancel', name, None, targets, None)
 
     # tone plus tts
     async def broadcast(self, target, originator:str, text:str, name:str, push_options:dict={}):
-        await self._notify(target, originator, 'broadcast', name, text, None, push_options)
+        await self._send_notification(target, originator, 'broadcast', name, text, push_options)
     
     async def cancel_broadcast(self, target, name:str, targets:dict=None):
-        await self._notify(target, None, 'cancel', name, None, targets, None)
+        await self._send_notification(target, None, 'cancel', name, None, targets, None)
 
     # tone only
     async def notify(self, target, originator:str, text:str, name:str, push_options:dict={}):
-        await self._notify(target, originator, 'notify', name, text, None, push_options)
+        await self._send_notification(target, originator, 'notify', name, text, None, push_options)
     
     async def cancel_notification(self, target, name:str, targets:dict=None):
-        await self._notify(target, None, 'cancel', name, None, targets, None)
+        await self._send_notification(target, None, 'cancel', name, None, targets, None)
 
     # text is used for creating an "ibot" notification. push_opts allows the developer to customize the push notification sent to a virtual device receiving the created notification
 
-    async def _notify(self, target, originator:str, ntype:str, name:str, text:str, targets:dict, push_options:dict=None):
+    async def _send_notification(self, target, originator:str, ntype:str, name:str, text:str, push_options:dict=None):
         event = {
             '_type': 'wf_api_notification_request',
             '_target': target,
@@ -716,7 +716,7 @@ class Relay:
             'type': ntype,
             'name': name,
             'text': text,
-            'target': targets,
+            'target': target,
             'push_opts': push_options
         }
         await self.sendReceive(event)
@@ -738,6 +738,9 @@ class Relay:
         return v['name']
 
     async def get_device_address(self, target, refresh:bool=False):
+        return await self.get_device_location(target, refresh)
+
+    async def get_device_location(self, target, refresh:bool=False):
         v = await self._get_device_info(target, 'address', refresh)
         return v['address']
 
@@ -761,7 +764,7 @@ class Relay:
         v = await self._get_device_info(target, 'id', refresh)
         return v['id']
 
-    async def get_device_username(self, target, refresh:bool=False):
+    async def get_user_profile(self, target, refresh:bool=False):
         v = await self._get_device_info(target, 'username', refresh)
         return v['username']
 
@@ -786,6 +789,12 @@ class Relay:
 
     async def set_device_channel(self, target, channel: str):
         await self._set_device_info(target, 'channel', channel)
+
+    async def enable_location(self, target):
+        await self._set_device_info(target, 'location_enabled', 'true')
+    
+    async def disable_location(self, target):
+        await self._set_device_info(target, 'location_enabled', 'false')
 
     async def set_device_location_enabled(self, target, location_enabled: str):
         await self._set_device_info(target, 'location_enabled', channel)
@@ -826,7 +835,7 @@ class Relay:
             info['colors'] = colors
         return info
 
-    async def set_led(self, target, effect:str="flash", args=None):
+    async def led_action(self, target, effect:str="flash", args=None):
         # effect possible values: "rainbow", "rotate", "flash", "breathe", "static", "off"
         # use led_info to create args
         event = {
@@ -838,25 +847,25 @@ class Relay:
         await self.sendReceive(event)
 
     # convenience functions
-    async def set_led_on(self, target, color:str='0000ff'):
+    async def switch_all_led_on(self, target, color:str='0000ff'):
         await self.set_led(target, 'static', {'colors':{'ring': color}})
 
-    async def set_single_led_on(self, target, index:int, color:str='0000ff'):
+    async def switch_led_on(self, target, index:int, color:str='0000ff'):
         await self.set_led(target, 'static', {'colors':{index: color}})
 
-    async def set_led_rainbow(self, target, rotations:int=-1):
+    async def rainbow(self, target, rotations:int=-1):
         await self.set_led(target, 'rainbow', {'rotations': rotations})
 
-    async def set_led_flash(self, target, color:str='0000ff', count:int=-1):
+    async def flash(self, target, color:str='0000ff', count:int=-1):
         await self.set_led(target, 'flash', {'colors': {'ring': color}, 'count': count})
 
-    async def set_led_breathe(self, target, color:str='0000ff', count:int=-1):
+    async def breathe(self, target, color:str='0000ff', count:int=-1):
         await self.set_led(target, 'breathe', {'colors': {'ring': color}, 'count': count})
 
-    async def set_led_rotate(self, target, color:str='0000ff', rotations:int=-1):
+    async def rotate(self, target, color:str='0000ff', rotations:int=-1):
         await self.set_led(target, 'rotate', {'colors': {'1': color}, 'rotations': rotations})
 
-    async def set_led_off(self, target):
+    async def switch_all_led_off(self, target):
         await self.set_led(target, 'off', {})
 
 
@@ -991,7 +1000,7 @@ class Relay:
 
     ##### TODO: test me from this point down
 
-    async def group_query_members(self, group_uri:str):
+    async def get_group_members(self, group_uri:str):
         event = {
             '_type': 'wf_api_group_query_request',
             'query': 'list_members',
@@ -1000,7 +1009,7 @@ class Relay:
         response = await self.sendReceive(event)
         return response['member_uris']
 
-    async def group_query_is_member(self, group_uri:str):
+    async def is_group_member(self, group_uri:str):
         event = {
             '_type': 'wf_api_group_query_request',
             'query': 'is_member',
@@ -1008,7 +1017,99 @@ class Relay:
         }
         response = await self.sendReceive(event)
         return response['is_member']
+
+    # Helper methods for constructing a group/device URN
+
+    all_devices_on_account = f'urn:relay-resource:all:device'
+    INTERACTION_ROOT = 'urn:relay-resource:name:interaction'
+
+    async def construct(self, resource_type:str, id_type:str, id_or_name:str):    
+        uri = f'urn:relay-resource:{id_type}:{resource_type}:{id_or_name}'
+        return uri
+
+    async def group_id(self, id:str):
+        if(' ' in id):
+            id = id.replace(' ', '%20')
+        return await self.construct('group', 'id', id)
+    
+    async def group_name(self, name:str):
+        if (' ' in name):
+            name = name.replace(' ', '%20')
+        return await self.construct('group', 'name', name)
+
+    async def device_name(self, name:str):
+        if(' ' in name):
+            name = name.replace(' ', '%20')
+        return await self.construct('device', 'name', name)
+
+    async def group_member(self, group:str, device:str):
+        if(' ' in group):
+            group = group.replace(' ', '%20')
+        uri = f'urn:relay-resource:name:group:{group}?device=urn%3relay-resource%3Aname%3Adevice%3A{device}'
+        return uri
+    
+    async def device_id(self, id:str):
+        if(' ' in id):
+            id = id.replace(' ', '%20')
+        return await self.construct('device', 'id', id)
+    
         
+    async def parse_group_name(self, uri:str):
+        [scheme, root, id_type, resource_type, id_or_name] = uri.split(':')
+        if(id_type == 'name' and resource_type == 'group'):
+            if('%20' in id_or_name):
+                id_or_name = id_or_name.replace('%20', ' ')
+            return id_or_name
+        else:
+            self.logger.error('invalid group urn')
+        
+    async def parse_group_id(self, uri:str):
+        [scheme, root, id_type, resource_type, id_or_name] = uri.split(':')
+        if(id_type == 'id' and resource_type == 'group'):
+            if('%20' in id_or_name):
+                id_or_name = id_or_name.replace('%20', ' ')
+            return id_or_name
+        else:
+            self.logger.error('invalid group urn')
+    
+    async def parse_device_name(self, uri:str):
+        [scheme, root, id_type, resource_type, id_or_name] = uri.split(':')
+        if(id_type == 'name' and resource_type == 'device'):
+            if('%20' in id_or_name):
+                id_or_name = id_or_name.replace('%20', ' ')
+            return id_or_name
+        elif(id_type =='name' and resource_type == 'interaction'):
+            [uri_full, root, id_type, resource_type, id_or_name] = uri.split('%3A')
+            if('%20' in id_or_name):
+                id_or_name = id_or_name.replace('%20', ' ')
+            return id_or_name
+        else:
+            self.logger.error('invalid device urn')
+    
+    async def parse_device_id(self, uri:str):
+        [scheme, root, id_type, resource_type, id_or_name] = uri.split(':')
+        if(id_type == 'id' and resource_type == 'device'):
+            if('%20' in id_or_name):
+                id_or_name = id_or_name.replace('%20', ' ')
+            return id_or_name
+        elif(id_type =='name' and resource_type == 'interaction'):
+            [uri_full, root, id_type, resource_type, id_or_name] = uri.split('%3A')
+            if('%20' in id_or_name):
+                id_or_name = id_or_name.replace('%20', ' ')
+            return id_or_name
+        else:
+            self.logger.error('invalid device urn')
+    
+    async def is_interaction_uri(self, uri:str):
+        if('%' in uri and '3' in uri and 'A' in uri):
+            return True
+        return False
+    
+    async def is_relay_uri(self, uri:str):
+        if(uri.startswith('urn:relay-resource')):
+            return True
+        return False
+   
 
     # target can have only one item
     async def set_user_profile(self, target:str, username:str, force:bool=False):
@@ -1036,13 +1137,22 @@ class Relay:
         }
         await self.sendReceive(event)
 
-    async def log_analytics_event(self, content:str, content_type:str, category:str, device_url:str=None):
+    async def log_message(self, content:str, category:str):
         event = {
             '_type': 'wf_api_log_analytics_event_request',
             'content': content,
-            'content_type': content_type,
+            'content_type': 'text/plain',
+            'category': category
+        }
+        await self.sendReceive(event)
+
+    async def log_user_message(self, content:str, category:str, device_uri:str=None):
+        event = {
+            '_type': 'wf_api_log_analytics_event_request',
+            'content': content,
+            'content_type': 'text/plain',
             'category': category,
-            'device_url': device_url
+            'device_uri': device_uri
         }
         await self.sendReceive(event)
 
@@ -1077,7 +1187,13 @@ class Relay:
         response = await self.sendReceive(event)
         return response['message_id']
 
-    async def set_home_channel_state(self, target, enabled:bool=True):
+    async def enable_home_channel(self, target):
+        await self._set_home_channel_state(target, True)
+    
+    async def disable_home_channel(self, target):
+        await self._set_home_channel_state(target, False)
+
+    async def _set_home_channel_state(self, target, enabled:bool=True):
         event = {
             '_type': 'wf_api_set_home_channel_state_request',
             '_target': target,
