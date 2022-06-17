@@ -97,75 +97,75 @@ DEVICE_PATTERN = '?device='
 INTERACTION_URI_NAME = 'urn:relay-resource:name:interaction'
 INTERACTION_URI_ID = 'urn:relay-resource:id:interaction'
 
-async def construct(resource_type:str, id_type:str, id_or_name:str): 
+def construct(resource_type:str, id_type:str, id_or_name:str): 
     return f'{SCHEME}:{ROOT}:{id_type}:{resource_type}:{id_or_name}'
 
-async def group_id(id:str):
-    return await construct(GROUP, ID, urllib.parse.quote(id))
+def group_id(id:str):
+    return construct(GROUP, ID, urllib.parse.quote(id))
 
-async def group_name(name:str):
-    return await construct(GROUP, NAME, urllib.parse.quote(name))
+def group_name(name:str):
+    return construct(GROUP, NAME, urllib.parse.quote(name))
 
-async def device_name(name:str):
-    return await construct(DEVICE, NAME, urllib.parse.quote(name))
+def device_name(name:str):
+    return construct(DEVICE, NAME, urllib.parse.quote(name))
 
-async def group_member(group:str, device:str):
+def group_member(group:str, device:str):
     return f'{SCHEME}:{ROOT}:{NAME}:{GROUP}:{urllib.parse.quote(group)}{DEVICE_PATTERN}' + urllib.parse.quote(f'{SCHEME}:{ROOT}:{NAME}:{DEVICE}:{device}')
 
-async def device_id(id:str):
-    return await construct(DEVICE, ID, urllib.parse.quote(id))
+def device_id(id:str):
+    return construct(DEVICE, ID, urllib.parse.quote(id))
 
-async def parse_group_name(uri:str):
+def parse_group_name(uri:str):
     scheme, root, id_type, resource_type, name = urllib.parse.unquote(uri).split(':')
-    if(id_type == NAME and resource_type == GROUP):
+    if id_type == NAME and resource_type == GROUP:
         return name
     logger.error('invalid group urn')
     
-async def parse_group_id(uri:str):
+def parse_group_id(uri:str):
     scheme, root, id_type, resource_type, id = urllib.parse.unquote(uri).split(':')
-    if(id_type == ID and resource_type == GROUP):
+    if id_type == ID and resource_type == GROUP:
         return id
     logger.error('invalid group urn')
 
-async def parse_device_name(uri:str):
+def parse_device_name(uri:str):
     uri = urllib.parse.unquote(uri)
-    if(not await is_interaction_uri(uri)):
+    if not is_interaction_uri(uri):
         scheme, root, id_type, resource_type, name = uri.split(':')
-        if(id_type == NAME):
+        if id_type == NAME:
             return name
-    elif(await is_interaction_uri(uri)):
+    elif is_interaction_uri(uri):
         scheme, root, id_type, resource_type, i_name, i_root, i_id_type, i_resource_type, name = uri.split(':')
-        if(id_type == NAME and i_id_type == NAME):
+        if id_type == NAME and i_id_type == NAME:
             return name
     logger.error('invalid device urn')
 
-async def parse_device_id(uri:str):
+def parse_device_id(uri:str):
     uri = urllib.parse.unquote(uri)
-    if(not await is_interaction_uri(uri)):
+    if not is_interaction_uri(uri):
         scheme, root, id_type, resource_type, id = uri.split(':')
-        if(id_type == ID):
+        if id_type == ID:
             return id
-    elif(await is_interaction_uri(uri)):
+    elif is_interaction_uri(uri):
         scheme, root, id_type, resource_type, i_id, i_root, i_id_type, i_resource_type, id = uri.split(':')
-        if(id_type == ID and i_id_type == ID):
+        if id_type == ID and i_id_type == ID:
             return id
     logger.error('invalid device urn')
 
-async def parse_interaction(uri:str):
+def parse_interaction(uri:str):
     uri = urllib.parse.unquote(uri)
-    if(await is_interaction_uri(uri)):
+    if is_interaction_uri(uri):
         scheme, root, id_type, resource_type, i_name, i_root, i_id_type, i_resource_type, name = uri.split(':')
         interaction_name, discard = i_name.split('?') 
         return interaction_name
     logger.error('not an interaction urn')
 
-async def is_interaction_uri(uri:str):
-    if(INTERACTION_URI_NAME in uri or INTERACTION_URI_ID in uri):
+def is_interaction_uri(uri:str):
+    if INTERACTION_URI_NAME in uri or INTERACTION_URI_ID in uri:
         return True
     return False
 
-async def is_relay_uri(uri:str):
-    if(uri.startswith(f'{SCHEME}:{ROOT}')):
+def is_relay_uri(uri:str):
+    if uri.startswith(f'{SCHEME}:{ROOT}'):
         return True
     return False
 
@@ -353,7 +353,7 @@ class Relay:
                 dictMessage = "".join(chr(i) for i in dictMessage)
         return dictMessage
 
-    def target_from_trigger(self, trigger:dict):
+    def make_target_uris(self, trigger:dict):
         # after receiving a trigger in on_start handler, create a target object
         if not isinstance(trigger, dict):
             raise WorkflowException('trigger parameter is not a dictionary')
