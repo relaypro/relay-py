@@ -85,85 +85,89 @@ class ServerException(Exception):
         self.message = message
         super().__init__(self.message)
 
-class Uri:
+# Helper methods for creating and parsing out a URI
 
-    #TODO add constants,look over and try to further simplify logic
+SCHEME = 'urn'
+ROOT = 'relay-resource'
+GROUP = 'group'
+ID = 'id'
+NAME = 'name'
+DEVICE = 'device'
+DEVICE_PATTERN = '?device='
+INTERACTION_URI_NAME = 'urn:relay-resource:name:interaction'
+INTERACTION_URI_ID = 'urn:relay-resource:id:interaction'
 
-    async def construct(resource_type:str, id_type:str, id_or_name:str):    
-        return f'urn:relay-resource:{id_type}:{resource_type}:{id_or_name}'
+async def construct(resource_type:str, id_type:str, id_or_name:str): 
+    return f'{SCHEME}:{ROOT}:{id_type}:{resource_type}:{id_or_name}'
 
-    async def group_id(id:str):
-        id = urllib.parse.quote(id)
-        return await Uri.construct('group', 'id', id)
+async def group_id(id:str):
+    return await construct(GROUP, ID, urllib.parse.quote(id))
+
+async def group_name(name:str):
+    return await construct(GROUP, NAME, urllib.parse.quote(name))
+
+async def device_name(name:str):
+    return await construct(DEVICE, NAME, urllib.parse.quote(name))
+
+async def group_member(group:str, device:str):
+    return f'{SCHEME}:{ROOT}:{NAME}:{GROUP}:{urllib.parse.quote(group)}{DEVICE_PATTERN}' + urllib.parse.quote(f'{SCHEME}:{ROOT}:{NAME}:{DEVICE}:{device}')
+
+async def device_id(id:str):
+    return await construct(DEVICE, ID, urllib.parse.quote(id))
+
+async def parse_group_name(uri:str):
+    scheme, root, id_type, resource_type, name = urllib.parse.unquote(uri).split(':')
+    if(id_type == NAME and resource_type == GROUP):
+        return name
+    logger.error('invalid group urn')
     
-    async def group_name(name:str):
-        name = urllib.parse.quote(name)
-        return await Uri.construct('group', 'name', name)
+async def parse_group_id(uri:str):
+    scheme, root, id_type, resource_type, id = urllib.parse.unquote(uri).split(':')
+    if(id_type == ID and resource_type == GROUP):
+        return id
+    logger.error('invalid group urn')
 
-    async def device_name(name:str):
-        name = urllib.parse.quote(name)
-        return await Uri.construct('device', 'name', name)
-
-    #TODO make this method not so manual
-    
-    async def group_member(group:str, device:str):
-        group = urllib.parse.quote(group)
-        device = urllib.parse.quote(device)
-        uri = f'urn:relay-resource:name:group:{group}?device=urn%3relay-resource%3Aname%3Adevice%3A{device}'
-        return uri
-    
-    async def device_id(id:str):
-        id = urllib.parse.quote(id)
-        return await Uri.construct('device', 'id', id)
-    
-    async def parse_group_name(uri:str):
-        uri = urllib.parse.unquote(uri)
-        [scheme, root, id_type, resource_type, name] = uri.split(':')
-        if(id_type == 'name' and resource_type == 'group'):
+async def parse_device_name(uri:str):
+    uri = urllib.parse.unquote(uri)
+    if(not await is_interaction_uri(uri)):
+        scheme, root, id_type, resource_type, name = uri.split(':')
+        if(id_type == NAME):
             return name
-        Uri.logger.error('invalid group urn')
-        
-    async def parse_group_id(uri:str):
-        uri = urllib.parse.unquote(uri)
-        [scheme, root, id_type, resource_type, id] = uri.split(':')
-        if(id_type == 'id' and resource_type == 'group'):
+    elif(await is_interaction_uri(uri)):
+        scheme, root, id_type, resource_type, i_name, i_root, i_id_type, i_resource_type, name = uri.split(':')
+        if(id_type == NAME and i_id_type == NAME):
+            return name
+    logger.error('invalid device urn')
+
+async def parse_device_id(uri:str):
+    uri = urllib.parse.unquote(uri)
+    if(not await is_interaction_uri(uri)):
+        scheme, root, id_type, resource_type, id = uri.split(':')
+        if(id_type == ID):
             return id
-        Uri.logger.error('invalid group urn')
-    
-    async def parse_device_name(uri:str):
-        uri = urllib.parse.unquote(uri)
-        if(not await Uri.is_interaction_uri(uri)):
-            [scheme, root, id_type, resource_type, name] = uri.split(':')
-            if(id_type == 'name'):
-                return name
-        elif(await Uri.is_interaction_uri(uri)):
-            [scheme, root, id_type, resource_type, name, i_root, i_id_type, i_resource_type, i_name] = uri.split(':')
-            if(id_type == 'name' and i_id_type == 'name'):
-                return i_name
-        Uri.logger.error('invalid device urn')
-    
-    async def parse_device_id(uri:str):
-        uri = urllib.parse.unquote(uri)
-        if(not await Uri.is_interaction_uri(uri)):
-            [scheme, root, id_type, resource_type, id] = uri.split(':')
-            if(id_type == 'id'):
-                return id
-        elif(await Uri.is_interaction_uri(uri)):
-            print(f'URI: {uri}')
-            [scheme, root, id_type, resource_type, id, i_root, i_id_type, i_resource_type, i_id] = uri.split(':')
-            if(id_type == 'id' and i_id_type == 'id'):
-                return i_id
-        Uri.logger.error('invalid device urn')
-    
-    async def is_interaction_uri(uri:str):
-        if('urn:relay-resource:name:interaction' in uri or 'urn:relay-resource:id:interaction' in uri):
-            return True
-        return False
-    
-    async def is_relay_uri(uri:str):
-        if(uri.startswith('urn:relay-resource')):
-            return True
-        return False
+    elif(await is_interaction_uri(uri)):
+        scheme, root, id_type, resource_type, i_id, i_root, i_id_type, i_resource_type, id = uri.split(':')
+        if(id_type == ID and i_id_type == ID):
+            return id
+    logger.error('invalid device urn')
+
+async def parse_interaction(uri:str):
+    uri = urllib.parse.unquote(uri)
+    if(await is_interaction_uri(uri)):
+        scheme, root, id_type, resource_type, i_name, i_root, i_id_type, i_resource_type, name = uri.split(':')
+        interaction_name, discard = i_name.split('?') 
+        return interaction_name
+    logger.error('not an interaction urn')
+
+async def is_interaction_uri(uri:str):
+    if(INTERACTION_URI_NAME in uri or INTERACTION_URI_ID in uri):
+        return True
+    return False
+
+async def is_relay_uri(uri:str):
+    if(uri.startswith(f'{SCHEME}:{ROOT}')):
+        return True
+    return False
 
 class Workflow:
     def __init__(self, name:str):
@@ -512,23 +516,6 @@ class Relay:
             await h(self, *args)
         except Exception as x:
             self.logger.error(f'{x}', exc_info=True)
-
-
-    def get_interaction_from_event_uri(self, source_uri:str):
-        urn_pieces = source_uri.split(':')
-        if len(urn_pieces) != 5 or urn_pieces[0] != 'urn' or urn_pieces[1] != 'relay-resource' or urn_pieces[3] != 'interaction':
-            raise WorkflowException(f'uri is not a relay-resource interaction: {source_uri}')
-        parse_result = urllib.parse.urlparse(urn_pieces[4])
-        return parse_result.path
-
-    def get_device_urn_from_event_uri(self, source_uri:str):
-        urn_pieces = source_uri.split(':')
-        if len(urn_pieces) != 5 or urn_pieces[0] != 'urn' or urn_pieces[1] != 'relay-resource' or urn_pieces[3] != 'interaction':
-            raise WorkflowException(f'uri is not a relay-resource interaction: {source_uri}')
-        parse_result = urllib.parse.urlparse(urn_pieces[4])
-        qs_dict = urllib.parse.parse_qs(parse_result.query)
-        deviceurn =  urllib.parse.unquote_plus(qs_dict['device'][0])
-        return deviceurn
 
     async def send(self, obj):
         _id = uuid.uuid4().hex
