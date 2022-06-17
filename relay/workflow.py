@@ -1,3 +1,6 @@
+
+# Copyright © 2022 Relay Inc.
+
 import asyncio
 import json
 import logging

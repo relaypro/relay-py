@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-import relay.workflow
+# Copyright © 2022 Relay Inc.
 
+import relay.workflow
 
 wf = relay.workflow.Workflow(__name__)
 

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# Copyright © 2022 Relay Inc.
+
 import relay.workflow
 from relay.workflow import WorkflowException
 

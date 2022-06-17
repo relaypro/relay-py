@@ -1,4 +1,5 @@
 # assumes env vars: ibot, subscriber_id, token
+# Copyright © 2022 Relay Inc.
 
 alias r_dev='curl -s -H "authorization: Bearer $token" "https://$ibot/ibot/device/$user_id?subscriber_id=$subscriber_id"'
 

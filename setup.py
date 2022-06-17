@@ -1,5 +1,7 @@
 import setuptools
 
+# Copyright © 2022 Relay Inc.
+
 # for tests: (venv)$ pip install -e '.[testing]'
 
 setuptools.setup(
