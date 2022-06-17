@@ -22,7 +22,7 @@ async def start_handler(relay, trigger):
 
     device_urn = trigger['args']['source_uri']
     logger.debug(f'device_urn is {device_urn}')
-    target = relay.target_from_trigger(trigger)
+    target = relay.make_target_uris(trigger)
 
     await relay.start_interaction(target, 'hello world')
 
