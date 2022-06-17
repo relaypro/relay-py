@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+# Copyright © 2022 Relay Inc.
+
 # add one workflow:
 # $ user_id=123 gen_wf.py <yml file> | r_wh -d @-
 #

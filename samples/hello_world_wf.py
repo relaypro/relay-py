@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# Copyright © 2022 Relay Inc.
+
 import asyncio
 import os
 import relay.workflow
