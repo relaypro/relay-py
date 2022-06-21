@@ -1,0 +1,48 @@
+name: docs
+
+on:
+  push:
+    branches: [ main, docs ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: './src/'
+
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+
+      - name: generate markdown and concatenate
+        run: |
+          cd src/relay
+          sudo apt install python3-pip
+          pip3 install websockets
+          pip3 install requests
+          pydoc3 -w workflow
+      - uses: actions/checkout@v3
+        with:
+          ref: 'gh-pages'
+          path: './web/'
+
+      - name: promote
+        run: |
+          cd web
+          cp -rp ../src/relay/workflow.html index.html
+      - uses: EndBug/add-and-commit@v9
+        with:
+          message: 'publish generated docs'
+          add: 'index.html'
+          cwd: './web/'
+          author_name: 'Relay Pro builder'
+          author_email: 'info@relaypro.com'
+          push: true
