@@ -9,7 +9,7 @@
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>workflow</strong></big></big></font></td
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/runner/work/relay-py/relay-py/src/relay/workflow.py">/home/runner/work/relay-py/relay-py/src/relay/workflow.py</a></font></td></tr></table>
-    <p></p>
+    <p><tt>#&nbsp;Copyright&nbsp;©&nbsp;2022&nbsp;<a href="#Relay">Relay</a>&nbsp;Inc.</tt></p>
 <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
@@ -155,6 +155,8 @@ Data descriptors inherited from <a href="logging.html#LoggerAdapter">logging.Log
 
 <dl><dt>async <a name="Relay-answer_call"><strong>answer_call</strong></a>(self, target, call_id: str)</dt><dd><tt>#&nbsp;target&nbsp;can&nbsp;have&nbsp;only&nbsp;one&nbsp;item</tt></dd></dl>
 
+<dl><dt>async <a name="Relay-breathe"><strong>breathe</strong></a>(self, target, color: str = '0000ff', count: int = -1)</dt></dl>
+
 <dl><dt>async <a name="Relay-broadcast"><strong>broadcast</strong></a>(self, target, originator: str, text: str, name: str, push_options: dict = {})</dt><dd><tt>#&nbsp;tone&nbsp;plus&nbsp;tts</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-cancel_alert"><strong>cancel_alert</strong></a>(self, target, name: str, targets: dict = None)</dt></dl>
@@ -169,7 +171,17 @@ Data descriptors inherited from <a href="logging.html#LoggerAdapter">logging.Log
 
 <dl><dt>async <a name="Relay-create_incident"><strong>create_incident</strong></a>(self, originator, itype: str)</dt></dl>
 
+<dl><dt>async <a name="Relay-disable_home_channel"><strong>disable_home_channel</strong></a>(self, target)</dt></dl>
+
+<dl><dt>async <a name="Relay-disable_location"><strong>disable_location</strong></a>(self, target)</dt></dl>
+
+<dl><dt>async <a name="Relay-enable_home_channel"><strong>enable_home_channel</strong></a>(self, target)</dt></dl>
+
+<dl><dt>async <a name="Relay-enable_location"><strong>enable_location</strong></a>(self, target)</dt></dl>
+
 <dl><dt>async <a name="Relay-end_interaction"><strong>end_interaction</strong></a>(self, target, name: str)</dt></dl>
+
+<dl><dt>async <a name="Relay-flash"><strong>flash</strong></a>(self, target, color: str = '0000ff', count: int = -1)</dt></dl>
 
 <dl><dt><a name="Relay-fromJson"><strong>fromJson</strong></a>(self, websocketMessage)</dt></dl>
 
@@ -185,25 +197,21 @@ Data descriptors inherited from <a href="logging.html#LoggerAdapter">logging.Log
 
 <dl><dt>async <a name="Relay-get_device_latlong"><strong>get_device_latlong</strong></a>(self, target, refresh: bool = False)</dt></dl>
 
+<dl><dt>async <a name="Relay-get_device_location"><strong>get_device_location</strong></a>(self, target, refresh: bool = False)</dt></dl>
+
 <dl><dt>async <a name="Relay-get_device_location_enabled"><strong>get_device_location_enabled</strong></a>(self, target, refresh: bool = False)</dt></dl>
 
 <dl><dt>async <a name="Relay-get_device_name"><strong>get_device_name</strong></a>(self, target, refresh: bool = False)</dt></dl>
 
 <dl><dt>async <a name="Relay-get_device_type"><strong>get_device_type</strong></a>(self, target, refresh: bool = False)</dt></dl>
 
-<dl><dt><a name="Relay-get_device_urn_from_event_uri"><strong>get_device_urn_from_event_uri</strong></a>(self, source_uri: str)</dt></dl>
-
-<dl><dt>async <a name="Relay-get_device_username"><strong>get_device_username</strong></a>(self, target, refresh: bool = False)</dt></dl>
+<dl><dt>async <a name="Relay-get_group_members"><strong>get_group_members</strong></a>(self, group_uri: str)</dt></dl>
 
 <dl><dt>async <a name="Relay-get_inbox_count"><strong>get_inbox_count</strong></a>(self, target)</dt><dd><tt>#&nbsp;target&nbsp;can&nbsp;have&nbsp;only&nbsp;one&nbsp;item</tt></dd></dl>
 
-<dl><dt><a name="Relay-get_interaction_from_event_uri"><strong>get_interaction_from_event_uri</strong></a>(self, source_uri: str)</dt></dl>
+<dl><dt>async <a name="Relay-get_user_profile"><strong>get_user_profile</strong></a>(self, target, refresh: bool = False)</dt></dl>
 
 <dl><dt>async <a name="Relay-get_var"><strong>get_var</strong></a>(self, name: str, default=None)</dt></dl>
-
-<dl><dt>async <a name="Relay-group_query_is_member"><strong>group_query_is_member</strong></a>(self, group_uri: str)</dt></dl>
-
-<dl><dt>async <a name="Relay-group_query_members"><strong>group_query_members</strong></a>(self, group_uri: str)</dt></dl>
 
 <dl><dt>async <a name="Relay-handle"><strong>handle</strong></a>(self, websocket)</dt></dl>
 
@@ -213,11 +221,19 @@ Data descriptors inherited from <a href="logging.html#LoggerAdapter">logging.Log
 
 <dl><dt>async <a name="Relay-invalid_type"><strong>invalid_type</strong></a>(self)</dt></dl>
 
+<dl><dt>async <a name="Relay-is_group_member"><strong>is_group_member</strong></a>(self, group_uri: str)</dt></dl>
+
+<dl><dt>async <a name="Relay-led_action"><strong>led_action</strong></a>(self, target, effect: str = 'flash', args=None)</dt></dl>
+
 <dl><dt><a name="Relay-led_info"><strong>led_info</strong></a>(self, rotations: int = None, count: int = None, duration: int = None, repeat_delay: int = None, pattern_repeats=None, colors=None)</dt></dl>
 
 <dl><dt>async <a name="Relay-listen"><strong>listen</strong></a>(self, target, request_id, phrases=None, transcribe: bool = True, timeout: int = 60, alt_lang: str = None)</dt></dl>
 
-<dl><dt>async <a name="Relay-log_analytics_event"><strong>log_analytics_event</strong></a>(self, content: str, content_type: str, category: str, device_url: str = None)</dt></dl>
+<dl><dt>async <a name="Relay-log_message"><strong>log_message</strong></a>(self, content: str, category: str)</dt></dl>
+
+<dl><dt>async <a name="Relay-log_user_message"><strong>log_user_message</strong></a>(self, content: str, category: str, device_uri: str = None)</dt></dl>
+
+<dl><dt><a name="Relay-make_target_uris"><strong>make_target_uris</strong></a>(self, trigger: dict)</dt></dl>
 
 <dl><dt>async <a name="Relay-missing_type"><strong>missing_type</strong></a>(self)</dt></dl>
 
@@ -235,11 +251,15 @@ Data descriptors inherited from <a href="logging.html#LoggerAdapter">logging.Log
 
 <dl><dt><a name="Relay-push_options"><strong>push_options</strong></a>(self, priority: str = 'normal', title: str = None, body: str = None, sound: str = 'default')</dt></dl>
 
+<dl><dt>async <a name="Relay-rainbow"><strong>rainbow</strong></a>(self, target, rotations: int = -1)</dt></dl>
+
 <dl><dt>async <a name="Relay-register"><strong>register</strong></a>(self, target, uri: str, password: str, expires: int)</dt><dd><tt>#&nbsp;target&nbsp;can&nbsp;have&nbsp;only&nbsp;one&nbsp;item</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-resolve_incident"><strong>resolve_incident</strong></a>(self, incident_id: str, reason: str)</dt></dl>
 
 <dl><dt>async <a name="Relay-restart_device"><strong>restart_device</strong></a>(self, target)</dt></dl>
+
+<dl><dt>async <a name="Relay-rotate"><strong>rotate</strong></a>(self, target, color: str = '0000ff', rotations: int = -1)</dt></dl>
 
 <dl><dt>async <a name="Relay-say"><strong>say</strong></a>(self, target, text: str, lang: str = 'en-US')</dt></dl>
 
@@ -259,24 +279,6 @@ Data descriptors inherited from <a href="logging.html#LoggerAdapter">logging.Log
 
 <dl><dt>async <a name="Relay-set_device_name"><strong>set_device_name</strong></a>(self, target, name: str)</dt></dl>
 
-<dl><dt>async <a name="Relay-set_home_channel_state"><strong>set_home_channel_state</strong></a>(self, target, enabled: bool = True)</dt></dl>
-
-<dl><dt>async <a name="Relay-set_led"><strong>set_led</strong></a>(self, target, effect: str = 'flash', args=None)</dt></dl>
-
-<dl><dt>async <a name="Relay-set_led_breathe"><strong>set_led_breathe</strong></a>(self, target, color: str = '0000ff', count: int = -1)</dt></dl>
-
-<dl><dt>async <a name="Relay-set_led_flash"><strong>set_led_flash</strong></a>(self, target, color: str = '0000ff', count: int = -1)</dt></dl>
-
-<dl><dt>async <a name="Relay-set_led_off"><strong>set_led_off</strong></a>(self, target)</dt></dl>
-
-<dl><dt>async <a name="Relay-set_led_on"><strong>set_led_on</strong></a>(self, target, color: str = '0000ff')</dt><dd><tt>#&nbsp;convenience&nbsp;functions</tt></dd></dl>
-
-<dl><dt>async <a name="Relay-set_led_rainbow"><strong>set_led_rainbow</strong></a>(self, target, rotations: int = -1)</dt></dl>
-
-<dl><dt>async <a name="Relay-set_led_rotate"><strong>set_led_rotate</strong></a>(self, target, color: str = '0000ff', rotations: int = -1)</dt></dl>
-
-<dl><dt>async <a name="Relay-set_single_led_on"><strong>set_single_led_on</strong></a>(self, target, index: int, color: str = '0000ff')</dt></dl>
-
 <dl><dt>async <a name="Relay-set_timer"><strong>set_timer</strong></a>(self, name: str, timeout: int, timeout_type: str = 'secs', timer_type: str = 'timeout')</dt><dd><tt>#&nbsp;named&nbsp;timer<br>
 #&nbsp;type&nbsp;can&nbsp;be&nbsp;'timeout'&nbsp;or&nbsp;'interval'<br>
 #&nbsp;timeout_type&nbsp;can&nbsp;be&nbsp;'ms',&nbsp;'secs',&nbsp;'mins',&nbsp;'hrs'</tt></dd></dl>
@@ -295,7 +297,11 @@ Data descriptors inherited from <a href="logging.html#LoggerAdapter">logging.Log
 
 <dl><dt>async <a name="Relay-stop_timer"><strong>stop_timer</strong></a>(self)</dt><dd><tt>#&nbsp;unnamed&nbsp;timer</tt></dd></dl>
 
-<dl><dt><a name="Relay-target_from_trigger"><strong>target_from_trigger</strong></a>(self, trigger: dict)</dt></dl>
+<dl><dt>async <a name="Relay-switch_all_led_off"><strong>switch_all_led_off</strong></a>(self, target)</dt></dl>
+
+<dl><dt>async <a name="Relay-switch_all_led_on"><strong>switch_all_led_on</strong></a>(self, target, color: str = '0000ff')</dt><dd><tt>#&nbsp;convenience&nbsp;functions</tt></dd></dl>
+
+<dl><dt>async <a name="Relay-switch_led_on"><strong>switch_led_on</strong></a>(self, target, index: int, color: str = '0000ff')</dt></dl>
 
 <dl><dt><a name="Relay-targets_from_source_uri"><strong>targets_from_source_uri</strong></a>(self, source_uri: str)</dt></dl>
 
@@ -548,7 +554,10 @@ Data descriptors inherited from <a href="builtins.html#BaseException">builtins.B
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-get_device_info"><strong>get_device_info</strong></a>(access_token: str, refresh_token: str, client_id: str, subscriber_id: str, user_id: str)</dt><dd><tt>A&nbsp;convenience&nbsp;method&nbsp;for&nbsp;getting&nbsp;all&nbsp;the&nbsp;details&nbsp;of&nbsp;a&nbsp;device.<br>
+<td width="100%"><dl><dt><a name="-construct"><strong>construct</strong></a>(resource_type: str, id_type: str, id_or_name: str)</dt></dl>
+ <dl><dt><a name="-device_id"><strong>device_id</strong></a>(id: str)</dt></dl>
+ <dl><dt><a name="-device_name"><strong>device_name</strong></a>(name: str)</dt></dl>
+ <dl><dt><a name="-get_device_info"><strong>get_device_info</strong></a>(access_token: str, refresh_token: str, client_id: str, subscriber_id: str, user_id: str)</dt><dd><tt>A&nbsp;convenience&nbsp;method&nbsp;for&nbsp;getting&nbsp;all&nbsp;the&nbsp;details&nbsp;of&nbsp;a&nbsp;device.<br>
 &nbsp;<br>
 This&nbsp;will&nbsp;return&nbsp;quite&nbsp;a&nbsp;bit&nbsp;of&nbsp;data&nbsp;regarding&nbsp;device&nbsp;configuration&nbsp;and<br>
 state.&nbsp;The&nbsp;result,&nbsp;if&nbsp;the&nbsp;query&nbsp;was&nbsp;successful,&nbsp;should&nbsp;have&nbsp;a&nbsp;large&nbsp;JSON<br>
@@ -568,6 +577,16 @@ dictionary.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;subscriber_id:&nbsp;the&nbsp;subcriber&nbsp;UUID&nbsp;as&nbsp;returned&nbsp;from&nbsp;"relay&nbsp;whoami".<br>
 &nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;user_id:&nbsp;the&nbsp;IMEI&nbsp;of&nbsp;the&nbsp;target&nbsp;device,&nbsp;such&nbsp;as&nbsp;990007560023456.</tt></dd></dl>
+ <dl><dt><a name="-group_id"><strong>group_id</strong></a>(id: str)</dt></dl>
+ <dl><dt><a name="-group_member"><strong>group_member</strong></a>(group: str, device: str)</dt></dl>
+ <dl><dt><a name="-group_name"><strong>group_name</strong></a>(name: str)</dt></dl>
+ <dl><dt><a name="-is_interaction_uri"><strong>is_interaction_uri</strong></a>(uri: str)</dt></dl>
+ <dl><dt><a name="-is_relay_uri"><strong>is_relay_uri</strong></a>(uri: str)</dt></dl>
+ <dl><dt><a name="-parse_device_id"><strong>parse_device_id</strong></a>(uri: str)</dt></dl>
+ <dl><dt><a name="-parse_device_name"><strong>parse_device_name</strong></a>(uri: str)</dt></dl>
+ <dl><dt><a name="-parse_group_id"><strong>parse_group_id</strong></a>(uri: str)</dt></dl>
+ <dl><dt><a name="-parse_group_name"><strong>parse_group_name</strong></a>(uri: str)</dt></dl>
+ <dl><dt><a name="-parse_interaction"><strong>parse_interaction</strong></a>(uri: str)</dt></dl>
  <dl><dt><a name="-remove_null"><strong>remove_null</strong></a>(obj)</dt></dl>
  <dl><dt><a name="-send_http_trigger"><strong>send_http_trigger</strong></a>(access_token: str, refresh_token: str, client_id: str, workflow_id: str, subscriber_id: str, user_id: str, action_args: dict = None)</dt><dd><tt>A&nbsp;convenience&nbsp;method&nbsp;for&nbsp;sending&nbsp;an&nbsp;HTTP&nbsp;trigger&nbsp;to&nbsp;the&nbsp;<a href="#Relay">Relay</a>&nbsp;server.<br>
 &nbsp;<br>
@@ -612,7 +631,16 @@ if&nbsp;it&nbsp;was&nbsp;updated&nbsp;(otherwise&nbsp;the&nbsp;original&nbsp;acc
 <font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
     
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><strong>auth_hostname</strong> = 'auth.relaygo.info'<br>
+<td width="100%"><strong>DEVICE</strong> = 'device'<br>
+<strong>DEVICE_PATTERN</strong> = '?device='<br>
+<strong>GROUP</strong> = 'group'<br>
+<strong>ID</strong> = 'id'<br>
+<strong>INTERACTION_URI_ID</strong> = 'urn:relay-resource:id:interaction'<br>
+<strong>INTERACTION_URI_NAME</strong> = 'urn:relay-resource:name:interaction'<br>
+<strong>NAME</strong> = 'name'<br>
+<strong>ROOT</strong> = 'relay-resource'<br>
+<strong>SCHEME</strong> = 'urn'<br>
+<strong>auth_hostname</strong> = 'auth.relaygo.info'<br>
 <strong>logger</strong> = &lt;Logger workflow (DEBUG)&gt;<br>
 <strong>server_hostname</strong> = 'all-main-qa-ibot.nocell.io'<br>
 <strong>version</strong> = 'relay-sdk-python/2.0.0'</td></tr></table>
