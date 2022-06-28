@@ -359,10 +359,10 @@ class CustomAdapter(logging.LoggerAdapter):
 
 class Relay:
     """
-    Includes the main functionalities that are used within the workflows,
-    including functions for communicating with the device, sending out
-    notifications to groups, handling workflow events, and performing actions
-    on the device like manipulating LEDs and creating vibrationss.
+    Includes the main functionalities that are used within workflows,
+    such as functions for communication with the device, sending out
+    notifications to groups, handling workflow events, and performing physical actions
+    on the device such as manipulating LEDs and creating vibrations.
     """
     def __init__(self, workflow:Workflow):
         self.workflow = workflow
@@ -399,8 +399,9 @@ class Relay:
 
     def make_target_uris(self, trigger:dict):
         """
-        Creates a target object after it receives a trigger in on_start_handler
-
+        Creates a target object after it receives a trigger from on_start_handler.
+        This is used so that the workflow knows which device it should perform
+        actions on.
 
         Args:
             trigger (dict): trigger that started the workflow.
@@ -426,13 +427,15 @@ class Relay:
 
     def targets_from_source_uri(self, source_uri:str):
         """
-        Creates a target from a source uri
+        Creates a target from a source uri.  Similarly to the make_target_uris function,
+        this function creates a target object that can then be used so that the workflow
+        knows which device it should perform actions on.
 
         Args:
-            source_uri (str): source uri that will be used to create a target
+            source_uri (str): source uri that will be used to create a target.
 
         Returns:
-            _type_: the targets that were created from the uri
+            _type_: the targets that were created from the uri.
         """
         targets = {
             'uris': [ source_uri ]
@@ -621,12 +624,12 @@ class Relay:
     async def get_var(self, name:str, default=None):
         """
         Retrieves a variable that was set either when registering a workflow
-        or through the set_var() function
+        or through the set_var() function.  The variable can be retrieved anywhere
+        within the workflow, but is erased after the workflow terminates.
 
         Args:
             name (str): name of the variable to be retrieved.
-            default (_type_, optional): default value of the variable if it does
-            not exist. Defaults to None.
+            default (_type_, optional): default value of the variable if it does not exist. Defaults to None.
 
         Returns:
             _type_: the variable that was requested.
@@ -641,11 +644,12 @@ class Relay:
 
     async def set_var(self, name:str, value:str):
         """
-        Sets a variable with the name and value passed in as parameters
+        Sets a variable with the name and value passed in as parameters.  The variable
+        will remain until the workflow terminates.
 
         Args:
-            name (str): name of the variable to be created
-            value (str): value that the variable will hold
+            name (str): name of the variable to be created.
+            value (str): value that the variable will hold.
         """
         event = {
             '_type': 'wf_api_set_var_request',
@@ -657,10 +661,10 @@ class Relay:
 
     async def unset_var(self, name:str):
         """
-        Unsets the value of a variable
+        Unsets the value of a variable.  
 
         Args:
-            name (str): the name of the variable whose value you would like to unset
+            name (str): the name of the variable whose value you would like to erase.
         """
         event = {
             '_type': 'wf_api_unset_var_request',
@@ -678,10 +682,13 @@ class Relay:
 
     async def start_interaction(self, target, name:str, options=None):
         """
-        Start an interaction with the user.
+        Start an interaction with the user.  This is used to trigger an INTERACTION_STARTED event
+        so that the user can interact with the device via the functions that require an 
+        interaction URN.
+
 
         Args:
-            target (_type_): the device in which you would like to start an interaction with
+            target (_type_): the device in which you would like to start an interaction with.
             name (str): a name for your interaction.
             options (_type_, optional): options that you would like to pass in to your interaction. Defaults to None.
         """
@@ -695,7 +702,8 @@ class Relay:
 
     async def end_interaction(self, target, name: str):
         """
-        End an interaction with the user.
+        End an interaction with the user.  This triggers an INTERACTION_ENDED event to signify
+        that the user is done interacting with the device.
 
         Args:
             target (_type_): the device in which you would like to end the interaction.
@@ -754,11 +762,12 @@ class Relay:
 
     async def listen(self, target, request_id, phrases=None, transcribe:bool=True, timeout:int=60, alt_lang:str=None):
         """
-        Listens for the user to speak into the device.
+        Listens for the user to speak into the device.  Utilizes speech to text functionality to interact
+        with the user.
 
         Args:
             target (_type_): the device that will listen to the user.
-            request_id (_type_): the id of the workflow request
+            request_id (_type_): the id of the workflow request.
             phrases (_type_, optional): optional phrases that you would like to limit the user's response to. Defaults to None.
             transcribe (bool, optional): whether you would like to transcribe the user's reponse. Defaults to True.
             timeout (int, optional): timeout for how long the device will wait for user's response. Defaults to 60.
@@ -798,6 +807,16 @@ class Relay:
             return speech_event['audio']
 
     async def play(self, target, filename:str):
+        """
+        Plays a custom audio file that was uploaded by the user.
+
+        Args:
+            target (_type_): the device that will play the file.
+            filename (str): the name of the audio file.
+
+        Returns:
+            _type_: the response after the audio file was played.
+        """
         event = {
             '_type': 'wf_api_play_request',
             '_target': target,
@@ -807,6 +826,17 @@ class Relay:
         return response['id']
 
     async def play_and_wait(self, target, filename:str):
+        """
+        Plays a custom audio file that was uploaded from the user.
+        Waits until the audio file has finished playing before continuing.
+
+        Args:
+            target (_type_): the device that will play the file.
+            filename (str): the name of the audio file.
+
+        Returns:
+            _type_: the response after the audio file was played.
+        """
         _id = uuid.uuid4().hex
         event = {
             '_type': 'wf_api_play_request',
@@ -826,7 +856,19 @@ class Relay:
         return response['id']
 
     async def say(self, target, text:str, lang:str='en-US'):
-        # target must be an interaction URI, not a device URI
+        """
+        Makes the device speak to the user utilizing text to speech capabilities.
+        The target must be an interaction URI, and not a device URI.
+
+        Args:
+            target (_type_): the device that will speak to the user.
+            text (str): the text that you want to be spoken.
+            lang (str, optional): the language of the text that is being spoken. Defaults to 'en-US'.
+
+        Returns:
+            _type_: the response after the device speaks to the user.
+        """
+
         event = {
             '_type': 'wf_api_say_request',
             '_target': target,
@@ -837,7 +879,19 @@ class Relay:
         return response['id']
 
     async def say_and_wait(self, target, text:str, lang:str='en-US'):
-        # target must be an interaction URI, not a device URI
+        """
+        Makes the device speak to the user utilizing text to speech capabilities.
+        The target must be an interaction URI, and not a device URI.  Waits until
+        the text is fully played out on the device before continuing.
+
+        Args:
+            target (_type_): the device that will speak to the user.
+            text (str): the text that you want to be spoken.
+            lang (str, optional): the language of the text that is being spoken. Defaults to 'en-US'.
+
+        Returns:
+            _type_: the response after the device speaks to the user.
+        """
         _id = uuid.uuid4().hex
         event = {
             '_type': 'wf_api_say_request',
@@ -874,20 +928,68 @@ class Relay:
 
     # repeating tone plus tts until button press
     async def alert(self, target, originator:str, text:str, name:str, push_options:dict={}):
+        """
+        Sends out an alert to the specified group of devices and the Relay Dash.
+
+        Args:
+            target (_type_): the group that you would like to send an alert to.
+            originator (str): the device that triggered the alert.
+            text (str): the text that you would like to be spoken to the group as your alert.
+            name (str): a name for your alert.
+            push_options (dict, optional): push options you would like when the alert is sent on the relay app. Defaults to {}.
+        """
         await self._send_notification(target, originator, 'alert', name, text, None, push_options)
     
     async def cancel_alert(self, target, name:str, targets:dict=None):
+        """
+        Cancels an alert on the devices.  This is handy if you would like to cancel the alert
+        on all devices after one device has acknowledged the alert.
+
+        Args:
+            target (_type_): the device that has acknowledged the alert.
+            name (str): the name of the alert.
+            targets (dict, optional): the group that you would like the cancel the alert for. Defaults to None.
+        """
         await self._send_notification(target, None, 'cancel', name, None, targets, None)
 
     # tone plus tts
     async def broadcast(self, target, originator:str, text:str, name:str, push_options:dict={}):
+        """
+        Sends out a broadcasted message to a group of devices.  The message is played out on 
+        all of the devices, as well as sent to the Relay Dash.
+
+        Args:
+            target (_type_): the group that you would like to broadcast your message to.
+            originator (str): the device that triggered the broadcast.
+            text (str): the text that you would like to be broadcasted to your group.
+            name (str): a name for your broadcast.
+            push_options (dict, optional): push options you would like when the broadcast is sent on the relay app. Defaults to {}.
+        """
         await self._send_notification(target, originator, 'broadcast', name, text, push_options)
     
     async def cancel_broadcast(self, target, name:str, targets:dict=None):
+        """
+        Cancels the broadcast that was sent to a group of devices. 
+
+        Args:
+            target (_type_): the device that is cancelling the broadcast.
+            name (str): the name of the broadcast that you would like to cancel.
+            targets (dict, optional): _description_. Defaults to None.
+        """
         await self._send_notification(target, None, 'cancel', name, None, targets, None)
 
     # tone only
     async def notify(self, target, originator:str, text:str, name:str, push_options:dict={}):
+        """
+        Sends out a notification message to a group of devices.  
+
+        Args:
+            target (_type_): the group of devices that you would like to notify.
+            originator (str): the device that triggered the notification.
+            text (str): the text that you would like to be spoken out of the device as your notification.
+            name (str): a name for your notification.
+            push_options (dict, optional): push options you would like when then notification is sent on the relay app. Defaults to {}.
+        """
         await self._send_notification(target, originator, 'notify', name, text, None, push_options)
     
     async def cancel_notification(self, target, name:str, targets:dict=None):
