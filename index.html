@@ -146,7 +146,10 @@ Data descriptors inherited from <a href="logging.html#LoggerAdapter">logging.Log
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#Relay">Relay</a>(workflow:&nbsp;workflow.<a href="#Workflow">Workflow</a>)<br>
 &nbsp;<br>
-<br>&nbsp;</tt></td></tr>
+Includes&nbsp;the&nbsp;main&nbsp;functionalities&nbsp;that&nbsp;are&nbsp;used&nbsp;within&nbsp;the&nbsp;workflows,<br>
+including&nbsp;functions&nbsp;for&nbsp;communicating&nbsp;with&nbsp;the&nbsp;device,&nbsp;sending&nbsp;out<br>
+notifications&nbsp;to&nbsp;groups,&nbsp;handling&nbsp;workflow&nbsp;events,&nbsp;and&nbsp;performing&nbsp;actions<br>
+on&nbsp;the&nbsp;device&nbsp;like&nbsp;manipulating&nbsp;LEDs&nbsp;and&nbsp;creating&nbsp;vibrationss.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
 <dl><dt><a name="Relay-__init__"><strong>__init__</strong></a>(self, workflow: workflow.Workflow)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
@@ -179,7 +182,11 @@ Data descriptors inherited from <a href="logging.html#LoggerAdapter">logging.Log
 
 <dl><dt>async <a name="Relay-enable_location"><strong>enable_location</strong></a>(self, target)</dt></dl>
 
-<dl><dt>async <a name="Relay-end_interaction"><strong>end_interaction</strong></a>(self, target, name: str)</dt></dl>
+<dl><dt>async <a name="Relay-end_interaction"><strong>end_interaction</strong></a>(self, target, name: str)</dt><dd><tt>End&nbsp;an&nbsp;interaction&nbsp;with&nbsp;the&nbsp;user.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(_type_):&nbsp;the&nbsp;device&nbsp;in&nbsp;which&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;end&nbsp;the&nbsp;interaction.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;interaction&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;end.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-flash"><strong>flash</strong></a>(self, target, color: str = '0000ff', count: int = -1)</dt></dl>
 
@@ -211,7 +218,16 @@ Data descriptors inherited from <a href="logging.html#LoggerAdapter">logging.Log
 
 <dl><dt>async <a name="Relay-get_user_profile"><strong>get_user_profile</strong></a>(self, target, refresh: bool = False)</dt></dl>
 
-<dl><dt>async <a name="Relay-get_var"><strong>get_var</strong></a>(self, name: str, default=None)</dt></dl>
+<dl><dt>async <a name="Relay-get_var"><strong>get_var</strong></a>(self, name: str, default=None)</dt><dd><tt>Retrieves&nbsp;a&nbsp;variable&nbsp;that&nbsp;was&nbsp;set&nbsp;either&nbsp;when&nbsp;registering&nbsp;a&nbsp;workflow<br>
+or&nbsp;through&nbsp;the&nbsp;<a href="#Relay-set_var">set_var</a>()&nbsp;function<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;name&nbsp;of&nbsp;the&nbsp;variable&nbsp;to&nbsp;be&nbsp;retrieved.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;default&nbsp;(_type_,&nbsp;optional):&nbsp;default&nbsp;value&nbsp;of&nbsp;the&nbsp;variable&nbsp;if&nbsp;it&nbsp;does<br>
+&nbsp;&nbsp;&nbsp;&nbsp;not&nbsp;exist.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;_type_:&nbsp;the&nbsp;variable&nbsp;that&nbsp;was&nbsp;requested.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-handle"><strong>handle</strong></a>(self, websocket)</dt></dl>
 
@@ -227,13 +243,36 @@ Data descriptors inherited from <a href="logging.html#LoggerAdapter">logging.Log
 
 <dl><dt><a name="Relay-led_info"><strong>led_info</strong></a>(self, rotations: int = None, count: int = None, duration: int = None, repeat_delay: int = None, pattern_repeats=None, colors=None)</dt></dl>
 
-<dl><dt>async <a name="Relay-listen"><strong>listen</strong></a>(self, target, request_id, phrases=None, transcribe: bool = True, timeout: int = 60, alt_lang: str = None)</dt></dl>
+<dl><dt>async <a name="Relay-listen"><strong>listen</strong></a>(self, target, request_id, phrases=None, transcribe: bool = True, timeout: int = 60, alt_lang: str = None)</dt><dd><tt>Listens&nbsp;for&nbsp;the&nbsp;user&nbsp;to&nbsp;speak&nbsp;into&nbsp;the&nbsp;device.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(_type_):&nbsp;the&nbsp;device&nbsp;that&nbsp;will&nbsp;listen&nbsp;to&nbsp;the&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;request_id&nbsp;(_type_):&nbsp;the&nbsp;id&nbsp;of&nbsp;the&nbsp;workflow&nbsp;request<br>
+&nbsp;&nbsp;&nbsp;&nbsp;phrases&nbsp;(_type_,&nbsp;optional):&nbsp;optional&nbsp;phrases&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;limit&nbsp;the&nbsp;user's&nbsp;response&nbsp;to.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;transcribe&nbsp;(bool,&nbsp;optional):&nbsp;whether&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;transcribe&nbsp;the&nbsp;user's&nbsp;reponse.&nbsp;Defaults&nbsp;to&nbsp;True.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;timeout&nbsp;(int,&nbsp;optional):&nbsp;timeout&nbsp;for&nbsp;how&nbsp;long&nbsp;the&nbsp;device&nbsp;will&nbsp;wait&nbsp;for&nbsp;user's&nbsp;response.&nbsp;Defaults&nbsp;to&nbsp;60.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;alt_lang&nbsp;(str,&nbsp;optional):&nbsp;if&nbsp;you&nbsp;would&nbsp;like&nbsp;the&nbsp;device&nbsp;to&nbsp;listen&nbsp;for&nbsp;a&nbsp;response&nbsp;in&nbsp;another&nbsp;language.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;_type_:&nbsp;text&nbsp;representation&nbsp;of&nbsp;what&nbsp;the&nbsp;user&nbsp;had&nbsp;spoken&nbsp;into&nbsp;the&nbsp;device.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-log_message"><strong>log_message</strong></a>(self, content: str, category: str)</dt></dl>
 
 <dl><dt>async <a name="Relay-log_user_message"><strong>log_user_message</strong></a>(self, content: str, category: str, device_uri: str = None)</dt></dl>
 
-<dl><dt><a name="Relay-make_target_uris"><strong>make_target_uris</strong></a>(self, trigger: dict)</dt></dl>
+<dl><dt><a name="Relay-make_target_uris"><strong>make_target_uris</strong></a>(self, trigger: dict)</dt><dd><tt>Creates&nbsp;a&nbsp;target&nbsp;<a href="builtins.html#object">object</a>&nbsp;after&nbsp;it&nbsp;receives&nbsp;a&nbsp;trigger&nbsp;in&nbsp;on_start_handler<br>
+&nbsp;<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;trigger&nbsp;(dict):&nbsp;trigger&nbsp;that&nbsp;started&nbsp;the&nbsp;workflow.<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#WorkflowException">WorkflowException</a>:&nbsp;thrown&nbsp;if&nbsp;the&nbsp;trigger&nbsp;param&nbsp;is&nbsp;not&nbsp;a&nbsp;dictionary.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#WorkflowException">WorkflowException</a>:&nbsp;thrown&nbsp;if&nbsp;the&nbsp;trigger&nbsp;param&nbsp;is&nbsp;not&nbsp;a&nbsp;trigger&nbsp;dictionary.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#WorkflowException">WorkflowException</a>:&nbsp;thrown&nbsp;if&nbsp;there&nbsp;is&nbsp;no&nbsp;source_uri&nbsp;definition&nbsp;in&nbsp;the&nbsp;trigger.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;_type_:&nbsp;a&nbsp;target&nbsp;<a href="builtins.html#object">object</a>&nbsp;created&nbsp;from&nbsp;the&nbsp;trigger.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-missing_type"><strong>missing_type</strong></a>(self)</dt></dl>
 
@@ -285,11 +324,20 @@ Data descriptors inherited from <a href="logging.html#LoggerAdapter">logging.Log
 
 <dl><dt>async <a name="Relay-set_user_profile"><strong>set_user_profile</strong></a>(self, target: str, username: str, force: bool = False)</dt><dd><tt>#&nbsp;target&nbsp;can&nbsp;have&nbsp;only&nbsp;one&nbsp;item</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-set_var"><strong>set_var</strong></a>(self, name: str, value: str)</dt></dl>
+<dl><dt>async <a name="Relay-set_var"><strong>set_var</strong></a>(self, name: str, value: str)</dt><dd><tt>Sets&nbsp;a&nbsp;variable&nbsp;with&nbsp;the&nbsp;name&nbsp;and&nbsp;value&nbsp;passed&nbsp;in&nbsp;as&nbsp;parameters<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;name&nbsp;of&nbsp;the&nbsp;variable&nbsp;to&nbsp;be&nbsp;created<br>
+&nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;(str):&nbsp;value&nbsp;that&nbsp;the&nbsp;variable&nbsp;will&nbsp;hold</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-sms"><strong>sms</strong></a>(self, stype: str, text: str, uri: str)</dt></dl>
 
-<dl><dt>async <a name="Relay-start_interaction"><strong>start_interaction</strong></a>(self, target, name: str, options=None)</dt></dl>
+<dl><dt>async <a name="Relay-start_interaction"><strong>start_interaction</strong></a>(self, target, name: str, options=None)</dt><dd><tt>Start&nbsp;an&nbsp;interaction&nbsp;with&nbsp;the&nbsp;user.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(_type_):&nbsp;the&nbsp;device&nbsp;in&nbsp;which&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;start&nbsp;an&nbsp;interaction&nbsp;with<br>
+&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;a&nbsp;name&nbsp;for&nbsp;your&nbsp;interaction.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;options&nbsp;(_type_,&nbsp;optional):&nbsp;options&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;pass&nbsp;in&nbsp;to&nbsp;your&nbsp;interaction.&nbsp;Defaults&nbsp;to&nbsp;None.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-start_timer"><strong>start_timer</strong></a>(self, timeout: int)</dt><dd><tt>#&nbsp;unnamed&nbsp;timer</tt></dd></dl>
 
@@ -303,13 +351,22 @@ Data descriptors inherited from <a href="logging.html#LoggerAdapter">logging.Log
 
 <dl><dt>async <a name="Relay-switch_led_on"><strong>switch_led_on</strong></a>(self, target, index: int, color: str = '0000ff')</dt></dl>
 
-<dl><dt><a name="Relay-targets_from_source_uri"><strong>targets_from_source_uri</strong></a>(self, source_uri: str)</dt></dl>
+<dl><dt><a name="Relay-targets_from_source_uri"><strong>targets_from_source_uri</strong></a>(self, source_uri: str)</dt><dd><tt>Creates&nbsp;a&nbsp;target&nbsp;from&nbsp;a&nbsp;source&nbsp;uri<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;source_uri&nbsp;(str):&nbsp;source&nbsp;uri&nbsp;that&nbsp;will&nbsp;be&nbsp;used&nbsp;to&nbsp;create&nbsp;a&nbsp;target<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;_type_:&nbsp;the&nbsp;targets&nbsp;that&nbsp;were&nbsp;created&nbsp;from&nbsp;the&nbsp;uri</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-terminate"><strong>terminate</strong></a>(self)</dt></dl>
 
 <dl><dt>async <a name="Relay-translate"><strong>translate</strong></a>(self, text: str, from_lang: str, to_lang: str)</dt></dl>
 
-<dl><dt>async <a name="Relay-unset_var"><strong>unset_var</strong></a>(self, name: str)</dt></dl>
+<dl><dt>async <a name="Relay-unset_var"><strong>unset_var</strong></a>(self, name: str)</dt><dd><tt>Unsets&nbsp;the&nbsp;value&nbsp;of&nbsp;a&nbsp;variable<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;variable&nbsp;whose&nbsp;value&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;unset</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-vibrate"><strong>vibrate</strong></a>(self, target, pattern: list = None)</dt></dl>
 
