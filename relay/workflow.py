@@ -358,6 +358,12 @@ class CustomAdapter(logging.LoggerAdapter):
 
 
 class Relay:
+    """
+    Includes the main functionalities that are used within the workflows,
+    including functions for communicating with the device, sending out
+    notifications to groups, handling workflow events, and performing actions
+    on the device like manipulating LEDs and creating vibrationss.
+    """
     def __init__(self, workflow:Workflow):
         self.workflow = workflow
         self.websocket = None
@@ -392,7 +398,21 @@ class Relay:
         return dictMessage
 
     def make_target_uris(self, trigger:dict):
-        # after receiving a trigger in on_start handler, create a target object
+        """
+        Creates a target object after it receives a trigger in on_start_handler
+
+
+        Args:
+            trigger (dict): trigger that started the workflow.
+
+        Raises:
+            WorkflowException: thrown if the trigger param is not a dictionary.
+            WorkflowException: thrown if the trigger param is not a trigger dictionary.
+            WorkflowException: thrown if there is no source_uri definition in the trigger.
+
+        Returns:
+            _type_: a target object created from the trigger.
+        """
         if not isinstance(trigger, dict):
             raise WorkflowException('trigger parameter is not a dictionary')
         if not 'args' in trigger:
@@ -405,6 +425,15 @@ class Relay:
         return target
 
     def targets_from_source_uri(self, source_uri:str):
+        """
+        Creates a target from a source uri
+
+        Args:
+            source_uri (str): source uri that will be used to create a target
+
+        Returns:
+            _type_: the targets that were created from the uri
+        """
         targets = {
             'uris': [ source_uri ]
         }
@@ -590,6 +619,18 @@ class Relay:
 
 
     async def get_var(self, name:str, default=None):
+        """
+        Retrieves a variable that was set either when registering a workflow
+        or through the set_var() function
+
+        Args:
+            name (str): name of the variable to be retrieved.
+            default (_type_, optional): default value of the variable if it does
+            not exist. Defaults to None.
+
+        Returns:
+            _type_: the variable that was requested.
+        """
         ### TODO: look in self.workflow.state to see all of what is available
         event = {
             '_type': 'wf_api_get_var_request',
@@ -599,6 +640,13 @@ class Relay:
         return v.get('value', default)
 
     async def set_var(self, name:str, value:str):
+        """
+        Sets a variable with the name and value passed in as parameters
+
+        Args:
+            name (str): name of the variable to be created
+            value (str): value that the variable will hold
+        """
         event = {
             '_type': 'wf_api_set_var_request',
             'name': name,
@@ -608,6 +656,12 @@ class Relay:
         return response['value']
 
     async def unset_var(self, name:str):
+        """
+        Unsets the value of a variable
+
+        Args:
+            name (str): the name of the variable whose value you would like to unset
+        """
         event = {
             '_type': 'wf_api_unset_var_request',
             'name': name
@@ -623,6 +677,14 @@ class Relay:
         return options
 
     async def start_interaction(self, target, name:str, options=None):
+        """
+        Start an interaction with the user.
+
+        Args:
+            target (_type_): the device in which you would like to start an interaction with
+            name (str): a name for your interaction.
+            options (_type_, optional): options that you would like to pass in to your interaction. Defaults to None.
+        """
         event = {
             '_type': 'wf_api_start_interaction_request',
             '_target': target,
@@ -632,6 +694,13 @@ class Relay:
         await self.sendReceive(event)
 
     async def end_interaction(self, target, name: str):
+        """
+        End an interaction with the user.
+
+        Args:
+            target (_type_): the device in which you would like to end the interaction.
+            name (str): the name of the interaction that you would like to end.
+        """
         event = {
             '_type': 'wf_api_end_interaction_request',
             '_target': target,
@@ -684,6 +753,20 @@ class Relay:
         return event
 
     async def listen(self, target, request_id, phrases=None, transcribe:bool=True, timeout:int=60, alt_lang:str=None):
+        """
+        Listens for the user to speak into the device.
+
+        Args:
+            target (_type_): the device that will listen to the user.
+            request_id (_type_): the id of the workflow request
+            phrases (_type_, optional): optional phrases that you would like to limit the user's response to. Defaults to None.
+            transcribe (bool, optional): whether you would like to transcribe the user's reponse. Defaults to True.
+            timeout (int, optional): timeout for how long the device will wait for user's response. Defaults to 60.
+            alt_lang (str, optional): if you would like the device to listen for a response in another language. Defaults to None.
+
+        Returns:
+            _type_: text representation of what the user had spoken into the device.
+        """
         if phrases is None:
             phrases = [ ]
         if isinstance(phrases, str):
