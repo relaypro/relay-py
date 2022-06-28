@@ -75,8 +75,6 @@ class Server:
             ServerException: thrown when the ssl_cert_file cannot be read
             ServerException: thrown when the ssl_key_file cannot be read
         """
-        # ws_logger = logging.getLogger('websockets.server')
-        # ws_logger.setLevel(logging.DEBUG)
 
         uname_result = platform.uname()
         custom_headers = { 'User-Agent': f'{version} (Python {platform.python_version()}; {uname_result.system} {uname_result.machine} {uname_result.release})' }
