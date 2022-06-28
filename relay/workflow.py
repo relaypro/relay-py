@@ -29,7 +29,20 @@ auth_hostname = "auth.relaygo.info"
 # auth_hostname = "auth.relaygo.com"
 
 class Server:
+    """
+    Class used for initializing the host and port in which the workflow will run,
+    registering the workflow on a path, handling an ssl protocol, and then listening
+    for a workflow trigger.
+    """
     def __init__(self, host:str, port:int, **kwargs):
+        """
+        Function for initializing the host and port, and
+        checking ssl
+
+        Args:
+            host (str): host for the workflow
+            port (int): the port to listen for a trigger
+        """
         self.host = host
         self.port = port
         self.workflows = {}   # {path: workflow}
@@ -40,11 +53,28 @@ class Server:
                 self.ssl_cert_filename = kwargs[key]
 
     def register(self, workflow, path:str):
+        """
+        Registers a workflow on the path
+
+        Args:
+            workflow (_type_): the workflow to be registered
+            path (str): the path on which the workflow will be registered
+
+        Raises:
+            ServerException: thrown when a workflow is already registered on that path
+        """
         if path in self.workflows:
             raise ServerException(f'a workflow is already registered at path {path}')
         self.workflows[path] = workflow
 
     def start(self):
+        """
+        Starts the ssl protocol and then listens on the server for a workflow trigger
+
+        Raises:
+            ServerException: thrown when the ssl_cert_file cannot be read
+            ServerException: thrown when the ssl_key_file cannot be read
+        """
         # ws_logger = logging.getLogger('websockets.server')
         # ws_logger.setLevel(logging.DEBUG)
 
@@ -72,6 +102,13 @@ class Server:
             logger.debug('server terminated')
 
     async def handler(self, websocket, path:str):
+        """
+        Handles a request on a path
+
+        Args:
+            websocket (_type_): websocket protocol
+            path (str): path that contained the request
+        """
         workflow = self.workflows.get(path, None)
         if workflow:
             logger.debug(f'handling request on path {path}')
