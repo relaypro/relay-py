@@ -208,7 +208,10 @@ Args:<br>
 
 <dl><dt><a name="Relay-cleanIntArrays"><strong>cleanIntArrays</strong></a>(self, dictMessage)</dt></dl>
 
-<dl><dt>async <a name="Relay-clear_timer"><strong>clear_timer</strong></a>(self, name: str)</dt><dd><tt>#&nbsp;named&nbsp;timer</tt></dd></dl>
+<dl><dt>async <a name="Relay-clear_timer"><strong>clear_timer</strong></a>(self, name: str)</dt><dd><tt>Clears&nbsp;the&nbsp;specified&nbsp;timer.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;timer&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;clear.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-create_incident"><strong>create_incident</strong></a>(self, originator, itype: str)</dt><dd><tt>Creates&nbsp;an&nbsp;incident&nbsp;that&nbsp;will&nbsp;alert&nbsp;the&nbsp;<a href="#Relay">Relay</a>&nbsp;Dash.<br>
 &nbsp;<br>
@@ -414,12 +417,14 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;content&nbsp;(str):&nbsp;a&nbsp;description&nbsp;for&nbsp;your&nbsp;analytical&nbsp;event.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;category&nbsp;(str):&nbsp;a&nbsp;category&nbsp;for&nbsp;you&nbsp;analytical&nbsp;event.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-log_user_message"><strong>log_user_message</strong></a>(self, content: str, category: str, device_uri: str = None)</dt><dd><tt>_summary_<br>
+<dl><dt>async <a name="Relay-log_user_message"><strong>log_user_message</strong></a>(self, content: str, category: str, device_uri: str = None)</dt><dd><tt>Log&nbsp;an&nbsp;analytic&nbsp;event&nbsp;from&nbsp;a&nbsp;workflow&nbsp;with&nbsp;the&nbsp;specified&nbsp;content&nbsp;and<br>
+under&nbsp;a&nbsp;specified&nbsp;category.&nbsp;&nbsp;This&nbsp;includes&nbsp;the&nbsp;device&nbsp;who&nbsp;triggered&nbsp;the&nbsp;workflow<br>
+that&nbsp;called&nbsp;this&nbsp;function.<br>
 &nbsp;<br>
 Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;content&nbsp;(str):&nbsp;_description_<br>
-&nbsp;&nbsp;&nbsp;&nbsp;category&nbsp;(str):&nbsp;_description_<br>
-&nbsp;&nbsp;&nbsp;&nbsp;device_uri&nbsp;(str,&nbsp;optional):&nbsp;_description_.&nbsp;Defaults&nbsp;to&nbsp;None.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;content&nbsp;(str):&nbsp;a&nbsp;description&nbsp;for&nbsp;your&nbsp;analytical&nbsp;event.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;category&nbsp;(str):&nbsp;a&nbsp;category&nbsp;for&nbsp;your&nbsp;analytical&nbsp;event.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;device_uri&nbsp;(str,&nbsp;optional):&nbsp;the&nbsp;URN&nbsp;of&nbsp;a&nbsp;the&nbsp;device&nbsp;that&nbsp;triggered&nbsp;this&nbsp;function.&nbsp;Defaults&nbsp;to&nbsp;None.</tt></dd></dl>
 
 <dl><dt><a name="Relay-make_target_uris"><strong>make_target_uris</strong></a>(self, trigger: dict)</dt><dd><tt>Creates&nbsp;a&nbsp;target&nbsp;<a href="builtins.html#object">object</a>&nbsp;after&nbsp;it&nbsp;receives&nbsp;a&nbsp;trigger&nbsp;from&nbsp;on_start_handler.<br>
 This&nbsp;is&nbsp;used&nbsp;so&nbsp;that&nbsp;the&nbsp;workflow&nbsp;knows&nbsp;which&nbsp;device&nbsp;it&nbsp;should&nbsp;perform<br>
@@ -576,9 +581,14 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(_type_):&nbsp;the&nbsp;device&nbsp;URN.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;a&nbsp;new&nbsp;name&nbsp;for&nbsp;your&nbsp;device.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-set_timer"><strong>set_timer</strong></a>(self, name: str, timeout: int, timeout_type: str = 'secs', timer_type: str = 'timeout')</dt><dd><tt>#&nbsp;named&nbsp;timer<br>
-#&nbsp;type&nbsp;can&nbsp;be&nbsp;'timeout'&nbsp;or&nbsp;'interval'<br>
-#&nbsp;timeout_type&nbsp;can&nbsp;be&nbsp;'ms',&nbsp;'secs',&nbsp;'mins',&nbsp;'hrs'</tt></dd></dl>
+<dl><dt>async <a name="Relay-set_timer"><strong>set_timer</strong></a>(self, name: str, timeout: int, timeout_type: str = 'secs', timer_type: str = 'timeout')</dt><dd><tt>Serves&nbsp;as&nbsp;a&nbsp;named&nbsp;timer&nbsp;that&nbsp;can&nbsp;be&nbsp;either&nbsp;interval&nbsp;or&nbsp;timeout.&nbsp;&nbsp;Allows&nbsp;you&nbsp;to&nbsp;specify<br>
+the&nbsp;unit&nbsp;of&nbsp;time.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;a&nbsp;name&nbsp;for&nbsp;your&nbsp;timer.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;timeout&nbsp;(int):&nbsp;an&nbsp;integer&nbsp;representing&nbsp;when&nbsp;you&nbsp;would&nbsp;like&nbsp;your&nbsp;timer&nbsp;to&nbsp;stop.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;timeout_type&nbsp;(str,&nbsp;optional):&nbsp;can&nbsp;be&nbsp;'ms',&nbsp;'secs',&nbsp;'mins'&nbsp;or&nbsp;'hrs'.&nbsp;Defaults&nbsp;to&nbsp;'secs'.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;timer_type&nbsp;(str,&nbsp;optional):&nbsp;can&nbsp;be&nbsp;'timeout'&nbsp;or&nbsp;'interval'.&nbsp;Defaults&nbsp;to&nbsp;'timeout'.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-set_user_profile"><strong>set_user_profile</strong></a>(self, target: str, username: str, force: bool = False)</dt><dd><tt>Sets&nbsp;the&nbsp;profile&nbsp;of&nbsp;a&nbsp;user&nbsp;by&nbsp;updating&nbsp;the&nbsp;username.<br>
 &nbsp;<br>
