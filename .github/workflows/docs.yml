@@ -2,7 +2,7 @@ name: docs
 
 on:
   push:
-    branches: [ main, adding-manual-doc ]
+    branches: [ main, docs, adding-manual-doc ]
 
   workflow_dispatch:
 
