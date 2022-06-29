@@ -1703,12 +1703,14 @@ class Relay:
         await self.sendReceive(event)
 
     async def log_user_message(self, content:str, category:str, device_uri:str=None):
-        """_summary_
+        """Log an analytic event from a workflow with the specified content and
+        under a specified category.  This includes the device who triggered the workflow
+        that called this function.
 
         Args:
-            content (str): _description_
-            category (str): _description_
-            device_uri (str, optional): _description_. Defaults to None.
+            content (str): a description for your analytical event.
+            category (str): a category for your analytical event.
+            device_uri (str, optional): the URN of a the device that triggered this function. Defaults to None.
         """
         event = {
             '_type': 'wf_api_log_analytics_event_request',
@@ -1723,6 +1725,15 @@ class Relay:
     # type can be 'timeout' or 'interval'
     # timeout_type can be 'ms', 'secs', 'mins', 'hrs'
     async def set_timer(self, name:str, timeout:int, timeout_type:str='secs', timer_type:str='timeout'):
+        """ Serves as a named timer that can be either interval or timeout.  Allows you to specify
+        the unit of time.
+
+        Args:
+            name (str): a name for your timer.
+            timeout (int): an integer representing when you would like your timer to stop.
+            timeout_type (str, optional): can be 'ms', 'secs', 'mins' or 'hrs'. Defaults to 'secs'.
+            timer_type (str, optional): can be 'timeout' or 'interval'. Defaults to 'timeout'.
+        """
         event = {
             '_type': 'wf_api_set_timer_request',
             'type': timer_type,
@@ -1734,6 +1745,11 @@ class Relay:
 
     # named timer
     async def clear_timer(self, name:str):
+        """Clears the specified timer.
+
+        Args:
+            name (str): the name of the timer that you would like to clear.
+        """
         event = {
             '_type': 'wf_api_clear_timer_request',
             'name': name
