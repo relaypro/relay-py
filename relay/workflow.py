@@ -1703,6 +1703,13 @@ class Relay:
         await self.sendReceive(event)
 
     async def log_user_message(self, content:str, category:str, device_uri:str=None):
+        """_summary_
+
+        Args:
+            content (str): _description_
+            category (str): _description_
+            device_uri (str, optional): _description_. Defaults to None.
+        """
         event = {
             '_type': 'wf_api_log_analytics_event_request',
             'content': content,
