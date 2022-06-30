@@ -118,16 +118,33 @@ class ServerException(Exception):
         self.message = message
         super().__init__(self.message)
 
-# Helper methods for creating and parsing out a URN
+# Helper constants and methods for creating and parsing out a URN.
 
+# The scheme used for creating a URN.
 SCHEME = 'urn'
+
+# The root used for creating a URN.
 ROOT = 'relay-resource'
+
+# Used to specify that the URN is for a group.
 GROUP = 'group'
+
+# Used to specify that the URN is for an ID.
 ID = 'id'
+
+# Used to specify that the URN is for a name.
 NAME = 'name'
+
+# Used to specify that the URN is for a device.
 DEVICE = 'device'
+
+# Pattern used when creating an interaction URN.
 DEVICE_PATTERN = '?device='
+
+# Beginning of an interaction URN that uses the name of a device.
 INTERACTION_URI_NAME = 'urn:relay-resource:name:interaction'
+
+# Beginning of an interaction URN that uses the ID of a device.
 INTERACTION_URI_ID = 'urn:relay-resource:id:interaction'
 
 def construct(resource_type:str, id_type:str, id_or_name:str):
