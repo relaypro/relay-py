@@ -856,7 +856,7 @@ class Relay:
             raise WorkflowException(event['error'])
         return event
 
-    async def listen(self, request_id, target, phrases=None, transcribe:bool=True, alt_lang:str=None, timeout:int=60,):
+    async def listen(self, target, request_id, phrases=None, transcribe:bool=True, alt_lang:str=None, timeout:int=60,):
         """Listens for the user to speak into the device.  Utilizes speech to text functionality to interact
         with the user.
 
@@ -959,10 +959,9 @@ class Relay:
         Returns:
             the response ID after the device speaks to the user.
         """
-
         event = {
             '_type': 'wf_api_say_request',
-            '_target': target,
+            '_target': self.targets_from_source_uri(target),
             'text': text,
             'lang': lang
         }
@@ -1671,7 +1670,7 @@ class Relay:
         response = await self.sendReceive(event)
         return response['member_uris']
 
-    async def is_group_member(self, group_uri:str):
+    async def is_group_member(self, group_name_uri:str, potential_member_name_uri:str):
         """Checks whether a device is a member of a particular group.
 
         Args:
@@ -1680,6 +1679,9 @@ class Relay:
         Returns:
             _type_: 'true' if the device is a member of the specified group, 'false' otherwise.
         """
+        group_name = parse_group_name(group_name_uri)
+        device_name = parse_device_name(potential_member_name_uri)
+        group_uri = group_member(group_name, device_name)
         event = {
             '_type': 'wf_api_group_query_request',
             'query': 'is_member',
@@ -1706,7 +1708,7 @@ class Relay:
         await self.sendReceive(event)
 
     # target can have only one item
-    async def get_inbox_count(self, target):
+    async def get_unread_inbox_size(self, target):
         """Retrieves the number of messages in a device's inbox.
 
         Args:
@@ -1722,7 +1724,7 @@ class Relay:
         response = await self.sendReceive(event)
         return response['count']
 
-    async def play_inbox_messages(self, target):
+    async def play_unread_inbox_messages(self, target):
         """Play a targeted device's inbox messages.
 
         Args:
@@ -1734,7 +1736,7 @@ class Relay:
         }
         await self.sendReceive(event)
 
-    async def log_message(self, content:str, category:str):
+    async def log_message(self, message:str, category:str='default'):
         """Log an analytics event from a workflow with the specified content and
         under a specified category. This does not log the device who
         triggered the workflow that called this function.
@@ -1745,13 +1747,13 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_log_analytics_event_request',
-            'content': content,
+            'content': message,
             'content_type': 'text/plain',
             'category': category
         }
         await self.sendReceive(event)
 
-    async def log_user_message(self, content:str, category:str, device_uri:str=None):
+    async def log_user_message(self, message:str, target, category:str):
         """Log an analytic event from a workflow with the specified content and
         under a specified category.  This includes the device who triggered the workflow
         that called this function.
@@ -1763,10 +1765,10 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_log_analytics_event_request',
-            'content': content,
+            'content': message,
             'content_type': 'text/plain',
             'category': category,
-            'device_uri': device_uri
+            'device_uri': target
         }
         await self.sendReceive(event)
 
