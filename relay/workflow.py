@@ -29,19 +29,16 @@ auth_hostname = "auth.relaygo.info"
 # auth_hostname = "auth.relaygo.com"
 
 class Server:
-    """
-    Class used for initializing the host and port in which the workflow will run,
-    registering the workflow on a path, handling an ssl protocol, and then listening
+    """Initializes the host and port in which the workflow will run,
+    registers the workflow on a path, handles ssl protocol, and listens
     for a workflow trigger.
     """
     def __init__(self, host:str, port:int, **kwargs):
-        """
-        Function for initializing the host and port, and
-        checking ssl
+        """Initializes the host and port, checks ssl.
 
         Args:
-            host (str): host for the workflow
-            port (int): the port to listen for a trigger
+            host (str): host for the workflow.
+            port (int): the port to listen for a trigger.
         """
         self.host = host
         self.port = port
@@ -53,15 +50,14 @@ class Server:
                 self.ssl_cert_filename = kwargs[key]
 
     def register(self, workflow, path:str):
-        """
-        Registers a workflow on the path
+        """Registers a workflow on the path.
 
         Args:
-            workflow (_type_): the workflow to be registered
-            path (str): the path on which the workflow will be registered
+            workflow: the workflow to be registered.
+            path (str): the path on which the workflow will be registered.
 
         Raises:
-            ServerException: thrown when a workflow is already registered on that path
+            ServerException: thrown when a workflow is already registered on that path.
         """
         if path in self.workflows:
             raise ServerException(f'a workflow is already registered at path {path}')
@@ -69,11 +65,11 @@ class Server:
 
     def start(self):
         """
-        Starts the ssl protocol and then listens on the server for a workflow trigger
+        Starts ssl protocol and then listens on the server for a workflow trigger.
 
         Raises:
-            ServerException: thrown when the ssl_cert_file cannot be read
-            ServerException: thrown when the ssl_key_file cannot be read
+            ServerException: thrown when the ssl_cert_file cannot be read.
+            ServerException: thrown when the ssl_key_file cannot be read.
         """
 
         uname_result = platform.uname()
@@ -100,12 +96,11 @@ class Server:
             logger.debug('server terminated')
 
     async def handler(self, websocket, path:str):
-        """
-        Handles a request on a path
+        """Handles a request on a path.
 
         Args:
-            websocket (_type_): websocket protocol
-            path (str): path that contained the request
+            websocket: websocket protocol.
+            path (str): path that contained the request.
         """
         workflow = self.workflows.get(path, None)
         if workflow:
@@ -123,7 +118,7 @@ class ServerException(Exception):
         self.message = message
         super().__init__(self.message)
 
-# Helper methods for creating and parsing out a URI
+# Helper methods for creating and parsing out a URN
 
 SCHEME = 'urn'
 ROOT = 'relay-resource'
@@ -135,37 +130,114 @@ DEVICE_PATTERN = '?device='
 INTERACTION_URI_NAME = 'urn:relay-resource:name:interaction'
 INTERACTION_URI_ID = 'urn:relay-resource:id:interaction'
 
-def construct(resource_type:str, id_type:str, id_or_name:str): 
+def construct(resource_type:str, id_type:str, id_or_name:str):
+    """Constructs a URN based off of the resource type, id type, and
+    id/name.  Used by methods that need to create a URN when given a
+    name or ID of a device or group.
+
+    Args:
+        resource_type (str): indicates whether the URN is for a device, group, or interaction.
+        id_type (str): indicates whether the URN has an ID type of 'name' or 'ID'.
+        id_or_name (str): the id or name of the device or group.
+
+    Returns:
+        str: the newly constructed URN.
+    """
     return f'{SCHEME}:{ROOT}:{id_type}:{resource_type}:{id_or_name}'
 
 def group_id(id:str):
+    """Creates a URN from a group ID.
+
+    Args:
+        id (str): the ID of the group.
+
+    Returns:
+        str: the newly constructed URN.
+    """
     return construct(GROUP, ID, urllib.parse.quote(id))
 
 def group_name(name:str):
+    """Creates a URN from a group name.
+
+    Args:
+        name (str): the name of the group.
+
+    Returns:
+        str: the newly constructed URN.
+    """
     return construct(GROUP, NAME, urllib.parse.quote(name))
 
 def device_name(name:str):
+    """Creates a URN from a device name.
+
+    Args:
+        name (str): the name of the device.
+
+    Returns:
+        str: the newly constructed URN.
+    """
     return construct(DEVICE, NAME, urllib.parse.quote(name))
 
 def group_member(group:str, device:str):
+    """Creates a URN for a group member.
+
+    Args:
+        group (str): the name of the group that the device belongs to.
+        device (str): the device ID or name.
+
+    Returns:
+        str: the newly constructed URN.
+    """
     return f'{SCHEME}:{ROOT}:{NAME}:{GROUP}:{urllib.parse.quote(group)}{DEVICE_PATTERN}' + urllib.parse.quote(f'{SCHEME}:{ROOT}:{NAME}:{DEVICE}:{device}')
 
 def device_id(id:str):
+    """Creates a URN from a device ID.
+
+    Args:
+        id (str): the ID of the device.
+
+    Returns:
+        str: the newly constructed URN.
+    """
     return construct(DEVICE, ID, urllib.parse.quote(id))
 
 def parse_group_name(uri:str):
+    """Parses out a group name from a group URN.
+
+    Args:
+        uri (str): the URN that you would like to extract the group name from.
+
+    Returns:
+        str: the group name.
+    """
     scheme, root, id_type, resource_type, name = urllib.parse.unquote(uri).split(':')
     if id_type == NAME and resource_type == GROUP:
         return name
     logger.error('invalid group urn')
     
 def parse_group_id(uri:str):
+    """Parses out a group ID from a group URN. 
+
+    Args:
+        uri (str): the URN that you would like to extract the group ID from.
+
+    Returns:
+        str: the group ID.
+    """
     scheme, root, id_type, resource_type, id = urllib.parse.unquote(uri).split(':')
     if id_type == ID and resource_type == GROUP:
         return id
     logger.error('invalid group urn')
 
 def parse_device_name(uri:str):
+    """Parses out a device name from a device or interaction URN.
+
+    Args:
+        uri (str): the device or interaction URN that you would like to extract the device name from.
+
+    Returns:
+        str: the device name.
+    """
     uri = urllib.parse.unquote(uri)
     if not is_interaction_uri(uri):
         scheme, root, id_type, resource_type, name = uri.split(':')
@@ -178,6 +250,14 @@ def parse_device_name(uri:str):
     logger.error('invalid device urn')
 
 def parse_device_id(uri:str):
+    """Parses out a device ID from a device or interaction URN.
+
+    Args:
+        uri (str): the device or interaction URN that you would like to extract the device ID from.
+
+    Returns:
+        str: the device ID.
+    """
     uri = urllib.parse.unquote(uri)
     if not is_interaction_uri(uri):
         scheme, root, id_type, resource_type, id = uri.split(':')
@@ -190,6 +270,14 @@ def parse_device_id(uri:str):
     logger.error('invalid device urn')
 
 def parse_interaction(uri:str):
+    """Parses out the name of an interaction from an interaction URN.
+
+    Args:
+        uri (str): the interaction URN that you would like to parse the interaction from.
+
+    Returns:
+        str: the name of an interaction.
+    """
     uri = urllib.parse.unquote(uri)
     if is_interaction_uri(uri):
         scheme, root, id_type, resource_type, i_name, i_root, i_id_type, i_resource_type, name = uri.split(':')
@@ -198,16 +286,33 @@ def parse_interaction(uri:str):
     logger.error('not an interaction urn')
 
 def is_interaction_uri(uri:str):
+    """Checks if the URN is for an interaction.
+
+    Args:
+        uri (str): the device URN.
+
+    Returns:
+        bool: true if the URN is an interaction URN, false otherwise.
+    """
     if INTERACTION_URI_NAME in uri or INTERACTION_URI_ID in uri:
         return True
     return False
 
 def is_relay_uri(uri:str):
+    """Checks if the URN is a Relay URN.
+
+    Args:
+        uri (str): the device, group, or interaction URN.
+
+    Returns:
+        bool: true if the URN is a Relay URN, false otherwise.
+    """
     if uri.startswith(f'{SCHEME}:{ROOT}'):
         return True
     return False
 
 class Workflow:
+    
     def __init__(self, name:str):
         self.name = name
         self.type_handlers = {}  # {(type, args): func}
@@ -358,9 +463,8 @@ class CustomAdapter(logging.LoggerAdapter):
 
 
 class Relay:
-    """
-    Includes the main functionalities that are used within workflows,
-    such as functions for communication with the device, sending out
+    """Includes the main functionalities that are used within workflows,
+    such as functions for communicating with the device, sending out
     notifications to groups, handling workflow events, and performing physical actions
     on the device such as manipulating LEDs and creating vibrations.
     """
@@ -398,8 +502,7 @@ class Relay:
         return dictMessage
 
     def make_target_uris(self, trigger:dict):
-        """
-        Creates a target object after it receives a trigger from on_start_handler.
+        """Creates a target object after it receives a trigger from on_start_handler.
         This is used so that the workflow knows which device it should perform
         actions on.
 
@@ -412,7 +515,7 @@ class Relay:
             WorkflowException: thrown if there is no source_uri definition in the trigger.
 
         Returns:
-            _type_: a target object created from the trigger.
+            a target object created from the trigger.
         """
         if not isinstance(trigger, dict):
             raise WorkflowException('trigger parameter is not a dictionary')
@@ -426,8 +529,7 @@ class Relay:
         return target
 
     def targets_from_source_uri(self, source_uri:str):
-        """
-        Creates a target from a source uri.  Similarly to the make_target_uris function,
+        """Creates a target from a source uri.  Similarly to the make_target_uris function,
         this function creates a target object that can then be used so that the workflow
         knows which device it should perform actions on.
 
@@ -435,7 +537,7 @@ class Relay:
             source_uri (str): source uri that will be used to create a target.
 
         Returns:
-            _type_: the targets that were created from the uri.
+            the targets that were created from the uri.
         """
         targets = {
             'uris': [ source_uri ]
@@ -622,17 +724,16 @@ class Relay:
 
 
     async def get_var(self, name:str, default=None):
-        """
-        Retrieves a variable that was set either when registering a workflow
+        """Retrieves a variable that was set either when registering a workflow
         or through the set_var() function.  The variable can be retrieved anywhere
         within the workflow, but is erased after the workflow terminates.
 
         Args:
             name (str): name of the variable to be retrieved.
-            default (_type_, optional): default value of the variable if it does not exist. Defaults to None.
+            default (optional): default value of the variable if it does not exist. Defaults to None.
 
         Returns:
-            _type_: the variable that was requested.
+            the variable that was requested.
         """
         ### TODO: look in self.workflow.state to see all of what is available
         event = {
@@ -643,8 +744,7 @@ class Relay:
         return v.get('value', default)
 
     async def set_var(self, name:str, value:str):
-        """
-        Sets a variable with the name and value passed in as parameters.  The variable
+        """Sets a variable with the name and value passed in as parameters.  The variable
         will remain until the workflow terminates.
 
         Args:
@@ -660,8 +760,7 @@ class Relay:
         return response['value']
 
     async def unset_var(self, name:str):
-        """
-        Unsets the value of a variable.  
+        """Unsets the value of a variable.  
 
         Args:
             name (str): the name of the variable whose value you would like to erase.
@@ -681,16 +780,14 @@ class Relay:
         return options
 
     async def start_interaction(self, target, name:str, options=None):
-        """
-        Start an interaction with the user.  This is used to trigger an INTERACTION_STARTED event
-        so that the user can interact with the device via the functions that require an 
+        """Starts an interaction with the user.  This is used to trigger an INTERACTION_STARTED event
+        so that the user can interact with the device via functions that require an 
         interaction URN.
 
-
         Args:
-            target (_type_): the device in which you would like to start an interaction with.
+            target(target): the device in which you would like to start an interaction with.
             name (str): a name for your interaction.
-            options (_type_, optional): options that you would like to pass in to your interaction. Defaults to None.
+            options (optional): can be color, home channel, or input types. Defaults to None.
         """
         event = {
             '_type': 'wf_api_start_interaction_request',
@@ -701,12 +798,11 @@ class Relay:
         await self.sendReceive(event)
 
     async def end_interaction(self, target, name: str):
-        """
-        End an interaction with the user.  This triggers an INTERACTION_ENDED event to signify
+        """Ends an interaction with the user.  This triggers an INTERACTION_ENDED event to signify
         that the user is done interacting with the device.
 
         Args:
-            target (_type_): the device in which you would like to end the interaction.
+            target(target): the device in which you would like to end the interaction.
             name (str): the name of the interaction that you would like to end.
         """
         event = {
@@ -760,21 +856,20 @@ class Relay:
             raise WorkflowException(event['error'])
         return event
 
-    async def listen(self, target, request_id, phrases=None, transcribe:bool=True, timeout:int=60, alt_lang:str=None):
-        """
-        Listens for the user to speak into the device.  Utilizes speech to text functionality to interact
+    async def listen(self, request_id, target, phrases=None, transcribe:bool=True, alt_lang:str=None, timeout:int=60,):
+        """Listens for the user to speak into the device.  Utilizes speech to text functionality to interact
         with the user.
 
         Args:
-            target (_type_): the device that will listen to the user.
-            request_id (_type_): the id of the workflow request.
-            phrases (_type_, optional): optional phrases that you would like to limit the user's response to. Defaults to None.
+            target(target): the interaction URN.
+            request_id: the id of the workflow request.
+            phrases (string[], optional): optional phrases that you would like to limit the user's response to. Defaults to None.
             transcribe (bool, optional): whether you would like to transcribe the user's reponse. Defaults to True.
             timeout (int, optional): timeout for how long the device will wait for user's response. Defaults to 60.
             alt_lang (str, optional): if you would like the device to listen for a response in another language. Defaults to None.
 
         Returns:
-            _type_: text representation of what the user had spoken into the device.
+            text representation of what the user had spoken into the device.
         """
         if phrases is None:
             phrases = [ ]
@@ -807,15 +902,14 @@ class Relay:
             return speech_event['audio']
 
     async def play(self, target, filename:str):
-        """
-        Plays a custom audio file that was uploaded by the user.
+        """Plays a custom audio file that was uploaded by the user.
 
         Args:
-            target (_type_): the device that will play the file.
+            target(target): the interaction URN.
             filename (str): the name of the audio file.
 
         Returns:
-            _type_: the response after the audio file was played.
+            the id of the response after the audio file was played.
         """
         event = {
             '_type': 'wf_api_play_request',
@@ -826,16 +920,15 @@ class Relay:
         return response['id']
 
     async def play_and_wait(self, target, filename:str):
-        """
-        Plays a custom audio file that was uploaded from the user.
+        """Plays a custom audio file that was uploaded from the user.
         Waits until the audio file has finished playing before continuing.
 
         Args:
-            target (_type_): the device that will play the file.
+            target(target): the interaction URN.
             filename (str): the name of the audio file.
 
         Returns:
-            _type_: the response after the audio file was played.
+            the id of the response after the audio file was played.
         """
         _id = uuid.uuid4().hex
         event = {
@@ -856,17 +949,15 @@ class Relay:
         return response['id']
 
     async def say(self, target, text:str, lang:str='en-US'):
-        """
-        Makes the device speak to the user utilizing text to speech capabilities.
-        The target must be an interaction URI, and not a device URI.
+        """Utilizes text to speech capabilities to make the device 'speak' to the user.
 
         Args:
-            target (_type_): the device that will speak to the user.
-            text (str): the text that you want to be spoken.
+            target(target): the interaction URN.
+            text (str): what you would like the device to say.
             lang (str, optional): the language of the text that is being spoken. Defaults to 'en-US'.
 
         Returns:
-            _type_: the response after the device speaks to the user.
+            the response ID after the device speaks to the user.
         """
 
         event = {
@@ -879,18 +970,16 @@ class Relay:
         return response['id']
 
     async def say_and_wait(self, target, text:str, lang:str='en-US'):
-        """
-        Makes the device speak to the user utilizing text to speech capabilities.
-        The target must be an interaction URI, and not a device URI.  Waits until
-        the text is fully played out on the device before continuing.
+        """Utilizes text to speech capabilities to make the device 'speak' to the user.
+        Waits until the text is fully played out on the device before continuing.
 
         Args:
-            target (_type_): the device that will speak to the user.
-            text (str): the text that you want to be spoken.
+            target(target): the interaction URN.
+            text (str): what you would like the device to say.
             lang (str, optional): the language of the text that is being spoken. Defaults to 'en-US'.
 
         Returns:
-            _type_: the response after the device speaks to the user.
+            the response ID after the device speaks to the user.
         """
         _id = uuid.uuid4().hex
         event = {
@@ -927,90 +1016,83 @@ class Relay:
         return options
 
     # repeating tone plus tts until button press
-    async def alert(self, target, originator:str, text:str, name:str, push_options:dict={}):
-        """
-        Sends out an alert to the specified group of devices and the Relay Dash.
+    async def alert(self, target, originator:str, name:str, text:str, push_options:dict={}):
+        """Sends out an alert to the specified group of devices and the Relay Dash.
 
         Args:
-            target (_type_): the group that you would like to send an alert to.
-            originator (str): the device that triggered the alert.
+            target(str): the group that you would like to send an alert to.
+            originator (str): the URN of the device that triggered the alert.
             text (str): the text that you would like to be spoken to the group as your alert.
             name (str): a name for your alert.
-            push_options (dict, optional): push options you would like when the alert is sent on the relay app. Defaults to {}.
+            push_options (dict, optional): push options for if the alert is sent to the Relay app on a virtual device. Defaults to {}.
         """
-        await self._send_notification(target, originator, 'alert', name, text, None, push_options)
+        await self._send_notification(target, originator, 'alert', text, name, push_options)
     
     # TODO: Who is target for all of the cancel notification? and targets?
-    async def cancel_alert(self, target, name:str, targets:dict=None):
-        """
-        Cancels an alert on the devices.  This is handy if you would like to cancel the alert
+    async def cancel_alert(self, target, name:str):
+        """Cancels an alert on all devices in a group.  Particularly useful if you would like to cancel the alert
         on all devices after one device has acknowledged the alert.
 
         Args:
-            target (_type_): the device that has acknowledged the alert.
+            target(str): the device that has acknowledged the alert.
             name (str): the name of the alert.
             targets (dict, optional): the group that you would like the cancel the alert for. Defaults to None.
         """
-        await self._send_notification(target, None, 'cancel', name, None, targets, None)
+        await self._send_notification(target, None, 'cancel', None, name)
 
     # tone plus tts
-    async def broadcast(self, target, originator:str, text:str, name:str, push_options:dict={}):
-        """
-        Sends out a broadcasted message to a group of devices.  The message is played out on 
-        all of the devices, as well as sent to the Relay Dash.
+    async def broadcast(self, target, originator:str, name:str, text:str, push_options:dict={}):
+        """Sends out a broadcasted message to a group of devices.  The message is played out on 
+        all devices, as well as sent to the Relay Dash.
 
         Args:
-            target (_type_): the group that you would like to broadcast your message to.
+            target(str): the group that you would like to broadcast your message to.
             originator (str): the device that triggered the broadcast.
             text (str): the text that you would like to be broadcasted to your group.
             name (str): a name for your broadcast.
             push_options (dict, optional): push options you would like when the broadcast is sent on the relay app. Defaults to {}.
         """
-        await self._send_notification(target, originator, 'broadcast', name, text, push_options)
+        await self._send_notification(target, originator, 'broadcast', text, name, push_options)
     
-    async def cancel_broadcast(self, target, name:str, targets:dict=None):
-        """
-        Cancels the broadcast that was sent to a group of devices. 
+    async def cancel_broadcast(self, target, name:str):
+        """Cancels the broadcast that was sent to a group of devices. 
 
         Args:
-            target (_type_): the device that is cancelling the broadcast.
+            target(str): the device that is cancelling the broadcast.
             name (str): the name of the broadcast that you would like to cancel.
-            targets (dict, optional): _description_. Defaults to None.
+            targets (dict, optional): the group that you would like to cancel the broadcast for. Defaults to None.
         """
-        await self._send_notification(target, None, 'cancel', name, None, targets, None)
+        await self._send_notification(target, None, 'cancel', None, name)
 
     # tone only
-    async def notify(self, target, originator:str, text:str, name:str, push_options:dict={}):
-        """
-        Sends out a notification message to a group of devices.  
+    async def notify(self, target, originator:str, name:str, text:str, push_options:dict={}):
+        """Sends out a notification message to a group of devices.  
 
         Args:
-            target (_type_): the group of devices that you would like to notify.
+            target(str): the group of devices that you would like to notify.
             originator (str): the device that triggered the notification.
             text (str): the text that you would like to be spoken out of the device as your notification.
             name (str): a name for your notification.
             push_options (dict, optional): push options you would like when then notification is sent on the relay app. Defaults to {}.
         """
-        await self._send_notification(target, originator, 'notify', name, text, None, push_options)
+        await self._send_notification(target, originator, 'notify', text, name, push_options)
     
-    async def cancel_notification(self, target, name:str, targets:dict=None):
-        """
-        Cancels the notification that was sent to a group of devices.
+    async def cancel_notify(self, target, name:str):
+        """Cancels the notification that was sent to a group of devices.
 
         Args:
-            target (_type_): the device that is canceling the notification.
+            target (str): the device that is canceling the notification.
             name (str): the name of the notification that you would like to cancel.
             targets (dict, optional): _description_. Defaults to None.
         """
-        await self._send_notification(target, None, 'cancel', name, None, targets, None)
+        await self._send_notification(target, None, 'cancel', None, name)
 
     #TODO: what is ntype?
-    async def _send_notification(self, target, originator:str, ntype:str, name:str, text:str, push_options:dict=None):
-        """
-        This is used for creating a notification on the server.
+    async def _send_notification(self, target, originator:str, ntype:str, text:str, name:str, push_options:dict=None):
+        """This is used for creating a notification on the server.
 
         Args:
-            target (_type_): the virtual device that you would like to send the notification to
+            target (str): the virtual device that you would like to send the notification to
             originator (str): the device that triggered the notification.
             ntype (str): _description_
             name (str): a name for your notification.
@@ -1032,12 +1114,11 @@ class Relay:
 
     #TODO: what is surpress_tts and disable_home_channel?
     async def set_channel(self, target, channel_name:str, suppress_tts:bool=False, disable_home_channel:bool=False):
-        """
-        Sets the channel of the device.  This can be used to change the channel of a device during a workflow,
+        """Sets the channel of the device.  This can be used to change the channel of a device during a workflow,
         where the channel is also updated on the Relay Dash.
 
         Args:
-            target (_type_): the device whose channel you want to change.
+            target (target): the device or interaction URN.
             channel_name (str): the name of the channel you would like to set your device to.
             suppress_tts (bool, optional): _description_. Defaults to False.
             disable_home_channel (bool, optional): _description_. Defaults to False.
@@ -1052,26 +1133,23 @@ class Relay:
         await self.sendReceive(event)
 
 
-    async def get_device_name(self, target, refresh:bool=False):
-        """
-        Returns the name of a targeted device.
+    async def get_device_name(self, target):
+        """Returns the name of a targeted device.
 
         Args:
-            target (_type_): the device URN.
-            refresh (bool, optional): whether you would like to refresh before retrieving the name. Defaults to False.
+            target (target): the device or interaction URN.
 
         Returns:
             _type_: the name of the device.
         """
-        v = await self._get_device_info(target, 'name', refresh)
+        v = await self._get_device_info(target, 'name')
         return v['name']
 
     async def get_device_address(self, target, refresh:bool=False):
-        """
-        Returns the address of a targeted device.
+        """Returns the address of a targeted device.
 
         Args:
-            target (_type_): the device URN.
+            target (target): the device or interaction URN.
             refresh (bool, optional): whether you would like to refresh before retrieving the address. Defaults to False.
 
         Returns:
@@ -1080,11 +1158,10 @@ class Relay:
         return await self.get_device_location(target, refresh)
 
     async def get_device_location(self, target, refresh:bool=False):
-        """
-        Returns the location of a targeted device.
+        """Returns the location of a targeted device.
 
         Args:
-            target (_type_): the device URN.
+            target (target): the device or interaction URN.
             refresh (bool, optional): whether you would like to refresh before retrieving the location. Defaults to False.
 
         Returns:
@@ -1094,11 +1171,10 @@ class Relay:
         return v['address']
 
     async def get_device_latlong(self, target, refresh:bool=False):
-        """
-        Returns the latitude and longitude coordinates of a targeted device.
+        """Returns the latitude and longitude coordinates of a targeted device.
 
         Args:
-            target (_type_): the device URN.
+            target (target): the device or interaction URN.
             refresh (bool, optional): whether you would like to refresh before retrieving the location. Defaults to False.
 
         Returns:
@@ -1108,11 +1184,10 @@ class Relay:
         return v['latlong']
 
     async def get_device_indoor_location(self, target, refresh:bool=False):
-        """
-        Returns the indoor location of a targeted device.
+        """Returns the indoor location of a targeted device.
 
         Args:
-            target (_type_): the device URN.
+            target (target): the device or interaction URN.
             refresh (bool, optional): whether you would like to refresh before retrieving the location. Defaults to False.
 
         Returns:
@@ -1122,11 +1197,10 @@ class Relay:
         return v['indoor_location']
 
     async def get_device_battery(self, target, refresh:bool=False):
-        """
-        Returns the battery of a targeted device.
+        """Returns the battery of a targeted device.
 
         Args:
-            target (_type_): the device URN.
+            target (target): the device or interaction URN.
             refresh (bool, optional): whether you would like to refresh before retrieving the battery. Defaults to False.
 
         Returns:
@@ -1135,71 +1209,62 @@ class Relay:
         v = await self._get_device_info(target, 'battery', refresh)
         return v['battery']
 
-    async def get_device_type(self, target, refresh:bool=False):
-        """
-        Returns the device type of a targeted device, i.e. gen 2, gen 3, etc.
+    async def get_device_type(self, target):
+        """Returns the device type of a targeted device, i.e. gen 2, gen 3, etc.
 
         Args:
-            target (_type_): the device URN.
-            refresh (bool, optional): whether you would like to refresh before retrieving the device type. Defaults to False.
+            target (target): the device or interaction URN.
 
         Returns:
             _type_: the device type.
         """
-        v = await self._get_device_info(target, 'type', refresh)
+        v = await self._get_device_info(target, 'type')
         return v['type']
     
-    async def get_device_id(self, target, refresh:bool=False):
-        """
-        Returns the ID of a targeted device, also known as the device IMEI.
+    async def get_device_id(self, target):
+        """Returns the ID of a targeted device, also known as the device IMEI.
 
         Args:
-            target (_type_): the device URN.
-            refresh (bool, optional): whether you would like to refresh before retrieving the device ID. Defaults to False.
+            target (target): the device or interaction URN.
 
         Returns:
             _type_: the device ID.
         """
-        v = await self._get_device_info(target, 'id', refresh)
+        v = await self._get_device_info(target, 'id')
         return v['id']
 
     #TODO: what does this actually do?
-    async def get_user_profile(self, target, refresh:bool=False):
-        """
-        Returns the user name of a targeted device.
+    async def get_user_profile(self, target):
+        """Returns the user name of a targeted device.
 
         Args:
-            target (_type_): the device URN.
-            refresh (bool, optional): whether you would like to refresh before retrieving the device user. Defaults to False.
+            target (target): the device or interaction URN.
 
         Returns:
             _type_: the user name registered to the device.
         """
-        v = await self._get_device_info(target, 'username', refresh)
+        v = await self._get_device_info(target, 'username')
         return v['username']
 
-    async def get_device_location_enabled(self, target, refresh:bool=False):
-        """
-        Returns whether the location services on a device are enabled.
+    async def get_device_location_enabled(self, target):
+        """Returns whether the location services on a device are enabled.
 
         Args:
-            target (_type_): the device URN.
-            refresh (bool, optional): whether you would like to refresh before retrieving location enabled information. Defaults to False.
+            target (target): the device or interaction URN.
 
         Returns:
             _type_: "true" if the device's location services are enabled, "false" otherwise.
         """
-        v = await self._get_device_info(target, 'location_enabled', refresh)
+        v = await self._get_device_info(target, 'location_enabled')
         return v['location_enabled']
 
     # target can have only one item
-    async def _get_device_info(self, target, query, refresh:bool):
-        """
-         Used privately by device information functions to retrieve different information
+    async def _get_device_info(self, target, query, refresh:bool=False):
+        """Used privately by device information functions to retrieve different information
          regarding the device, such as the ID, location, battery, name and type.
 
         Args:
-            target (_type_): the device URN.
+            target (target): the device or interaction URN.
             query (_type_): which category of information you are retrieving.
             refresh (bool): whether to refresh before retrieving information on the device.
 
@@ -1217,62 +1282,47 @@ class Relay:
 
 
     async def set_device_name(self, target, name:str):
-        """
-        Sets the name of a targeted device and updates it on the Relay Dash.
+        """Sets the name of a targeted device and updates it on the Relay Dash.
         The name remains updated until it is set again via a workflow or updated
         on the Relay Dash.
 
         Args:
-            target (_type_): the device URN.
+            target (target): the device or interaction URN.
             name (str): a new name for your device.
         """
         await self._set_device_info(target, 'label', name)
 
     async def set_device_channel(self, target, channel: str):
-        """
-        Sets the channel of a targeted device and updates it on the Relay Dash.
+        """Sets the channel of a targeted device and updates it on the Relay Dash.
         The new channel remains until it is set again via a workflow or updated on the
         Relay Dash.
 
         Args:
-            target (_type_): the device URN.
+            target (target): the device or interaction URN.
             channel (str): the channel that you would like to update your device to.
         """
         await self._set_device_info(target, 'channel', channel)
 
     async def enable_location(self, target):
-        """
-        Enables location services on a device.  Location services will remain
+        """Enables location services on a device.  Location services will remain
         enabled until they are disabled on the Relay Dash or through a workflow.
 
         Args:
-            target (_type_): the device URN.
+            target (target): the device or interaction URN.
         """
         await self._set_device_info(target, 'location_enabled', 'true')
     
     async def disable_location(self, target):
-        """
-        Disables location services on a device.  Location services will remain
+        """Disables location services on a device.  Location services will remain
         disabled until they are enabled on the Relay Dash or through a workflow.
 
         Args:
-            target (_type_): the device URN.
+            target (target): the device or interaction URN.
         """
         await self._set_device_info(target, 'location_enabled', 'false')
 
-    async def set_device_location_enabled(self, target, location_enabled: str):
-        """
-        Sets the device's location service enablement.
-
-        Args:
-            target (_type_): the device URN.
-            location_enabled (str): whether you would like to enable the location of a device.
-        """
-        await self._set_device_info(target, 'location_enabled', channel)
-
     async def _set_device_info(self, target, field, value):
-        """
-        Used privately by device information functions to set information
+        """Used privately by device information functions to set information
         fields on the device, such as the location, name, and channel of
         the device.
 
@@ -1294,8 +1344,7 @@ class Relay:
         return event
 
     async def set_device_mode(self, target, mode:str='none'):
-        """
-        Sets the mode of the device.
+        """Sets the mode of the device.
 
         Args:
             target (_type_): the device URN.
@@ -1345,7 +1394,7 @@ class Relay:
             target (_type_): an interaction URN of a device.
             color (str, optional): the hex color code you would like the LEDs to be. Defaults to '0000ff'.
         """
-        await self.set_led(target, 'static', {'colors':{'ring': color}})
+        await self.led_action(target, 'static', {'colors':{'ring': color}})
 
     async def switch_led_on(self, target, index:int, color:str='0000ff'):
         """Switches on an led at a particular index to a specified color.
@@ -1355,7 +1404,7 @@ class Relay:
             index (int): the index of an LED, numbered 1-12.
             color (str, optional): the hex color code you would like to turn the LED to. Defaults to '0000ff'.
         """
-        await self.set_led(target, 'static', {'colors':{index: color}})
+        await self.led_action(target, 'static', {'colors':{index: color}})
 
     async def rainbow(self, target, rotations:int=-1):
         """Switches all of the LEDs on to a configured rainbow pattern and rotates the rainbow
@@ -1366,7 +1415,7 @@ class Relay:
             rotations (int, optional): the number of times you would like the rainbow to rotate. Defaults to -1, meaning the 
             rainbow will rotate indefinitely.
         """
-        await self.set_led(target, 'rainbow', {'rotations': rotations})
+        await self.led_action(target, 'rainbow', {'rotations': rotations})
 
     async def flash(self, target, color:str='0000ff', count:int=-1):
         """Switches all of the LEDs on a device to a certain color and flashes them
@@ -1378,7 +1427,7 @@ class Relay:
             count (int, optional): the number of times you would like the LEDs to flash. Defaults to -1, meaning the LEDs
             will flash indefinitely.
         """
-        await self.set_led(target, 'flash', {'colors': {'ring': color}, 'count': count})
+        await self.led_action(target, 'flash', {'colors': {'ring': color}, 'count': count})
 
     async def breathe(self, target, color:str='0000ff', count:int=-1):
         """Switches all of the LEDs on a device to a certain color and creates a 'breathing' effect, 
@@ -1390,7 +1439,7 @@ class Relay:
             count (int, optional): the number of times you would like the LEDs to 'breathe'. Defaults to -1, meaning
             the LEDs will 'breathe' indefinitely.
         """
-        await self.set_led(target, 'breathe', {'colors': {'ring': color}, 'count': count})
+        await self.led_action(target, 'breathe', {'colors': {'ring': color}, 'count': count})
 
     async def rotate(self, target, color:str='0000ff', rotations:int=-1):
         """Switches all of the LEDs on a device to a certain color and rotates them a specified number
@@ -1402,7 +1451,7 @@ class Relay:
             rotations (int, optional): the number of times you would like the LEDs to rotate. Defaults to -1, meaning
             the LEDs will rotate indefinitely.
         """
-        await self.set_led(target, 'rotate', {'colors': {'1': color}, 'rotations': rotations})
+        await self.led_action(target, 'rotate', {'colors': {'1': color}, 'rotations': rotations})
 
     async def switch_all_led_off(self, target):
         """Switches all of the LEDs on a device off.
@@ -1410,7 +1459,7 @@ class Relay:
         Args:
             target (_type_): an interaction URN of a device.
         """
-        await self.set_led(target, 'off', {})
+        await self.led_action(target, 'off', {})
 
 
     async def vibrate(self, target, pattern:list=None):
@@ -1435,7 +1484,7 @@ class Relay:
 
     # unnamed timer
     #TODO: check on this.  not sure what timeout does.
-    async def start_timer(self, timeout:int):
+    async def start_timer(self, timeout:int=60):
         """Starts an unnamed timer, meaning this will be the only timer on your device.
         The timer will stop when it reaches the limit of the 'timeout' parameter.
 
@@ -1555,7 +1604,7 @@ class Relay:
             }
         await self.sendReceive(event)
 
-    async def translate(self, text:str, from_lang:str, to_lang:str):
+    async def translate(self, text:str, from_lang:str='en-US', to_lang:str='es-ES'):
         """Translates text from one language to another.
 
         Args:
@@ -1844,23 +1893,24 @@ def send_http_trigger(access_token:str, refresh_token:str, client_id:str, workfl
     where you can inspect the http response, and get the updated access_token
     if it was updated (otherwise the original access_token will be returned).
 
-        access_token: the current access token. Can be a placeholder value
+    Args:
+        access_token(str): the current access token. Can be a placeholder value
         and this method will generate a new one and return it. If the
         original value of the access token passed in here has expired,
         this method will also generate a new one and return it.
 
-        refresh_token: the permanent refresh_token that can be used to
+        refresh_token(str): the permanent refresh_token that can be used to
         obtain a new access_token. The caller should treat the refresh
         token as very sensitive data, and secure it appropriately.
 
-        client_id: the auth_sdk_id as returned from "relay env".
+        client_id(str): the auth_sdk_id as returned from "relay env".
 
-        workflow_id: the workflow_id as returned from "relay workflow list".
+        workflow_id(str): the workflow_id as returned from "relay workflow list".
         Usually starts with "wf_".
 
-        subscriber_id: the subcriber UUID as returned from "relay whoami".
+        subscriber_id(str): the subcriber UUID as returned from "relay whoami".
 
-        user_id: the IMEI of the target device, such as 990007560023456.
+        user_id(str): the IMEI of the target device, such as 990007560023456.
 
         action_args (optional): a dict of any key/value arguments you want
         to pass in to the workflow that gets started by this trigger.
@@ -1896,20 +1946,21 @@ def get_device_info(access_token:str, refresh_token:str, client_id:str, subscrib
     state. The result, if the query was successful, should have a large JSON
     dictionary.
 
-        access_token: the current access token. Can be a placeholder value
+    Args:
+        access_token(str): the current access token. Can be a placeholder value
         and this method will generate a new one and return it. If the
         original value of the access token passed in here has expired,
         this method will also generate a new one and return it.
 
-        refresh_token: the permanent refresh_token that can be used to
+        refresh_token(str): the permanent refresh_token that can be used to
         obtain a new access_token. The caller should treat the refresh
         token as very sensitive data, and secure it appropriately.
 
-        client_id: the auth_sdk_id as returned from "relay env".
+        client_id(str): the auth_sdk_id as returned from "relay env".
 
-        subscriber_id: the subcriber UUID as returned from "relay whoami".
+        subscriber_id(str): the subcriber UUID as returned from "relay whoami".
 
-        user_id: the IMEI of the target device, such as 990007560023456.
+        user_id(str): the IMEI of the target device, such as 990007560023456.
     """
     url = f'https://{server_hostname}/relaypro/api/v1/device/{user_id}'
     headers = {
