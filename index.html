@@ -343,7 +343,7 @@ Args:<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;_type_:&nbsp;a&nbsp;list&nbsp;of&nbsp;the&nbsp;members&nbsp;within&nbsp;the&nbsp;specified&nbsp;group.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-get_inbox_count"><strong>get_inbox_count</strong></a>(self, target)</dt><dd><tt>Retrieves&nbsp;the&nbsp;number&nbsp;of&nbsp;messages&nbsp;in&nbsp;a&nbsp;device's&nbsp;inbox.<br>
+<dl><dt>async <a name="Relay-get_unread_inbox_size"><strong>get_unread_inbox_size</strong></a>(self, target)</dt><dd><tt>Retrieves&nbsp;the&nbsp;number&nbsp;of&nbsp;messages&nbsp;in&nbsp;a&nbsp;device's&nbsp;inbox.<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(_type_):&nbsp;the&nbsp;device&nbsp;whose&nbsp;inbox&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;check.<br>
@@ -378,7 +378,7 @@ Returns:<br>
 
 <dl><dt>async <a name="Relay-invalid_type"><strong>invalid_type</strong></a>(self)</dt></dl>
 
-<dl><dt>async <a name="Relay-is_group_member"><strong>is_group_member</strong></a>(self, group_uri: str)</dt><dd><tt>Checks&nbsp;whether&nbsp;a&nbsp;device&nbsp;is&nbsp;a&nbsp;member&nbsp;of&nbsp;a&nbsp;particular&nbsp;group.<br>
+<dl><dt>async <a name="Relay-is_group_member"><strong>is_group_member</strong></a>(self, group_name_uri: str, potential_member_name_uri: str)</dt><dd><tt>Checks&nbsp;whether&nbsp;a&nbsp;device&nbsp;is&nbsp;a&nbsp;member&nbsp;of&nbsp;a&nbsp;particular&nbsp;group.<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;group_uri&nbsp;(str):&nbsp;the&nbsp;URN&nbsp;of&nbsp;a&nbsp;group.<br>
@@ -390,7 +390,7 @@ Returns:<br>
 
 <dl><dt><a name="Relay-led_info"><strong>led_info</strong></a>(self, rotations: int = None, count: int = None, duration: int = None, repeat_delay: int = None, pattern_repeats=None, colors=None)</dt></dl>
 
-<dl><dt>async <a name="Relay-listen"><strong>listen</strong></a>(self, request_id, target, phrases=None, transcribe: bool = True, alt_lang: str = None, timeout: int = 60)</dt><dd><tt>Listens&nbsp;for&nbsp;the&nbsp;user&nbsp;to&nbsp;speak&nbsp;into&nbsp;the&nbsp;device.&nbsp;&nbsp;Utilizes&nbsp;speech&nbsp;to&nbsp;text&nbsp;functionality&nbsp;to&nbsp;interact<br>
+<dl><dt>async <a name="Relay-listen"><strong>listen</strong></a>(self, target, request_id, phrases=None, transcribe: bool = True, alt_lang: str = None, timeout: int = 60)</dt><dd><tt>Listens&nbsp;for&nbsp;the&nbsp;user&nbsp;to&nbsp;speak&nbsp;into&nbsp;the&nbsp;device.&nbsp;&nbsp;Utilizes&nbsp;speech&nbsp;to&nbsp;text&nbsp;functionality&nbsp;to&nbsp;interact<br>
 with&nbsp;the&nbsp;user.<br>
 &nbsp;<br>
 Args:<br>
@@ -404,7 +404,7 @@ Args:<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;text&nbsp;representation&nbsp;of&nbsp;what&nbsp;the&nbsp;user&nbsp;had&nbsp;spoken&nbsp;into&nbsp;the&nbsp;device.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-log_message"><strong>log_message</strong></a>(self, content: str, category: str)</dt><dd><tt>Log&nbsp;an&nbsp;analytics&nbsp;event&nbsp;from&nbsp;a&nbsp;workflow&nbsp;with&nbsp;the&nbsp;specified&nbsp;content&nbsp;and<br>
+<dl><dt>async <a name="Relay-log_message"><strong>log_message</strong></a>(self, message: str, category: str = 'default')</dt><dd><tt>Log&nbsp;an&nbsp;analytics&nbsp;event&nbsp;from&nbsp;a&nbsp;workflow&nbsp;with&nbsp;the&nbsp;specified&nbsp;content&nbsp;and<br>
 under&nbsp;a&nbsp;specified&nbsp;category.&nbsp;This&nbsp;does&nbsp;not&nbsp;log&nbsp;the&nbsp;device&nbsp;who<br>
 triggered&nbsp;the&nbsp;workflow&nbsp;that&nbsp;called&nbsp;this&nbsp;function.<br>
 &nbsp;<br>
@@ -412,7 +412,7 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;content&nbsp;(str):&nbsp;a&nbsp;description&nbsp;for&nbsp;your&nbsp;analytical&nbsp;event.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;category&nbsp;(str):&nbsp;a&nbsp;category&nbsp;for&nbsp;you&nbsp;analytical&nbsp;event.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-log_user_message"><strong>log_user_message</strong></a>(self, content: str, category: str, device_uri: str = None)</dt><dd><tt>Log&nbsp;an&nbsp;analytic&nbsp;event&nbsp;from&nbsp;a&nbsp;workflow&nbsp;with&nbsp;the&nbsp;specified&nbsp;content&nbsp;and<br>
+<dl><dt>async <a name="Relay-log_user_message"><strong>log_user_message</strong></a>(self, message: str, target, category: str)</dt><dd><tt>Log&nbsp;an&nbsp;analytic&nbsp;event&nbsp;from&nbsp;a&nbsp;workflow&nbsp;with&nbsp;the&nbsp;specified&nbsp;content&nbsp;and<br>
 under&nbsp;a&nbsp;specified&nbsp;category.&nbsp;&nbsp;This&nbsp;includes&nbsp;the&nbsp;device&nbsp;who&nbsp;triggered&nbsp;the&nbsp;workflow<br>
 that&nbsp;called&nbsp;this&nbsp;function.<br>
 &nbsp;<br>
@@ -468,7 +468,7 @@ Args:<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;id&nbsp;of&nbsp;the&nbsp;response&nbsp;after&nbsp;the&nbsp;audio&nbsp;file&nbsp;was&nbsp;played.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-play_inbox_messages"><strong>play_inbox_messages</strong></a>(self, target)</dt><dd><tt>Play&nbsp;a&nbsp;targeted&nbsp;device's&nbsp;inbox&nbsp;messages.<br>
+<dl><dt>async <a name="Relay-play_unread_inbox_messages"><strong>play_unread_inbox_messages</strong></a>(self, target)</dt><dd><tt>Play&nbsp;a&nbsp;targeted&nbsp;device's&nbsp;inbox&nbsp;messages.<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(_type_):&nbsp;the&nbsp;device&nbsp;whose&nbsp;inbox&nbsp;messages&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;play.</tt></dd></dl>
