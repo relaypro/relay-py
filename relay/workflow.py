@@ -807,7 +807,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_end_interaction_request',
-            '_target': target,
+            '_target': self.targets_from_source_uri(target),
             'name': name
         }
         await self.sendReceive(event)
@@ -879,7 +879,7 @@ class Relay:
         _id = uuid.uuid4().hex
         event = {
             '_type': 'wf_api_listen_request',
-            '_target': target,
+            '_target': self.targets_from_source_uri(target),
             'request_id': request_id,
             'phrases': phrases,
             'transcribe': transcribe,
@@ -913,7 +913,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_play_request',
-            '_target': target,
+            '_target': self.targets_from_source_uri(target),
             'filename': filename
         }
         response = await self.sendReceive(event)
@@ -933,7 +933,7 @@ class Relay:
         _id = uuid.uuid4().hex
         event = {
             '_type': 'wf_api_play_request',
-            '_target': target,
+            '_target': self.targets_from_source_uri(target),
             'filename': filename
         }
 
@@ -983,7 +983,7 @@ class Relay:
         _id = uuid.uuid4().hex
         event = {
             '_type': 'wf_api_say_request',
-            '_target': target,
+            '_target': self.targets_from_source_uri(target),
             'text': text,
             'lang': lang
         }
@@ -1124,7 +1124,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_set_channel_request',
-            '_target': target,
+            '_target': self.targets_from_source_uri(target),
             'channel_name': channel_name,
             'suppress_tts': suppress_tts,
             'disable_home_channel': disable_home_channel
@@ -1272,7 +1272,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_get_device_info_request',
-            '_target': target,
+            '_target': self.targets_from_source_uri(target),
             'query': query,
             'refresh': refresh
         }
@@ -1335,7 +1335,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_set_device_info_request',
-            '_target': target,
+            '_target': self.targets_from_source_uri(target),
             'field': field,
             'value': value
         }
@@ -1351,7 +1351,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_set_device_mode_request',
-            'target': target,
+            'target': self.targets_from_source_uri(target),
             'mode': mode,
         }
         await self.sendReceive(event)
@@ -1379,7 +1379,7 @@ class Relay:
         # use led_info to create args
         event = {
             '_type': 'wf_api_set_led_request',
-            '_target': target,
+            '_target': self.targets_from_source_uri(target),
             'effect': effect,
             'args': args
         }
@@ -1476,7 +1476,7 @@ class Relay:
 
         event = {
             '_type': 'wf_api_vibrate_request',
-            '_target': target,
+            '_target': self.targets_from_source_uri(target),
             'pattern': pattern
         }
         await self.sendReceive(event)
@@ -1562,7 +1562,7 @@ class Relay:
 
         event = {
             '_type': 'wf_api_device_power_off_request',
-            '_target': target,
+            '_target': self.targets_from_source_uri(target),
             'restart': True
         }
         await self.sendReceive(event)
@@ -1576,7 +1576,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_device_power_off_request',
-            '_target': target,
+            '_target': self.targets_from_source_uri(target),
             'restart': False
         }
         await self.sendReceive(event)
@@ -1701,7 +1701,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_set_user_profile_request',
-            '_target': target,
+            '_target': self.targets_from_source_uri(target),
             'username': username,
             'force': force
         }
@@ -1719,7 +1719,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_inbox_count_request',
-            '_target': target
+            '_target': self.targets_from_source_uri(target)
         }
         response = await self.sendReceive(event)
         return response['count']
@@ -1732,7 +1732,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_play_inbox_messages_request',
-            '_target': target
+            '_target': self.targets_from_source_uri(target)
         }
         await self.sendReceive(event)
 
@@ -1826,7 +1826,7 @@ class Relay:
     async def _set_home_channel_state(self, target, enabled:bool=True):
         event = {
             '_type': 'wf_api_set_home_channel_state_request',
-            '_target': target,
+            '_target': self.targets_from_source_uri(target),
             'enabled': enabled
         }
         await self.sendReceive(event)
