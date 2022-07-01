@@ -1833,13 +1833,13 @@ class Relay:
         }
         await self.sendReceive(event)
 
-    async def set_timer(self,  timer_type:str='timeout', name:str, timeout:int=60, timeout_type:str='secs'):
+    async def set_timer(self, name:str, timer_type:str='timeout', timeout:int=60, timeout_type:str='secs'):
         """ Serves as a named timer that can be either interval or timeout.  Allows you to specify
         the unit of time.
 
         Args:
-            timer_type (str, optional): can be 'timeout' or 'interval'. Defaults to 'timeout'.
             name (str): a name for your timer.
+            timer_type (str, optional): can be 'timeout' or 'interval'. Defaults to 'timeout'.
             timeout (int): an integer representing when you would like your timer to stop.
             timeout_type (str, optional): can be 'ms', 'secs', 'mins' or 'hrs'. Defaults to 'secs'.
         """
