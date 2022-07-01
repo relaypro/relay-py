@@ -220,7 +220,7 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;itype&nbsp;(str):&nbsp;the&nbsp;type&nbsp;of&nbsp;incident&nbsp;that&nbsp;occurred.<br>
 &nbsp;<br>
 Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;_type_:&nbsp;return&nbsp;the&nbsp;incident&nbsp;ID.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;the&nbsp;incident&nbsp;ID.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-disable_home_channel"><strong>disable_home_channel</strong></a>(self, target)</dt></dl>
 
@@ -276,7 +276,7 @@ Args:<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;int:&nbsp;the&nbsp;battery&nbsp;of&nbsp;the&nbsp;device.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-get_device_id"><strong>get_device_id</strong></a>(self, target)</dt><dd><tt>Returns&nbsp;the&nbsp;ID&nbsp;of&nbsp;a&nbsp;targeted&nbsp;device,&nbsp;also&nbsp;known&nbsp;as&nbsp;the&nbsp;device&nbsp;IMEI.<br>
+<dl><dt>async <a name="Relay-get_device_id"><strong>get_device_id</strong></a>(self, target)</dt><dd><tt>Returns&nbsp;the&nbsp;ID&nbsp;of&nbsp;a&nbsp;targeted&nbsp;device.<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;device&nbsp;or&nbsp;interaction&nbsp;URN.<br>
@@ -317,7 +317,7 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;device&nbsp;or&nbsp;interaction&nbsp;URN.<br>
 &nbsp;<br>
 Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;"true"&nbsp;if&nbsp;the&nbsp;device's&nbsp;location&nbsp;services&nbsp;are&nbsp;enabled,&nbsp;"false"&nbsp;otherwise.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;'true'&nbsp;if&nbsp;the&nbsp;device's&nbsp;location&nbsp;services&nbsp;are&nbsp;enabled,&nbsp;'false'&nbsp;otherwise.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-get_device_name"><strong>get_device_name</strong></a>(self, target)</dt><dd><tt>Returns&nbsp;the&nbsp;name&nbsp;of&nbsp;a&nbsp;targeted&nbsp;device.<br>
 &nbsp;<br>
@@ -394,6 +394,7 @@ Returns:<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;group_uri&nbsp;(str):&nbsp;the&nbsp;URN&nbsp;of&nbsp;a&nbsp;group.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;potential_member_name_uri:&nbsp;the&nbsp;URN&nbsp;of&nbsp;the&nbsp;device&nbsp;name.<br>
 &nbsp;<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;'true'&nbsp;if&nbsp;the&nbsp;device&nbsp;is&nbsp;a&nbsp;member&nbsp;of&nbsp;the&nbsp;specified&nbsp;group,&nbsp;'false'&nbsp;otherwise.</tt></dd></dl>
@@ -429,7 +430,7 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;phrases&nbsp;(string[],&nbsp;optional):&nbsp;optional&nbsp;phrases&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;limit&nbsp;the&nbsp;user's&nbsp;response&nbsp;to.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;transcribe&nbsp;(bool,&nbsp;optional):&nbsp;whether&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;transcribe&nbsp;the&nbsp;user's&nbsp;reponse.&nbsp;Defaults&nbsp;to&nbsp;True.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;timeout&nbsp;(int,&nbsp;optional):&nbsp;timeout&nbsp;for&nbsp;how&nbsp;long&nbsp;the&nbsp;device&nbsp;will&nbsp;wait&nbsp;for&nbsp;user's&nbsp;response.&nbsp;Defaults&nbsp;to&nbsp;60.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;alt_lang&nbsp;(str,&nbsp;optional):&nbsp;if&nbsp;you&nbsp;would&nbsp;like&nbsp;the&nbsp;device&nbsp;to&nbsp;listen&nbsp;for&nbsp;a&nbsp;response&nbsp;in&nbsp;another&nbsp;language.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;alt_lang&nbsp;(str,&nbsp;optional):&nbsp;if&nbsp;you&nbsp;would&nbsp;like&nbsp;the&nbsp;device&nbsp;to&nbsp;listen&nbsp;for&nbsp;a&nbsp;response&nbsp;in&nbsp;a&nbsp;specific&nbsp;language.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
 &nbsp;<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;text&nbsp;representation&nbsp;of&nbsp;what&nbsp;the&nbsp;user&nbsp;had&nbsp;spoken&nbsp;into&nbsp;the&nbsp;device.</tt></dd></dl>
@@ -440,7 +441,7 @@ triggered&nbsp;the&nbsp;workflow&nbsp;that&nbsp;called&nbsp;this&nbsp;function.<
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;message&nbsp;(str):&nbsp;a&nbsp;description&nbsp;for&nbsp;your&nbsp;analytical&nbsp;event.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;category&nbsp;(str):&nbsp;a&nbsp;category&nbsp;for&nbsp;you&nbsp;analytical&nbsp;event.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;category&nbsp;(str):&nbsp;a&nbsp;category&nbsp;for&nbsp;your&nbsp;analytical&nbsp;event.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-log_user_message"><strong>log_user_message</strong></a>(self, message: str, target, category: str)</dt><dd><tt>Log&nbsp;an&nbsp;analytic&nbsp;event&nbsp;from&nbsp;a&nbsp;workflow&nbsp;with&nbsp;the&nbsp;specified&nbsp;content&nbsp;and<br>
 under&nbsp;a&nbsp;specified&nbsp;category.&nbsp;&nbsp;This&nbsp;includes&nbsp;the&nbsp;device&nbsp;who&nbsp;triggered&nbsp;the&nbsp;workflow<br>
@@ -471,8 +472,8 @@ Returns:<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target(str):&nbsp;the&nbsp;group&nbsp;URN&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;notify.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;originator&nbsp;(str):&nbsp;the&nbsp;device&nbsp;URN&nbsp;that&nbsp;triggered&nbsp;the&nbsp;notification.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;text&nbsp;(str):&nbsp;the&nbsp;text&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;be&nbsp;spoken&nbsp;out&nbsp;of&nbsp;the&nbsp;device&nbsp;as&nbsp;your&nbsp;notification.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;a&nbsp;name&nbsp;for&nbsp;your&nbsp;notification.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;text&nbsp;(str):&nbsp;the&nbsp;text&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;be&nbsp;spoken&nbsp;out&nbsp;of&nbsp;the&nbsp;device&nbsp;as&nbsp;your&nbsp;notification.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;push_options&nbsp;(dict,&nbsp;optional):&nbsp;push&nbsp;options&nbsp;for&nbsp;if&nbsp;the&nbsp;notification&nbsp;is&nbsp;sent&nbsp;to&nbsp;the&nbsp;<a href="#Relay">Relay</a>&nbsp;app&nbsp;on&nbsp;a&nbsp;virtual&nbsp;device.&nbsp;Defaults&nbsp;to&nbsp;{}.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-place_call"><strong>place_call</strong></a>(self, target, uri: str)</dt><dd><tt>#&nbsp;target&nbsp;can&nbsp;have&nbsp;only&nbsp;one&nbsp;item</tt></dd></dl>
@@ -606,14 +607,14 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;device&nbsp;or&nbsp;interaction&nbsp;URN.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;a&nbsp;new&nbsp;name&nbsp;for&nbsp;your&nbsp;device.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-set_timer"><strong>set_timer</strong></a>(self, name: str, timeout: int, timeout_type: str = 'secs', timer_type: str = 'timeout')</dt><dd><tt>Serves&nbsp;as&nbsp;a&nbsp;named&nbsp;timer&nbsp;that&nbsp;can&nbsp;be&nbsp;either&nbsp;interval&nbsp;or&nbsp;timeout.&nbsp;&nbsp;Allows&nbsp;you&nbsp;to&nbsp;specify<br>
+<dl><dt>async <a name="Relay-set_timer"><strong>set_timer</strong></a>(self, name: str, timer_type: str = 'timeout', timeout: int = 60, timeout_type: str = 'secs')</dt><dd><tt>Serves&nbsp;as&nbsp;a&nbsp;named&nbsp;timer&nbsp;that&nbsp;can&nbsp;be&nbsp;either&nbsp;interval&nbsp;or&nbsp;timeout.&nbsp;&nbsp;Allows&nbsp;you&nbsp;to&nbsp;specify<br>
 the&nbsp;unit&nbsp;of&nbsp;time.<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;a&nbsp;name&nbsp;for&nbsp;your&nbsp;timer.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;timer_type&nbsp;(str,&nbsp;optional):&nbsp;can&nbsp;be&nbsp;'timeout'&nbsp;or&nbsp;'interval'.&nbsp;Defaults&nbsp;to&nbsp;'timeout'.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;timeout&nbsp;(int):&nbsp;an&nbsp;integer&nbsp;representing&nbsp;when&nbsp;you&nbsp;would&nbsp;like&nbsp;your&nbsp;timer&nbsp;to&nbsp;stop.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;timeout_type&nbsp;(str,&nbsp;optional):&nbsp;can&nbsp;be&nbsp;'ms',&nbsp;'secs',&nbsp;'mins'&nbsp;or&nbsp;'hrs'.&nbsp;Defaults&nbsp;to&nbsp;'secs'.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;timer_type&nbsp;(str,&nbsp;optional):&nbsp;can&nbsp;be&nbsp;'timeout'&nbsp;or&nbsp;'interval'.&nbsp;Defaults&nbsp;to&nbsp;'timeout'.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;timeout_type&nbsp;(str,&nbsp;optional):&nbsp;can&nbsp;be&nbsp;'ms',&nbsp;'secs',&nbsp;'mins'&nbsp;or&nbsp;'hrs'.&nbsp;Defaults&nbsp;to&nbsp;'secs'.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-set_user_profile"><strong>set_user_profile</strong></a>(self, target: str, username: str, force: bool = False)</dt><dd><tt>Sets&nbsp;the&nbsp;profile&nbsp;of&nbsp;a&nbsp;user&nbsp;by&nbsp;updating&nbsp;the&nbsp;username.<br>
 &nbsp;<br>
