@@ -908,7 +908,7 @@ class Relay:
             phrases (string[], optional): optional phrases that you would like to limit the user's response to. Defaults to None.
             transcribe (bool, optional): whether you would like to transcribe the user's reponse. Defaults to True.
             timeout (int, optional): timeout for how long the device will wait for user's response. Defaults to 60.
-            alt_lang (str, optional): if you would like the device to listen for a response in another language. Defaults to None.
+            alt_lang (str, optional): if you would like the device to listen for a response in a specific language. Defaults to None.
 
         Returns:
             text representation of what the user had spoken into the device.
@@ -1118,8 +1118,8 @@ class Relay:
         Args:
             target(str): the group URN that you would like to notify.
             originator (str): the device URN that triggered the notification.
-            text (str): the text that you would like to be spoken out of the device as your notification.
             name (str): a name for your notification.
+            text (str): the text that you would like to be spoken out of the device as your notification.
             push_options (dict, optional): push options for if the notification is sent to the Relay app on a virtual device. Defaults to {}.
         """
         await self._send_notification(target, originator, 'notify', text, name, push_options)
@@ -1267,7 +1267,7 @@ class Relay:
         return v['type']
     
     async def get_device_id(self, target):
-        """Returns the ID of a targeted device, also known as the device IMEI.
+        """Returns the ID of a targeted device.
 
         Args:
             target (str): the device or interaction URN.
@@ -1298,7 +1298,7 @@ class Relay:
             target (str): the device or interaction URN.
 
         Returns:
-            str: "true" if the device's location services are enabled, "false" otherwise.
+            str: 'true' if the device's location services are enabled, 'false' otherwise.
         """
         v = await self._get_device_info(target, 'location_enabled')
         return v['location_enabled']
@@ -1587,7 +1587,7 @@ class Relay:
             itype (str): the type of incident that occurred.
 
         Returns:
-            _type_: return the incident ID.
+            str: the incident ID.
         """
         # TODO: what are the values for itype?
         event = {
@@ -1735,6 +1735,7 @@ class Relay:
 
         Args:
             group_uri (str): the URN of a group.
+            potential_member_name_uri: the URN of the device name.
 
         Returns:
             str: 'true' if the device is a member of the specified group, 'false' otherwise.
@@ -1803,7 +1804,7 @@ class Relay:
 
         Args:
             message (str): a description for your analytical event.
-            category (str): a category for you analytical event.
+            category (str): a category for your analytical event.
         """
         event = {
             '_type': 'wf_api_log_analytics_event_request',
@@ -1832,15 +1833,15 @@ class Relay:
         }
         await self.sendReceive(event)
 
-    async def set_timer(self, name:str, timeout:int, timeout_type:str='secs', timer_type:str='timeout'):
+    async def set_timer(self,  timer_type:str='timeout', name:str, timeout:int=60, timeout_type:str='secs'):
         """ Serves as a named timer that can be either interval or timeout.  Allows you to specify
         the unit of time.
 
         Args:
+            timer_type (str, optional): can be 'timeout' or 'interval'. Defaults to 'timeout'.
             name (str): a name for your timer.
             timeout (int): an integer representing when you would like your timer to stop.
             timeout_type (str, optional): can be 'ms', 'secs', 'mins' or 'hrs'. Defaults to 'secs'.
-            timer_type (str, optional): can be 'timeout' or 'interval'. Defaults to 'timeout'.
         """
         event = {
             '_type': 'wf_api_set_timer_request',
