@@ -1685,6 +1685,15 @@ class Relay:
 
     # target can have only one item
     async def place_call(self, target, uri:str):
+        """Places a call to another device.
+
+        Args:
+            target (str): the device URN.
+            uri (str): the URN of the device you would like to call.
+
+        Returns:
+            the event response.
+        """
         event = {
             '_type': 'wf_api_call_request',
             '_target': target,
@@ -1695,6 +1704,12 @@ class Relay:
 
     # target can have only one item
     async def answer_call(self, target, call_id:str):
+        """Answers a call on your device.
+
+        Args:
+            target (str): the device URN.
+            call_id (str): the call ID.
+        """
         event = {
             '_type': 'wf_api_answer_request',
             '_target': target,
@@ -1704,6 +1719,12 @@ class Relay:
     
     # target can have only one item
     async def hangup_call(self, target, call_id:str):
+        """Ends a call on your device.
+
+        Args:
+            target (str): the device URN.
+            call_id (str): the call ID.
+        """
         event = {
             '_type': 'wf_api_hangup_request',
             '_target': target,
