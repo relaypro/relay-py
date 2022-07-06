@@ -734,20 +734,16 @@ class Relay:
     async def sendReceive(self, obj, uid=None):
         _id = uid if uid else uuid.uuid4().hex
         obj['_id'] = _id
-
         fut = asyncio.get_event_loop().create_future()
         self.id_futures[_id] = fut
 
         # TODO: ibot currently loads null as the string 'null'
         await self._send(json.dumps(remove_null(obj)))
-
         # wait on the response
         await fut
-
         rsp = fut.result()
         if rsp['_type'] == 'wf_api_error_response':
             raise WorkflowException(rsp['error'])
-
         return fut.result()
 
 
@@ -1147,12 +1143,12 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_notification_request',
-            '_target': target,
+            '_target': self.targets_from_source_uri(target),
             'originator': originator,
             'type': ntype,
             'name': name,
             'text': text,
-            'target': target,
+            'target': self.targets_from_source_uri(target),
             'push_opts': push_options
         }
         await self.sendReceive(event)
@@ -1224,6 +1220,15 @@ class Relay:
 
         Returns:
             float[]: an array containing the latitude and longitude of the device.
+        """
+        return await self.get_device_coordinates(target, refresh)
+
+    async def get_device_coordinates(self, target, refresh:bool=False):
+        """Retrieves the coordinates of the device's location.
+
+        Args:
+            target (str): the device or interaction URN.
+            refresh (bool, optional): whether you would like to refresh before retreiving the coordinates. Defaults to False.
         """
         v = await self._get_device_info(target, 'latlong', refresh)
         return v['latlong']
