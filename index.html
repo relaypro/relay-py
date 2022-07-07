@@ -380,11 +380,7 @@ Args:<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;variable&nbsp;requested.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-handle"><strong>handle</strong></a>(self, websocket)</dt><dd><tt>Handles&nbsp;websocket&nbsp;events&nbsp;by&nbsp;creating&nbsp;tasks&nbsp;based<br>
-off&nbsp;o&nbsp;the&nbsp;type&nbsp;of&nbsp;event&nbsp;that&nbsp;was&nbsp;received.<br>
-&nbsp;<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;websocket:&nbsp;the&nbsp;websocket&nbsp;event.</tt></dd></dl>
+<dl><dt>async <a name="Relay-handle"><strong>handle</strong></a>(self, websocket)</dt></dl>
 
 <dl><dt>async <a name="Relay-hangup_call"><strong>hangup_call</strong></a>(self, target, call_id: str)</dt><dd><tt>Ends&nbsp;a&nbsp;call&nbsp;on&nbsp;your&nbsp;device.<br>
 &nbsp;<br>
@@ -729,11 +725,7 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;interaction&nbsp;URN.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;pattern&nbsp;(list,&nbsp;optional):&nbsp;an&nbsp;array&nbsp;representing&nbsp;the&nbsp;pattern&nbsp;of&nbsp;your&nbsp;vibration.&nbsp;Defaults&nbsp;to&nbsp;None.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-wrapper"><strong>wrapper</strong></a>(self, h, *args)</dt><dd><tt>Runs&nbsp;handlers&nbsp;with&nbsp;exception&nbsp;logging.&nbsp;&nbsp;Needed&nbsp;since&nbsp;we&nbsp;<br>
-cannot&nbsp;await&nbsp;handlers.<br>
-&nbsp;<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;h:&nbsp;the&nbsp;handler.</tt></dd></dl>
+<dl><dt>async <a name="Relay-wrapper"><strong>wrapper</strong></a>(self, h, *args)</dt><dd><tt>#&nbsp;run&nbsp;handlers&nbsp;with&nbsp;exception&nbsp;logging;&nbsp;needed&nbsp;since&nbsp;we&nbsp;cannot&nbsp;await&nbsp;handlers</tt></dd></dl>
 
 <hr>
 Data descriptors defined here:<br>
@@ -752,37 +744,16 @@ Data descriptors defined here:<br>
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#Server">Server</a>(host:&nbsp;str,&nbsp;port:&nbsp;int,&nbsp;**kwargs)<br>
 &nbsp;<br>
-Initializes&nbsp;the&nbsp;host&nbsp;and&nbsp;port&nbsp;in&nbsp;which&nbsp;the&nbsp;workflow&nbsp;will&nbsp;run,<br>
-registers&nbsp;the&nbsp;workflow&nbsp;on&nbsp;a&nbsp;path,&nbsp;handles&nbsp;ssl&nbsp;protocol,&nbsp;and&nbsp;listens<br>
-for&nbsp;a&nbsp;workflow&nbsp;trigger.<br>&nbsp;</tt></td></tr>
+<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="Server-__init__"><strong>__init__</strong></a>(self, host: str, port: int, **kwargs)</dt><dd><tt>Initializes&nbsp;the&nbsp;host&nbsp;and&nbsp;port,&nbsp;checks&nbsp;ssl.<br>
-&nbsp;<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;host&nbsp;(str):&nbsp;host&nbsp;for&nbsp;the&nbsp;workflow.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;port&nbsp;(int):&nbsp;the&nbsp;port&nbsp;to&nbsp;listen&nbsp;for&nbsp;a&nbsp;trigger.</tt></dd></dl>
+<dl><dt><a name="Server-__init__"><strong>__init__</strong></a>(self, host: str, port: int, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
-<dl><dt>async <a name="Server-handler"><strong>handler</strong></a>(self, websocket, path: str)</dt><dd><tt>Handles&nbsp;a&nbsp;request&nbsp;on&nbsp;a&nbsp;path.<br>
-&nbsp;<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;websocket:&nbsp;websocket&nbsp;protocol.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;path&nbsp;(str):&nbsp;path&nbsp;that&nbsp;contained&nbsp;the&nbsp;request.</tt></dd></dl>
+<dl><dt>async <a name="Server-handler"><strong>handler</strong></a>(self, websocket, path: str)</dt></dl>
 
-<dl><dt><a name="Server-register"><strong>register</strong></a>(self, workflow, path: str)</dt><dd><tt>Registers&nbsp;a&nbsp;workflow&nbsp;on&nbsp;the&nbsp;path.<br>
-&nbsp;<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;workflow:&nbsp;the&nbsp;workflow&nbsp;to&nbsp;be&nbsp;registered.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;path&nbsp;(str):&nbsp;the&nbsp;path&nbsp;on&nbsp;which&nbsp;the&nbsp;workflow&nbsp;will&nbsp;be&nbsp;registered.<br>
-&nbsp;<br>
-Raises:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ServerException">ServerException</a>:&nbsp;thrown&nbsp;when&nbsp;a&nbsp;workflow&nbsp;is&nbsp;already&nbsp;registered&nbsp;on&nbsp;that&nbsp;path.</tt></dd></dl>
+<dl><dt><a name="Server-register"><strong>register</strong></a>(self, workflow, path: str)</dt></dl>
 
-<dl><dt><a name="Server-start"><strong>start</strong></a>(self)</dt><dd><tt>Starts&nbsp;ssl&nbsp;protocol&nbsp;and&nbsp;then&nbsp;listens&nbsp;on&nbsp;the&nbsp;server&nbsp;for&nbsp;a&nbsp;workflow&nbsp;trigger.<br>
-&nbsp;<br>
-Raises:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ServerException">ServerException</a>:&nbsp;thrown&nbsp;when&nbsp;the&nbsp;ssl_cert_file&nbsp;cannot&nbsp;be&nbsp;read.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ServerException">ServerException</a>:&nbsp;thrown&nbsp;when&nbsp;the&nbsp;ssl_key_file&nbsp;cannot&nbsp;be&nbsp;read.</tt></dd></dl>
+<dl><dt><a name="Server-start"><strong>start</strong></a>(self)</dt></dl>
 
 <hr>
 Data descriptors defined here:<br>
