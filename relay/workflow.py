@@ -29,17 +29,9 @@ auth_hostname = "auth.relaygo.info"
 # auth_hostname = "auth.relaygo.com"
 
 class Server:
-    """Initializes the host and port in which the workflow will run,
-    registers the workflow on a path, handles ssl protocol, and listens
-    for a workflow trigger.
-    """
-    def __init__(self, host:str, port:int, **kwargs):
-        """Initializes the host and port, checks ssl.
 
-        Args:
-            host (str): host for the workflow.
-            port (int): the port to listen for a trigger.
-        """
+    def __init__(self, host:str, port:int, **kwargs):
+
         self.host = host
         self.port = port
         self.workflows = {}   # {path: workflow}
@@ -50,27 +42,12 @@ class Server:
                 self.ssl_cert_filename = kwargs[key]
 
     def register(self, workflow, path:str):
-        """Registers a workflow on the path.
 
-        Args:
-            workflow: the workflow to be registered.
-            path (str): the path on which the workflow will be registered.
-
-        Raises:
-            ServerException: thrown when a workflow is already registered on that path.
-        """
         if path in self.workflows:
             raise ServerException(f'a workflow is already registered at path {path}')
         self.workflows[path] = workflow
 
     def start(self):
-        """
-        Starts ssl protocol and then listens on the server for a workflow trigger.
-
-        Raises:
-            ServerException: thrown when the ssl_cert_file cannot be read.
-            ServerException: thrown when the ssl_key_file cannot be read.
-        """
 
         uname_result = platform.uname()
         custom_headers = { 'User-Agent': f'{version} (Python {platform.python_version()}; {uname_result.system} {uname_result.machine} {uname_result.release})' }
@@ -96,12 +73,7 @@ class Server:
             logger.debug('server terminated')
 
     async def handler(self, websocket, path:str):
-        """Handles a request on a path.
-
-        Args:
-            websocket: websocket protocol.
-            path (str): path that contained the request.
-        """
+ 
         workflow = self.workflows.get(path, None)
         if workflow:
             logger.debug(f'handling request on path {path}')
@@ -566,12 +538,7 @@ class Relay:
         return targets
 
     async def handle(self, websocket):
-        """Handles websocket events by creating tasks based
-        off o the type of event that was received.
 
-        Args:
-            websocket: the websocket event.
-        """
         self.websocket = websocket
         self.logger = CustomAdapter(logger, {'cid': self.get_cid()})
 
@@ -711,12 +678,7 @@ class Relay:
 
     # run handlers with exception logging; needed since we cannot await handlers
     async def wrapper(self, h, *args):
-        """Runs handlers with exception logging.  Needed since we 
-        cannot await handlers.
 
-        Args:
-            h: the handler.
-        """
         try:
             await h(self, *args)
         except Exception as x:
