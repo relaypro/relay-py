@@ -36,3 +36,11 @@ async def lifecycle_handler(relay, itype, interaction_uri, reason):
         await relay.end_interaction(interaction_uri, 'hello world')
     if itype == 'ended':
         await relay.terminate()
+
+@wf.on_stop
+async def stop_handler(relay, reason):
+    logger.debug(f'stopped: {reason}')
+
+@wf.on_prompt
+async def prompt_handler(relay, source_uri, type):
+    logger.debug(f'source uri: {source_uri}, type: {type}')
