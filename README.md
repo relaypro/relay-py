@@ -48,8 +48,6 @@ Install into a virtual environment (Python 3.6.1+).
             user_provided_name = await relay.listen(interaction_uri, 'request1')
             greeting = await relay.get_var('greeting')
             await relay.say_and_wait(interaction_uri, f'{greeting} {user_provided_name}! You are currently using {device_name}')
-            translation = await relay.translate("Hello", "", "")
-            await relay.say_and_wait(interaction_uri, translation)
             await relay.end_interaction(interaction_uri, 'hello world')
         if itype == 'ended':
             await relay.terminate()
