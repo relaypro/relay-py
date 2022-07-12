@@ -8,12 +8,14 @@ Install into a virtual environment (Python 3.6.1+).
 
     python -m venv venv
     . venv/bin/activate
-    pip install git@github.com:relaypro/relay-py.git#egg=relay-py
+    pip install git+ssh://git@github.com/relaypro/relay-py.git#egg=relay-py
     cd relay-py
     pip install -e .
 
 ## Usage
 
+- The following demonstrates a simple Hello World program, located in the `hello_world_wf.py` file:
+<pre>
     python
     #!/usr/bin/env python3
 
@@ -59,6 +61,7 @@ Install into a virtual environment (Python 3.6.1+).
     @wf.on_prompt
     async def prompt_handler(relay, source_uri, type):
         logger.debug(f'source uri: {source_uri}, type: {type}')
+</pre>
 
 ## Development
 
