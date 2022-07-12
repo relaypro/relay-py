@@ -82,7 +82,7 @@ Start demo workflow server:
 Run tests:
 
     bash
-    cd relay_py
+    cd relay-py
     . venv/bin/activate
     pip install -e .[testing]
     pytest
