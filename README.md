@@ -16,7 +16,6 @@ Install into a virtual environment (Python 3.6.1+).
 
 - The following demonstrates a simple Hello World program, located in the `hello_world_wf.py` file:
 <pre>
-    python
     #!/usr/bin/env python3
 
     import asyncio
