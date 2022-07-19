@@ -383,8 +383,11 @@ class Relay:
 
         try:
             async for m in websocket:
-                self.logger.debug(f'recv: {m}')
+                # TODO: restore after PE-17571
+                # self.logger.debug(f'recv: {m}')
                 e = self.fromJson(m)
+                self.logger.debug(f'recv: {e}')
+
                 _id = e.get('_id', None)
                 _type = e.get('_type', None)
                 request_id = e.get('request_id', None)
