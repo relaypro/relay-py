@@ -734,7 +734,7 @@ class Relay:
         v = await self.sendReceive(event)
         return v.get('value', default)
 
-    async def set_var(self, name:str, value:str):
+    async def set_var(self, name:str, value):
         """Sets a variable with the corresponding name and value. Scope of
         the variable is from start to end of a workflow.
         Args:
@@ -1304,16 +1304,18 @@ class Relay:
         """
         await self._set_device_info(target, 'label', name)
 
-    async def set_device_channel(self, target, channel: str):
-        """Sets the channel of a targeted device and updates it on the Relay Dash.
-        The new channel remains until it is set again via a workflow or updated on the
-        Relay Dash.
+    # SETDEVICECHANNEL CURRENTLY DOES NOT WORK
 
-        Args:
-            target (str): the device or interaction URN.
-            channel (str): the channel that you would like to update your device to.
-        """
-        await self._set_device_info(target, 'channel', channel)
+    # async def set_device_channel(self, target, channel: str):
+    #     """Sets the channel of a targeted device and updates it on the Relay Dash.
+    #     The new channel remains until it is set again via a workflow or updated on the
+    #     Relay Dash.
+
+    #     Args:
+    #         target (str): the device or interaction URN.
+    #         channel (str): the channel that you would like to update your device to.
+    #     """
+    #     await self._set_device_info(target, 'channel', channel)
 
     async def enable_location(self, target):
         """Enables location services on a device.  Location services will remain
@@ -1355,19 +1357,22 @@ class Relay:
         v = await self.sendReceive(event)
         return event
 
-    async def set_device_mode(self, target, mode:str='none'):
-        """Sets the mode of the device.
+    # SETDEVICEMODE CURRENTLY DOES NOT WORK
 
-        Args:
-            target (str): the device or interaction URN.
-            mode (str, optional): the updated mode of the device, which can be 'panic', 'alarm', or 'none'. Defaults to 'none'.
-        """
-        event = {
-            '_type': 'wf_api_set_device_mode_request',
-            'target': self.targets_from_source_uri(target),
-            'mode': mode,
-        }
-        await self.sendReceive(event)
+    # async def set_device_mode(self, target, mode:str='none'):
+    #     """Sets the mode of the device.
+
+    #     Args:
+    #         target (str): the device or interaction URN.
+    #         mode (str, optional): the updated mode of the device, which can be 'panic', 'alarm', or 'none'. Defaults to 'none'.
+    #     """
+    #     event = {
+    #         '_type': 'wf_api_set_device_channel_request',
+    #         'target': target,
+    #         'mode': mode,
+    #     }
+    #     await self.sendReceive(event)
+        # await self._set_device_info(target, )
 
     def led_info(self, rotations:int=None, count:int=None, duration:int=None, repeat_delay:int=None, pattern_repeats=None, colors=None):
         """Sets information on a device, such as the number of rotations, count, duration, repeat delay, pattern repeats, 
@@ -1579,34 +1584,36 @@ class Relay:
         }
         await self.sendReceive(event)
     
-    async def restart_device(self, target):
-        """Restarts a device during a workflow, without having
-        to physically restart the device via hodling down the '-' button.
+    # RESTART/POWERING DOWN DEVICE CURRENTLY DO NOT WORK
 
-        Args:
-            target (str): the URN of the device you would like to restart.
-        """
+    # async def restart_device(self, target):
+    #     """Restarts a device during a workflow, without having
+    #     to physically restart the device via hodling down the '-' button.
 
-        event = {
-            '_type': 'wf_api_device_power_off_request',
-            '_target': self.targets_from_source_uri(target),
-            'restart': True
-        }
-        await self.sendReceive(event)
+    #     Args:
+    #         target (str): the URN of the device you would like to restart.
+    #     """
+
+    #     event = {
+    #         '_type': 'wf_api_device_power_off_request',
+    #         '_target': self.targets_from_source_uri(target),
+    #         'restart': True
+    #     }
+    #     await self.sendReceive(event)
     
-    async def power_down_device(self, target):
-        """Powers down a device during a workflow, without
-        having to physically power down the device via holding down the '+' button.
+    # async def power_down_device(self, target):
+    #     """Powers down a device during a workflow, without
+    #     having to physically power down the device via holding down the '+' button.
 
-        Args:
-            target (str): the URN of the device that you would like to power down.
-        """
-        event = {
-            '_type': 'wf_api_device_power_off_request',
-            '_target': self.targets_from_source_uri(target),
-            'restart': False
-        }
-        await self.sendReceive(event)
+    #     Args:
+    #         target (str): the URN of the device that you would like to power down.
+    #     """
+    #     event = {
+    #         '_type': 'wf_api_device_power_off_request',
+    #         '_target': self.targets_from_source_uri(target),
+    #         'restart': False
+    #     }
+    #     await self.sendReceive(event)
     
     async def stop_playback(self, target, id:str=None):
         event = None
