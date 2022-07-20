@@ -26,14 +26,21 @@ async def start_handler(relay, trigger):
 
 
 @wf.on_interaction_lifecycle
-async def lifecycle_handler(relay, itype, source_uri, reason):
+async def lifecycle_handler(relay, itype, interaction_uri, reason):
     if itype == 'started':
-        target = relay.targets_from_source_uri(source_uri)
-        device_name = await relay.get_device_name(target)
-        await relay.say_and_wait(target, 'What is your name?')
-        user_provided_name = await relay.listen(target, 'request1')
+        device_name = await relay.get_device_name(interaction_uri)
+        await relay.say_and_wait(interaction_uri, 'What is your name?')
+        user_provided_name = await relay.listen(interaction_uri, 'request1')
         greeting = await relay.get_var('greeting')
-        await relay.say_and_wait(target, f'{greeting} {user_provided_name}! You are currently using {device_name}')
-        await relay.end_interaction(target, 'hello world')
+        await relay.say_and_wait(interaction_uri, f'{greeting} {user_provided_name}! You are currently using {device_name}')
+        await relay.end_interaction(interaction_uri, 'hello world')
     if itype == 'ended':
         await relay.terminate()
+
+@wf.on_stop
+async def stop_handler(relay, reason):
+    logger.debug(f'stopped: {reason}')
+
+@wf.on_prompt
+async def prompt_handler(relay, source_uri, type):
+    logger.debug(f'source uri: {source_uri}, type: {type}')

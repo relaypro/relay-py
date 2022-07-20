@@ -8,37 +8,65 @@ Install into a virtual environment (Python 3.6.1+).
 
     python -m venv venv
     . venv/bin/activate
-    pip install git@github.com:relaypro/relay-py.git#egg=relay-py
+    pip install git+ssh://git@github.com/relaypro/relay-py.git#egg=relay-py
     cd relay-py
     pip install -e .
 
 ## Usage
 
-    python
-    #!/usr/bin/env python
+- The following demonstrates a simple Hello World program, located in the `hello_world_wf.py` file:
+<pre>
+    #!/usr/bin/env python3
 
     import asyncio
+    import os
     import relay.workflow
+    import logging
+    import time
 
-    wf = relay.workflow.Workflow('hellowf')
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+
+    wf = relay.workflow.Workflow('hello')
+    port = os.getenv('PORT')
+    if port is None:
+        port = 8080
 
     @wf.on_start
-    async def start_handler(relay):
-        name = await relay.get_device_name()
-        await relay.say('What is your name?')
-        user = await relay.listen([])
-        await relay.say(f'Hello {user}! from {name}')
-        await relay.terminate()
+    async def start_handler(relay, trigger):
 
-    server = relay.workflow.Server('localhost', 3000)
-    server.register(wf, '/hellopath')
-    server.start()
+        device_urn = trigger['args']['source_uri']
+        target = relay.make_target_uris(trigger)
+
+        await relay.start_interaction(target, 'hello world')
+
+
+    @wf.on_interaction_lifecycle
+    async def lifecycle_handler(relay, itype, interaction_uri, reason):
+        if itype == 'started':
+            device_name = await relay.get_device_name(interaction_uri)
+            await relay.say_and_wait(interaction_uri, 'What is your name?')
+            user_provided_name = await relay.listen(interaction_uri, 'request1')
+            greeting = await relay.get_var('greeting')
+            await relay.say_and_wait(interaction_uri, f'{greeting} {user_provided_name}! You are currently using {device_name}')
+            await relay.end_interaction(interaction_uri, 'hello world')
+        if itype == 'ended':
+            await relay.terminate()
+
+    @wf.on_stop
+    async def stop_handler(relay, reason):
+        logger.debug(f'stopped: {reason}')
+
+    @wf.on_prompt
+    async def prompt_handler(relay, source_uri, type):
+        logger.debug(f'source uri: {source_uri}, type: {type}')
+</pre>
 
 ## Development
 
     bash
     git clone git@github.com:relaypro/relay-py.git
-    cd relay_py
+    cd relay-py
     virtualenv venv
     . venv/bin/activate
     pip install -e .
@@ -46,7 +74,7 @@ Install into a virtual environment (Python 3.6.1+).
 Start demo workflow server:
 
     bash
-    cd relay_py
+    cd relay-py
     . venv/bin/activate
     cd samples
     python app.py
@@ -54,13 +82,45 @@ Start demo workflow server:
 Run tests:
 
     bash
-    cd relay_py
+    cd relay-py
     . venv/bin/activate
     pip install -e .[testing]
     pytest
 
 
 ## Deployment on ngrok
+
+- Install ngrok on your machine by creating an account and downloading from
+`https://dashboard.ngrok.com/get-started/setup`, or entering the
+command `npm install -g ngrok` into your shell. Once you have ngrok installed, expose your 
+workflow to the internet on port 8080 by entering the following command:
+
+<pre>
+    ngrok http 8080
+</pre>
+
+- Run the ngrok http command in a different shell window than the one where you will be running your code, so that you can keep ngrok running while you install and run your workflows.  After typing in the command, you will see information about your session including two forwarding addresses.   It should look like the following:
+
+<pre>
+    ngrok by @inconshreveable                                                                                                                                    (Ctrl+C to quit)
+                                                                                                                                                                             
+    Session Status                online                                                                                                                                         
+    Session Expires               1 hour, 59 minutes                                                                                                                             
+    Version                       2.3.40                                                                                                                                         
+    Region                        United States (us)                                                                                                                             
+    Web Interface                 http://127.0.0.1:4040                                                                                                                          
+    Forwarding                    http://8adb-8-48-95-57.ngrok.io -> http://localhost:8080                                                                                       
+    Forwarding                    https://8adb-8-48-95-57.ngrok.io -> http://localhost:8080                                                                                      
+                                                                                                                                                                                
+    Connections                   ttl     opn     rt1     rt5     p50     p90                                                                                                    
+                                0       0       0.00    0.00    0.00    0.00   
+</pre>
+
+- When registering a workflow, you would use the address provided by ngrok:
+
+<pre>
+relay workflow:create:button -n helloworld -u 'wss://8adb-8-48-95-57.ngrok.io/helloworld' --trigger=single -i 990007560012345
+</pre>
 
 
 ## Deployment on Heroku
