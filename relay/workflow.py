@@ -749,13 +749,7 @@ class Relay:
         Returns:
             the variable requested.
         """
-        ### TODO: look in self.workflow.state to see all of what is available
-        event = {
-            '_type': 'wf_api_get_var_request',
-            'name': name
-        }
-        v = await self.sendReceive(event)
-        return int(v.get('value', default))
+        return int(await self.get_var(name, default))
 
     async def set_var(self, name:str, value:str):
         """Sets a variable with the corresponding name and value. Scope of
