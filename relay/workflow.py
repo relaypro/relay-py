@@ -546,11 +546,8 @@ class Relay:
 
         try:
             async for m in websocket:
-                # TODO: restore after PE-17571
-                # self.logger.debug(f'recv: {m}')
+                self.logger.debug(f'recv: {m}')
                 e = self.fromJson(m)
-                self.logger.debug(f'recv: {e}')
-
                 _id = e.get('_id', None)
                 _type = e.get('_type', None)
                 request_id = e.get('request_id', None)
@@ -737,9 +734,30 @@ class Relay:
         v = await self.sendReceive(event)
         return v.get('value', default)
 
-    async def set_var(self, name:str, value):
+    async def get_number_var(self, name:str, default=None):
+        """Retrieves a variable that was set either during workflow registration
+        or through the set_var() function of type integer.  The variable can be retrieved anywhere
+        within the workflow, but is erased after the workflow terminates.
+
+        Args:
+            name (str): name of the variable to be retrieved.
+            default (optional): default value of the variable if it does not exist. Defaults to None.
+
+        Returns:
+            the variable requested.
+        """
+        ### TODO: look in self.workflow.state to see all of what is available
+        event = {
+            '_type': 'wf_api_get_var_request',
+            'name': name
+        }
+        v = await self.sendReceive(event)
+        return int(v.get('value', default))
+
+    async def set_var(self, name:str, value:str):
         """Sets a variable with the corresponding name and value. Scope of
-        the variable is from start to end of a workflow.
+        the variable is from start to end of a workflow.  Note that you 
+        can only set values of type string.
         Args:
             name (str): name of the variable to be created.
             value (str): value that the variable will hold.
