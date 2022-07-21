@@ -343,8 +343,6 @@ class Workflow:
         # unnamed timer
         self.type_handlers[('wf_api_timer_event')] = func
 
-    ###### TODO: test all the ones from here down
-
     def on_timer_fired(self, func):
         # named timer
         self.type_handlers[('wf_api_timer_fired_event')] = func
@@ -479,7 +477,7 @@ class Relay:
     def cleanIntArrays(self, dictMessage):
         # work around the JSON formatting issue in iBot
         # that gives us an array of ints instead of a string:
-        # will be fixed in iBot 3.9 via PE-17571
+        # will be fixed in iBot 3.10 via PE-17571
 
         if isinstance(dictMessage, dict):
             for key in dictMessage.keys():
@@ -779,17 +777,19 @@ class Relay:
         }
         await self.sendReceive(event)
 
-    def interaction_options(color:str="0000ff", input_types:list=[], home_channel:str="suspend"):
+    def interaction_options(color:str="0000ff", input_types:list=None, home_channel:str="suspend"):
         """Options for when an interaction is started via a workflow.
 
         Args:
             color (str, optional): desired color of LEDs when an interaction is started. Defaults to "0000ff".
-            input_types (list, optional): input types you would like for the interaction. Defaults to [].
+            input_types (list, optional): input types you would like for the interaction. Defaults to an empty list.
             home_channel (str, optional): home channel for the device during the interaction. Defaults to "suspend".
 
         Returns:
             the options specified.
         """
+        if input_types is None:
+            input_types = []
         options = {
             'color': color,
             'input_types': input_types,
@@ -874,7 +874,7 @@ class Relay:
             raise WorkflowException(event['error'])
         return event
 
-    async def listen(self, target, request_id, phrases=None, transcribe:bool=True, alt_lang:str=None, timeout:int=60,):
+    async def listen(self, target, request_id, phrases=None, transcribe:bool=True, alt_lang:str=None, timeout:int=60):
         """Listens for the user to speak into the device.  Utilizes speech to text functionality to interact
         with the user.
 
@@ -1044,7 +1044,7 @@ class Relay:
         return options
 
     # repeating tone plus tts until button press
-    async def alert(self, target, originator:str, name:str, text:str, push_options:dict={}):
+    async def alert(self, target, originator:str, name:str, text:str, push_options:dict=None):
         """Sends out an alert to the specified group of devices and the Relay Dash.
 
         Args:
@@ -1052,8 +1052,10 @@ class Relay:
             originator (str): the URN of the device that triggered the alert.
             name (str): a name for your alert.
             text (str): the text that you would like to be spoken to the group as your alert.
-            push_options (dict, optional): push options for if the alert is sent to the Relay app on a virtual device. Defaults to {}.
+            push_options (dict, optional): push options for if the alert is sent to the Relay app on a virtual device. Defaults to an empty value.
         """
+        if push_options is None:
+            push_options = {}
         await self._send_notification(target, originator, 'alert', text, name, push_options)
     
     async def cancel_alert(self, target, name:str):
@@ -1066,7 +1068,7 @@ class Relay:
         """
         await self._send_notification(target, None, 'cancel', None, name)
 
-    async def broadcast(self, target, originator:str, name:str, text:str, push_options:dict={}):
+    async def broadcast(self, target, originator:str, name:str, text:str, push_options:dict=None):
         """Sends out a broadcasted message to a group of devices.  The message is played out on 
         all devices, as well as sent to the Relay Dash.
 
@@ -1075,8 +1077,10 @@ class Relay:
             originator (str): the device URN that triggered the broadcast.
             name (str): a name for your broadcast.
             text (str): the text that you would like to be broadcasted to your group.
-            push_options (dict, optional): push options for if the broadcast is sent to the Relay app on a virtual device. Defaults to {}.
+            push_options (dict, optional): push options for if the broadcast is sent to the Relay app on a virtual device. Defaults to an empty value.
         """
+        if push_options is None:
+            push_options = {}
         await self._send_notification(target, originator, 'broadcast', text, name, push_options)
     
     async def cancel_broadcast(self, target, name:str):
@@ -1088,7 +1092,7 @@ class Relay:
         """
         await self._send_notification(target, None, 'cancel', None, name)
 
-    async def notify(self, target, originator:str, name:str, text:str, push_options:dict={}):
+    async def notify(self, target, originator:str, name:str, text:str, push_options:dict=None):
         """Sends out a notification message to a group of devices.  
 
         Args:
@@ -1096,8 +1100,10 @@ class Relay:
             originator (str): the device URN that triggered the notification.
             name (str): a name for your notification.
             text (str): the text that you would like to be spoken out of the device as your notification.
-            push_options (dict, optional): push options for if the notification is sent to the Relay app on a virtual device. Defaults to {}.
+            push_options (dict, optional): push options for if the notification is sent to the Relay app on a virtual device. Defaults to an empty value.
         """
+        if push_options is None:
+            push_options = {}
         await self._send_notification(target, originator, 'notify', text, name, push_options)
     
     async def cancel_notify(self, target, name:str):
@@ -1263,7 +1269,6 @@ class Relay:
         v = await self._get_device_info(target, 'id')
         return v['id']
 
-    #TODO: what does this actually do?
     async def get_user_profile(self, target):
         """Returns the user profile of a targeted device.
 
@@ -1322,13 +1327,12 @@ class Relay:
         """
         await self._set_device_info(target, 'label', name)
 
-    # SETDEVICECHANNEL CURRENTLY DOES NOT WORK
-
+    # set_device_channel is currently not supported
     # async def set_device_channel(self, target, channel: str):
     #     """Sets the channel of a targeted device and updates it on the Relay Dash.
     #     The new channel remains until it is set again via a workflow or updated on the
     #     Relay Dash.
-
+    #
     #     Args:
     #         target (str): the device or interaction URN.
     #         channel (str): the channel that you would like to update your device to.
@@ -1375,11 +1379,10 @@ class Relay:
         v = await self.sendReceive(event)
         return event
 
-    # SETDEVICEMODE CURRENTLY DOES NOT WORK
-
+    # set_device_mode is currently not supported
     # async def set_device_mode(self, target, mode:str='none'):
     #     """Sets the mode of the device.
-
+    #
     #     Args:
     #         target (str): the device or interaction URN.
     #         mode (str, optional): the updated mode of the device, which can be 'panic', 'alarm', or 'none'. Defaults to 'none'.
@@ -1390,7 +1393,7 @@ class Relay:
     #         'mode': mode,
     #     }
     #     await self.sendReceive(event)
-        # await self._set_device_info(target, )
+    #     # await self._set_device_info(target, )
 
     def led_info(self, rotations:int=None, count:int=None, duration:int=None, repeat_delay:int=None, pattern_repeats=None, colors=None):
         """Sets information on a device, such as the number of rotations, count, duration, repeat delay, pattern repeats, 
@@ -1602,12 +1605,12 @@ class Relay:
         }
         await self.sendReceive(event)
     
-    # RESTART/POWERING DOWN DEVICE CURRENTLY DO NOT WORK
+    # restart/powering down device is currently not supported
 
     # async def restart_device(self, target):
     #     """Restarts a device during a workflow, without having
     #     to physically restart the device via hodling down the '-' button.
-
+    #
     #     Args:
     #         target (str): the URN of the device you would like to restart.
     #     """
@@ -1622,7 +1625,7 @@ class Relay:
     # async def power_down_device(self, target):
     #     """Powers down a device during a workflow, without
     #     having to physically power down the device via holding down the '+' button.
-
+    #
     #     Args:
     #         target (str): the URN of the device that you would like to power down.
     #     """
@@ -1912,7 +1915,7 @@ class Relay:
         }
         await self.sendReceive(event)
 
-    ############ the ones below here are just for testing error handling
+    # invalid_type and missing_type are just for internal testing of error handling
 
     async def invalid_type(self):
         event = {
