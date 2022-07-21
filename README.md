@@ -1,6 +1,6 @@
 # relay-py
 
-A Python SDK for [Relay](https://developer.relaypro.com) Workflows.
+A Python SDK for [Relay Workflows](https://developer.relaypro.com).
 
 ## Installation
 
