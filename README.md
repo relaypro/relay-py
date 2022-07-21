@@ -1,16 +1,16 @@
 # relay-py
 
-Draft of a Python SDK for Relay Workflows.
+A Python SDK for [Relay](https://developer.relaypro.com) Workflows.
 
 ## Installation
 
 Install into a virtual environment (Python 3.6.1+).
 
-    python -m venv venv
+    python3 -m venv venv
     . venv/bin/activate
-    pip install git+ssh://git@github.com/relaypro/relay-py.git#egg=relay-py
+    pip3 install git+ssh://git@github.com/relaypro/relay-py.git#egg=relay-py
     cd relay-py
-    pip install -e .
+    pip3 install -e .
 
 ## Usage
 
@@ -69,7 +69,7 @@ Install into a virtual environment (Python 3.6.1+).
     cd relay-py
     virtualenv venv
     . venv/bin/activate
-    pip install -e .
+    pip3 install -e .
 
 Start demo workflow server:
 
@@ -77,14 +77,14 @@ Start demo workflow server:
     cd relay-py
     . venv/bin/activate
     cd samples
-    python app.py
+    python3 app.py
 
 Run tests:
 
     bash
     cd relay-py
     . venv/bin/activate
-    pip install -e .[testing]
+    pip3 install -e .[testing]
     pytest
 
 
@@ -93,35 +93,41 @@ Run tests:
 - Install ngrok on your machine by creating an account and downloading from
 `https://dashboard.ngrok.com/get-started/setup`, or entering the
 command `npm install -g ngrok` into your shell. Once you have ngrok installed, expose your 
-workflow to the internet on port 8080 by entering the following command:
+workflow to the internet by entering the following command (assuming your workflow listens on
+port 8080 locally):
 
 <pre>
     ngrok http 8080
 </pre>
 
-- Run the ngrok http command in a different shell window than the one where you will be running your code, so that you can keep ngrok running while you install and run your workflows.  After typing in the command, you will see information about your session including two forwarding addresses.   It should look like the following:
+- Run the ngrok http command in a different shell window than the one where you will be running your code, so that you can keep ngrok running while you edit and run your workflows.  After typing in the command, you will see information about your session including an https forwarding address.   It should look like the following:
 
 <pre>
-    ngrok by @inconshreveable                                                                                                                                    (Ctrl+C to quit)
-                                                                                                                                                                             
-    Session Status                online                                                                                                                                         
-    Session Expires               1 hour, 59 minutes                                                                                                                             
-    Version                       2.3.40                                                                                                                                         
-    Region                        United States (us)                                                                                                                             
-    Web Interface                 http://127.0.0.1:4040                                                                                                                          
-    Forwarding                    http://8adb-8-48-95-57.ngrok.io -> http://localhost:8080                                                                                       
-    Forwarding                    https://8adb-8-48-95-57.ngrok.io -> http://localhost:8080                                                                                      
-                                                                                                                                                                                
-    Connections                   ttl     opn     rt1     rt5     p50     p90                                                                                                    
-                                0       0       0.00    0.00    0.00    0.00   
+    ngrok                         (Ctrl+C to quit)
+
+    Session Status                online
+    Account                       Relay User (Plan: Free)
+    Version                       3.0.6
+    Region                        United States (us)
+    Latency                       29ms
+    Web Interface                 http://127.0.0.1:4040
+    Forwarding                    https://8adb-8-48-95-57.ngrok.io -> http://localhost:8080
+
+    Connections                   ttl     opn     rt1     rt5     p50     p90
+                                  0       0       0.00    0.00    0.00    0.00
 </pre>
 
-- When registering a workflow, you would use the address provided by ngrok:
+- Now start your workflow:
+
+<pre>$ python3 mywf.py</pre>
+
+- When registering a workflow, you would use the Forwarding URL provided by ngrok, but replacing the `https` protocol with `wss`, and appending the path that you use in the `register` method call in your workflow:
 
 <pre>
-relay workflow:create:button -n helloworld -u 'wss://8adb-8-48-95-57.ngrok.io/helloworld' --trigger=single -i 990007560012345
+relay workflow:create:phrase -n hellophrase -u 'wss://8adb-8-48-95-57.ngrok.io/hellopath' --trigger hello -i 990007560012345
 </pre>
 
+- As you make iterative changes to your workflow, you'll need to stop and restart the `mywf.py` script for source changes to take effect, but can leave the ngrok executable running.
 
 ## Deployment on Heroku
 
@@ -133,7 +139,7 @@ code to this:
 <pre>
     port = os.getenv('PORT')
     if port is None:
-        port = 3000
+        port = 8080
     print(f'listening on port {port}')
     server = relay.workflow.Server('0.0.0.0', port)
 </pre>
