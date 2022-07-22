@@ -9,7 +9,6 @@ import uuid
 import websockets
 import sys
 import time
-import platform
 import os
 import urllib.parse
 import requests
@@ -23,10 +22,10 @@ logger.setLevel(logging.DEBUG)
 # logger.addHandler(logging.NullHandler())
 
 version = "relay-sdk-python/2.0.0"
-server_hostname = "all-main-qa-ibot.nocell.io"
-# server_hostname = "all-main-pro-ibot.nocell.io"
-auth_hostname = "auth.relaygo.info"
-# auth_hostname = "auth.relaygo.com"
+
+# used only for send_http_trigger and get_device_info
+server_hostname = "all-main-pro-ibot.relaysvr.com"
+auth_hostname = "auth.relaygo.com"
 
 class Server:
 
@@ -49,8 +48,7 @@ class Server:
 
     def start(self):
 
-        uname_result = platform.uname()
-        custom_headers = { 'User-Agent': f'{version} (Python {platform.python_version()}; {uname_result.system} {uname_result.machine} {uname_result.release})' }
+        custom_headers = { 'Server': f'{version}' }
         if hasattr(self, 'ssl_key_filename') and hasattr(self, 'ssl_cert_filename') :
             if not os.access(self.ssl_cert_filename, os.R_OK):
                 raise ServerException(f"can't read ssl_cert_file {ssl_cert_filename}")
@@ -652,7 +650,7 @@ class Relay:
     
                         elif _type == 'wf_api_incident_event':
                             # logger.debug(f"wf_api_incident_event with type: {e['type']}, id: {e['id']}, reason: {e['reason']}")
-                            asyncio.create_task(self.wrapper(h, e['type'], e['id'], e['reason']))
+                            asyncio.create_task(self.wrapper(h, e['type'], e['incident_id'], e['reason']))
     
                         elif _type == 'wf_api_interaction_lifecycle_event':
                             reason = e['reason'] if 'reason' in e else None
