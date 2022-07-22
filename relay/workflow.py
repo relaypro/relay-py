@@ -650,7 +650,7 @@ class Relay:
     
                         elif _type == 'wf_api_incident_event':
                             # logger.debug(f"wf_api_incident_event with type: {e['type']}, id: {e['id']}, reason: {e['reason']}")
-                            asyncio.create_task(self.wrapper(h, e['type'], e['id'], e['reason']))
+                            asyncio.create_task(self.wrapper(h, e['type'], e['incident_id'], e['reason']))
     
                         elif _type == 'wf_api_interaction_lifecycle_event':
                             reason = e['reason'] if 'reason' in e else None
