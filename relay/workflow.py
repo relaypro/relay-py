@@ -21,7 +21,7 @@ logger.setLevel(logging.DEBUG)
 # without a specific handler, it will log to the console. Uncomment below to not send to console.
 # logger.addHandler(logging.NullHandler())
 
-version = "relay-sdk-python/2.0.0"
+version = "relay-sdk-python/2.0.1"
 
 # used only for send_http_trigger and get_device_info
 server_hostname = "all-main-pro-ibot.relaysvr.com"
@@ -872,13 +872,12 @@ class Relay:
             raise WorkflowException(event['error'])
         return event
 
-    async def listen(self, target, request_id, phrases=None, transcribe:bool=True, alt_lang:str=None, timeout:int=60):
+    async def listen(self, target, phrases=None, transcribe:bool=True, alt_lang:str=None, timeout:int=60):
         """Listens for the user to speak into the device.  Utilizes speech to text functionality to interact
         with the user.
 
         Args:
             target (str): the interaction URN.
-            request_id (str): the id of the workflow request.
             phrases (string[], optional): optional phrases that you would like to limit the user's response to. Defaults to None.
             transcribe (bool, optional): whether you would like to transcribe the user's reponse. Defaults to True.
             timeout (int, optional): timeout for how long the device will wait for user's response. Defaults to 60.
@@ -896,7 +895,6 @@ class Relay:
         event = {
             '_type': 'wf_api_listen_request',
             '_target': self.targets_from_source_uri(target),
-            'request_id': request_id,
             'phrases': phrases,
             'transcribe': transcribe,
             'timeout': timeout,
