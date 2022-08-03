@@ -21,7 +21,7 @@ logger.setLevel(logging.DEBUG)
 # without a specific handler, it will log to the console. Uncomment below to not send to console.
 # logger.addHandler(logging.NullHandler())
 
-version = "relay-sdk-python/2.0.2"
+version = "relay-sdk-python/2.0.0"
 
 # used only for send_http_trigger and get_device_info
 server_hostname = "all-main-pro-ibot.relaysvr.com"
