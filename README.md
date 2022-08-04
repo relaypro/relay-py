@@ -124,7 +124,7 @@ port 8080 locally):
 - When registering a workflow, you would use the Forwarding URL provided by ngrok, but replacing the `https` protocol with `wss`, and appending the path that you use in the `register` method call in your workflow:
 
 <pre>
-relay workflow:create:phrase -n hellophrase -u 'wss://8adb-8-48-95-57.ngrok.io/hellopath' --trigger hello -i 990007560012345
+relay workflow:create:phrase -n hellophrase -u 'wss://8adb-8-48-95-57.ngrok.io/hellopath' --trigger hello --install-all
 </pre>
 
 - As you make iterative changes to your workflow, you'll need to stop and restart the `mywf.py` script for source changes to take effect, but can leave the ngrok executable running.
@@ -331,13 +331,6 @@ to Linux as the root user.
 
 - `$ relay workflow:list -x`<br>
 get the workflow ID from the "ID" column.
-
-- `$ relay devices`<br>
-get the list of all the device IDs on your account. Pick
-one for the install command as follows. If you need help figuring out the ID
-of a named device, go into Dash in Account -> Users.
-
-- `$ relay workflow:install -w wf_pythonphrase_bN8RoR9BpGK41urSjGUdjsC -s ed2a4a98-0395-4612-8f60-bd7b08d5b9a1 990007560123456`
 
 ## Invoking
 
