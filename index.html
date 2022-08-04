@@ -613,7 +613,7 @@ the&nbsp;unit&nbsp;of&nbsp;time.<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;a&nbsp;name&nbsp;for&nbsp;your&nbsp;timer.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;timer_type&nbsp;(str,&nbsp;optional):&nbsp;can&nbsp;be&nbsp;'timeout'&nbsp;or&nbsp;'interval'.&nbsp;Defaults&nbsp;to&nbsp;'timeout'.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;timeout&nbsp;(int):&nbsp;an&nbsp;integer&nbsp;representing&nbsp;when&nbsp;you&nbsp;would&nbsp;like&nbsp;your&nbsp;timer&nbsp;to&nbsp;stop.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;timeout&nbsp;(int):&nbsp;an&nbsp;integer&nbsp;representing&nbsp;when&nbsp;you&nbsp;would&nbsp;like&nbsp;your&nbsp;timer&nbsp;to&nbsp;fire.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;timeout_type&nbsp;(str,&nbsp;optional):&nbsp;can&nbsp;be&nbsp;'ms',&nbsp;'secs',&nbsp;'mins'&nbsp;or&nbsp;'hrs'.&nbsp;Defaults&nbsp;to&nbsp;'secs'.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-set_user_profile"><strong>set_user_profile</strong></a>(self, target: str, username: str, force: bool = False)</dt><dd><tt>Sets&nbsp;the&nbsp;profile&nbsp;of&nbsp;a&nbsp;user&nbsp;by&nbsp;updating&nbsp;the&nbsp;username.<br>
@@ -642,10 +642,10 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;options&nbsp;(optional):&nbsp;can&nbsp;be&nbsp;color,&nbsp;home&nbsp;channel,&nbsp;or&nbsp;input&nbsp;types.&nbsp;Defaults&nbsp;to&nbsp;None.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-start_timer"><strong>start_timer</strong></a>(self, timeout: int = 60)</dt><dd><tt>Starts&nbsp;an&nbsp;unnamed&nbsp;timer,&nbsp;meaning&nbsp;this&nbsp;will&nbsp;be&nbsp;the&nbsp;only&nbsp;timer&nbsp;on&nbsp;your&nbsp;device.<br>
-The&nbsp;timer&nbsp;will&nbsp;stop&nbsp;when&nbsp;it&nbsp;reaches&nbsp;the&nbsp;limit&nbsp;of&nbsp;the&nbsp;'timeout'&nbsp;parameter.<br>
+The&nbsp;timer&nbsp;will&nbsp;fire&nbsp;when&nbsp;it&nbsp;reaches&nbsp;the&nbsp;value&nbsp;of&nbsp;the&nbsp;'timeout'&nbsp;parameter.<br>
 &nbsp;<br>
 Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;timeout&nbsp;(int):&nbsp;the&nbsp;number&nbsp;of&nbsp;seconds&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;wait&nbsp;until&nbsp;the&nbsp;timer&nbsp;stops.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;timeout&nbsp;(int):&nbsp;the&nbsp;number&nbsp;of&nbsp;seconds&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;wait&nbsp;until&nbsp;the&nbsp;timer&nbsp;fires.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-stop_playback"><strong>stop_playback</strong></a>(self, target, id: str = None)</dt></dl>
 
@@ -1124,5 +1124,5 @@ Args:<br>
 <strong>auth_hostname</strong> = 'auth.relaygo.com'<br>
 <strong>logger</strong> = &lt;Logger workflow (DEBUG)&gt;<br>
 <strong>server_hostname</strong> = 'all-main-pro-ibot.relaysvr.com'<br>
-<strong>version</strong> = 'relay-sdk-python/2.0.1'</td></tr></table>
+<strong>version</strong> = 'relay-sdk-python/2.0.0'</td></tr></table>
 </body></html>
