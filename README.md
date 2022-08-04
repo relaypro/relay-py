@@ -366,6 +366,10 @@ enable DEBUG logging in the SDK. You can add your own log statements in
 your workflow for further identification of how your workflow script
 is progressing.
 
+## Guides Documentation
+
+The higher-level guides are available at https://developer.relaypro.com/docs
+
 ## API Reference Documentation
 
 The generated pydoc documentation is available at https://relaypro.github.io/relay-py/
