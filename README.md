@@ -259,8 +259,7 @@ authority).
 - open the desired inbound port in the EC2 Security Group for your workflow
 application (i.e., 3000)
 
-- configure the WebSocket server for SSL: *********** TODO add those steps here.
-    `openssl s_client -debug myserver.mydomain.com:3000`
+- configure the WebSocket server for SSL: see below
 
 - login to the EC2 server and start the workflow application. The logs should
 appear in your remote shell session.
@@ -365,6 +364,48 @@ To see the timing and flow of the callbacks and actions in your workflow,
 enable DEBUG logging in the SDK. You can add your own log statements in
 your workflow for further identification of how your workflow script
 is progressing.
+
+## TLS Capability
+
+The websocket server that is built-in to this Python Relay SDK has support
+for providing TLS encryption, given that you have a TLS key and certificate.
+For example, you can get a TLS key and certificate from letsencrypt.org. Or
+you can use a commercial provider. Sometimes this key and certificate for
+HTTP-over-TLS is called an "SSL certificate".
+
+To use the built-in TLS support, the key and certificate both need to
+be in PEM format, and in a file that can be read locally by the workflow
+process.
+
+When not using TLS support, your workflow app should have a line that
+looks like this:
+
+`server = relay.workflow.Server('0.0.0.0', port)`
+
+When you want to use the built-in TLS support, you supply extra arguments
+to this line that identify the filename of both the key and the
+certificate:
+
+    my_ssl_key_filename = '/etc/letsencrypt/live/myhost.mydomain.com/privkey.pem'
+    my_ssl_cert_filename = '/etc/letsencrypt/live/myhost.mydomain.com/fullchain.pem'
+    server = relay.workflow.Server('0.0.0.0', port, ssl_key_filename=my_ssl_key_filename, ssl_cert_filename=my_ssl_cert_filename)
+
+Now when you start your workflow application, in the log you should see this line:
+
+`Relay workflow server (relay-sdk-python/2.0.0) listening on 0.0.0.0 port 8080 with ssl_context MySslContext`
+
+When it says "ssl_context" instead of "plaintext", that is the clue that TLS is enabled.
+
+If you want to verify the certificate that your server is presenting to web clients, run:
+
+`openssl s_client -debug myserver.mydomain.com:8080`
+
+...assuming that you are still specifying port 8080. You may consider changing the port in
+the `relay.workflow.Server` method to 443, which is the standard port for TLS.
+Then when you specify the workflow server URL in the `relay workflow create` command
+via the `-n` option, you can assume the default port number by specifying
+`wss://myserver.mydomain.com/my_path`, otherwise if using a port other than 443 you'll
+need to specify it like `wss://myserver.mydomain.com:8080/my_path`.
 
 ## API Reference Documentation
 
