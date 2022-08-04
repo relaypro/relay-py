@@ -1948,7 +1948,7 @@ def __update_access_token(refresh_token:str, client_id:str):
     return access_token
 
 
-def send_http_trigger(access_token:str, refresh_token:str, client_id:str, workflow_id:str, subscriber_id:str, user_id:str, action_args:dict=None):
+def trigger_workflow(access_token:str, refresh_token:str, client_id:str, workflow_id:str, subscriber_id:str, user_id:str, action_args:dict=None):
     """A convenience method for sending an HTTP trigger to the Relay server.
 
     This generally would be used in a third-party system to start a Relay
@@ -2011,7 +2011,7 @@ def send_http_trigger(access_token:str, refresh_token:str, client_id:str, workfl
     return (response, access_token)
 
 
-def get_device_info(access_token:str, refresh_token:str, client_id:str, subscriber_id:str, user_id:str):
+def fetch_device(access_token:str, refresh_token:str, client_id:str, subscriber_id:str, user_id:str):
     """A convenience method for getting all the details of a device.
 
     This will return quite a bit of data regarding device configuration and
