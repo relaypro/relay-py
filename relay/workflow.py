@@ -21,7 +21,7 @@ logger.setLevel(logging.DEBUG)
 # without a specific handler, it will log to the console. Uncomment below to not send to console.
 # logger.addHandler(logging.NullHandler())
 
-version = "relay-sdk-python/2.0.1"
+version = "relay-sdk-python/2.0.0"
 
 # used only for send_http_trigger and get_device_info
 server_hostname = "all-main-pro-ibot.relaysvr.com"
@@ -466,6 +466,7 @@ class Relay:
         self.logger = None
 
     def get_cid(self):
+        # correlation id
         return f'{self.workflow.name}:{id(self.websocket)}'
 
     def fromJson(self, websocketMessage):
@@ -1535,10 +1536,10 @@ class Relay:
 
     async def start_timer(self, timeout:int=60):
         """Starts an unnamed timer, meaning this will be the only timer on your device.
-        The timer will stop when it reaches the limit of the 'timeout' parameter.
+        The timer will fire when it reaches the value of the 'timeout' parameter.
 
         Args:
-            timeout (int): the number of seconds you would like to wait until the timer stops.
+            timeout (int): the number of seconds you would like to wait until the timer fires.
         """
         event = {
             '_type': 'wf_api_start_timer_request',
@@ -1852,7 +1853,7 @@ class Relay:
         Args:
             name (str): a name for your timer.
             timer_type (str, optional): can be 'timeout' or 'interval'. Defaults to 'timeout'.
-            timeout (int): an integer representing when you would like your timer to stop.
+            timeout (int): an integer representing when you would like your timer to fire.
             timeout_type (str, optional): can be 'ms', 'secs', 'mins' or 'hrs'. Defaults to 'secs'.
         """
         event = {
