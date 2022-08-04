@@ -409,6 +409,10 @@ If you want to verify the certificate that your server is presenting to web clie
 
 `openssl s_client -debug myserver.mydomain.com:443`
 
+## Guides Documentation
+
+The higher-level guides are available at https://developer.relaypro.com/docs
+
 ## API Reference Documentation
 
 The generated pydoc documentation is available at https://relaypro.github.io/relay-py/
