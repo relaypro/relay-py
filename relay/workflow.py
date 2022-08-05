@@ -465,7 +465,6 @@ class Relay:
         self.id_futures = {}  # {_id: future}
         self.event_futures = {}
         self.logger = None
-        self.store = {}
 
     def get_cid(self):
         return f'{self.workflow.name}:{id(self.websocket)}'
