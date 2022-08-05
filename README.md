@@ -367,6 +367,15 @@ is progressing.
 
 ## TLS Capability
 
+Your workflow server must be exposed to the Relay server with TLS so
+that the `wss` (WebSocket Secure) protocol is used, this is enforced by
+the Relay server when registering workflows. See the
+[Guide](https://developer.relaypro.com/docs/requirements) on this topic.
+
+There are multiple ways to provide a TLS endpoint, such as a reverse proxy
+found in ngrok or Heroku or an Application Load Balancer, or directly in
+the websocket server.
+
 The websocket server that is built-in to this Python Relay SDK has support
 for providing TLS encryption, given that you have a TLS key and certificate.
 For example, you can get a TLS key and certificate from letsencrypt.org. Or
