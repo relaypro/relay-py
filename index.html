@@ -454,13 +454,15 @@ Args:<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;text&nbsp;representation&nbsp;of&nbsp;what&nbsp;the&nbsp;user&nbsp;had&nbsp;spoken&nbsp;into&nbsp;the&nbsp;device.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-log_message"><strong>log_message</strong></a>(self, message: str, category: str = 'default')</dt><dd><tt>Log&nbsp;an&nbsp;analytics&nbsp;event&nbsp;from&nbsp;a&nbsp;workflow&nbsp;with&nbsp;the&nbsp;specified&nbsp;content&nbsp;and<br>
+<dl><dt>async <a name="Relay-log_message"><strong>log_message</strong></a>(self, message: str, category: Optional[str] = 'default', target: Optional[str] = None, content_type: Optional[str] = 'text/plain')</dt><dd><tt>Log&nbsp;an&nbsp;analytics&nbsp;event&nbsp;from&nbsp;a&nbsp;workflow&nbsp;with&nbsp;the&nbsp;specified&nbsp;content&nbsp;and<br>
 under&nbsp;a&nbsp;specified&nbsp;category.&nbsp;This&nbsp;does&nbsp;not&nbsp;log&nbsp;the&nbsp;device&nbsp;who<br>
 triggered&nbsp;the&nbsp;workflow&nbsp;that&nbsp;called&nbsp;this&nbsp;function.<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;message&nbsp;(str):&nbsp;a&nbsp;description&nbsp;for&nbsp;your&nbsp;analytical&nbsp;event.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;category&nbsp;(str):&nbsp;a&nbsp;category&nbsp;for&nbsp;your&nbsp;analytical&nbsp;event.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;category&nbsp;(str,&nbsp;optional):&nbsp;a&nbsp;category&nbsp;for&nbsp;your&nbsp;analytical&nbsp;event.&nbsp;Defaults&nbsp;to&nbsp;'default'.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str,&nbsp;optional):&nbsp;URN&nbsp;of&nbsp;the&nbsp;device&nbsp;that&nbsp;triggered&nbsp;this&nbsp;function.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;content_type&nbsp;(str,&nbsp;optional):&nbsp;encoding&nbsp;of&nbsp;the&nbsp;message&nbsp;string.&nbsp;Defaults&nbsp;to&nbsp;'text/plain'.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-log_user_message"><strong>log_user_message</strong></a>(self, message: str, target, category: str)</dt><dd><tt>Log&nbsp;an&nbsp;analytic&nbsp;event&nbsp;from&nbsp;a&nbsp;workflow&nbsp;with&nbsp;the&nbsp;specified&nbsp;content&nbsp;and<br>
 under&nbsp;a&nbsp;specified&nbsp;category.&nbsp;&nbsp;This&nbsp;includes&nbsp;the&nbsp;device&nbsp;who&nbsp;triggered&nbsp;the&nbsp;workflow<br>
@@ -1119,6 +1121,7 @@ Args:<br>
 <strong>INTERACTION_URI_ID</strong> = 'urn:relay-resource:id:interaction'<br>
 <strong>INTERACTION_URI_NAME</strong> = 'urn:relay-resource:name:interaction'<br>
 <strong>NAME</strong> = 'name'<br>
+<strong>Optional</strong> = typing.Optional<br>
 <strong>ROOT</strong> = 'relay-resource'<br>
 <strong>SCHEME</strong> = 'urn'<br>
 <strong>auth_hostname</strong> = 'auth.relaygo.com'<br>
