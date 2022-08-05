@@ -14,6 +14,7 @@ import urllib.parse
 import requests
 import ssl
 from functools import singledispatch
+from typing import Optional
 
 logging.basicConfig(format='%(levelname)s: %(asctime)s: %(message)s')
 logger = logging.getLogger(__name__)
@@ -1810,23 +1811,27 @@ class Relay:
         }
         await self.sendReceive(event)
 
-    async def log_message(self, message:str, category:str='default'):
+    async def log_message(self, message:str, category: Optional[str]='default', target: Optional[str]=None, content_type: Optional[str]='text/plain'):
         """Log an analytics event from a workflow with the specified content and
         under a specified category. This does not log the device who
         triggered the workflow that called this function.
 
         Args:
             message (str): a description for your analytical event.
-            category (str): a category for your analytical event.
+            category (str, optional): a category for your analytical event. Defaults to 'default'.
+            target (str, optional): URN of the device that triggered this function. Defaults to None.
+            content_type (str, optional): encoding of the message string. Defaults to 'text/plain'.
         """
         event = {
             '_type': 'wf_api_log_analytics_event_request',
             'content': message,
-            'content_type': 'text/plain',
-            'category': category
+            'content_type':  content_type,
+            'category': category,
+            'device_uri': target
         }
         await self.sendReceive(event)
 
+    # TODO: is this needed?
     async def log_user_message(self, message:str, target, category:str):
         """Log an analytic event from a workflow with the specified content and
         under a specified category.  This includes the device who triggered the workflow
