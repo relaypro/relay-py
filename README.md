@@ -380,32 +380,25 @@ process.
 When not using TLS support, your workflow app should have a line that
 looks like this:
 
-`server = relay.workflow.Server('0.0.0.0', port)`
+`server = relay.workflow.Server('0.0.0.0', 8080)`
 
-When you want to use the built-in TLS support, you supply extra arguments
-to this line that identify the filename of both the key and the
-certificate:
+When you want to use the built-in TLS support, you supply keyword arguments
+to this function that identify the filename of both the key and the
+certificate, for example:
 
-    my_ssl_key_filename = '/etc/letsencrypt/live/myhost.mydomain.com/privkey.pem'
-    my_ssl_cert_filename = '/etc/letsencrypt/live/myhost.mydomain.com/fullchain.pem'
-    server = relay.workflow.Server('0.0.0.0', port, ssl_key_filename=my_ssl_key_filename, ssl_cert_filename=my_ssl_cert_filename)
+    my_ssl_key_filename = '/etc/letsencrypt/live/myserver.mydomain.com/privkey.pem'
+    my_ssl_cert_filename = '/etc/letsencrypt/live/myserver.mydomain.com/fullchain.pem'
+    server = relay.workflow.Server('0.0.0.0', 443, ssl_key_filename=my_ssl_key_filename, ssl_cert_filename=my_ssl_cert_filename)
 
 Now when you start your workflow application, in the log you should see this line:
 
-`Relay workflow server (relay-sdk-python/2.0.0) listening on 0.0.0.0 port 8080 with ssl_context MySslContext`
+`Relay workflow server (relay-sdk-python/2.0.0) listening on 0.0.0.0 port 443 with ssl_context MySslContext`
 
 When it says "ssl_context" instead of "plaintext", that is the clue that TLS is enabled.
 
 If you want to verify the certificate that your server is presenting to web clients, run:
 
-`openssl s_client -debug myserver.mydomain.com:8080`
-
-...assuming that you are still specifying port 8080. You may consider changing the port in
-the `relay.workflow.Server` method to 443, which is the standard port for TLS.
-Then when you specify the workflow server URL in the `relay workflow create` command
-via the `-n` option, you can assume the default port number by specifying
-`wss://myserver.mydomain.com/my_path`, otherwise if using a port other than 443 you'll
-need to specify it like `wss://myserver.mydomain.com:8080/my_path`.
+`openssl s_client -debug myserver.mydomain.com:443`
 
 ## API Reference Documentation
 
