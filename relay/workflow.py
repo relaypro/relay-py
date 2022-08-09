@@ -14,7 +14,7 @@ import urllib.parse
 import requests
 import ssl
 from functools import singledispatch
-from typing import Optional
+from typing import List, Optional
 
 logging.basicConfig(format='%(levelname)s: %(asctime)s: %(message)s')
 logger = logging.getLogger(__name__)
@@ -1953,7 +1953,7 @@ def __update_access_token(refresh_token:str, client_id:str):
     return access_token
 
 
-def trigger_workflow(access_token:str, refresh_token:str, client_id:str, workflow_id:str, subscriber_id:str, user_id:str, targets, action_args:dict=None):
+def trigger_workflow(access_token:str, refresh_token:str, client_id:str, workflow_id:str, subscriber_id:str, user_id:str, targets:List[str], action_args:dict=None):
     """A convenience method for sending an HTTP trigger to the Relay server.
 
     This generally would be used in a third-party system to start a Relay
