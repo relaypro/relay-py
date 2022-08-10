@@ -1070,7 +1070,7 @@ Args:<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;the&nbsp;name&nbsp;of&nbsp;an&nbsp;interaction.</tt></dd></dl>
  <dl><dt><a name="-remove_null"><strong>remove_null</strong></a>(obj)</dt></dl>
- <dl><dt><a name="-trigger_workflow"><strong>trigger_workflow</strong></a>(access_token: str, refresh_token: str, client_id: str, workflow_id: str, subscriber_id: str, user_id: str, action_args: dict = None)</dt><dd><tt>A&nbsp;convenience&nbsp;method&nbsp;for&nbsp;sending&nbsp;an&nbsp;HTTP&nbsp;trigger&nbsp;to&nbsp;the&nbsp;<a href="#Relay">Relay</a>&nbsp;server.<br>
+ <dl><dt><a name="-trigger_workflow"><strong>trigger_workflow</strong></a>(access_token: str, refresh_token: str, client_id: str, workflow_id: str, subscriber_id: str, user_id: str, targets: List[str], action_args: dict = None)</dt><dd><tt>A&nbsp;convenience&nbsp;method&nbsp;for&nbsp;sending&nbsp;an&nbsp;HTTP&nbsp;trigger&nbsp;to&nbsp;the&nbsp;<a href="#Relay">Relay</a>&nbsp;server.<br>
 &nbsp;<br>
 This&nbsp;generally&nbsp;would&nbsp;be&nbsp;used&nbsp;in&nbsp;a&nbsp;third-party&nbsp;system&nbsp;to&nbsp;start&nbsp;a&nbsp;<a href="#Relay">Relay</a><br>
 workflow&nbsp;via&nbsp;an&nbsp;HTTP&nbsp;trigger&nbsp;and&nbsp;optionally&nbsp;pass&nbsp;data&nbsp;to&nbsp;it&nbsp;with<br>
@@ -1120,6 +1120,7 @@ Args:<br>
 <strong>ID</strong> = 'id'<br>
 <strong>INTERACTION_URI_ID</strong> = 'urn:relay-resource:id:interaction'<br>
 <strong>INTERACTION_URI_NAME</strong> = 'urn:relay-resource:name:interaction'<br>
+<strong>List</strong> = typing.List<br>
 <strong>NAME</strong> = 'name'<br>
 <strong>Optional</strong> = typing.Optional<br>
 <strong>ROOT</strong> = 'relay-resource'<br>
