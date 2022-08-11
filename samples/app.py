@@ -13,7 +13,6 @@ with open('logging.yml', 'r') as f:
 import relay.workflow
 
 # import deviceinfo_demo_wf as deviceinfo
-import hello_world_wf as helloworld
 # import interval_timer_wf as timer
 # import led_demo_wf as led
 # import login_wf as login
@@ -27,7 +26,6 @@ def main():
     server = relay.workflow.Server('localhost', 8080)
 
     # server.register(deviceinfo.wf, '/deviceinfo')
-    server.register(helloworld.wf, '/helloworld')
     # server.register(broadcast.wf, '/broadcast')
     # server.register(timer.wf, '/timer')
     # server.register(led.wf, '/led')

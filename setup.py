@@ -6,7 +6,7 @@ import setuptools
 
 setuptools.setup(
     name='relay-py',
-    version='0.0.1',
+    version='2.0.0-alpha',
     packages=setuptools.find_packages(),
     install_requires=[
         'requests',

@@ -1,13 +1,18 @@
+"""
+A module for implementing Relay workflows in Python. This is the SDK that
+provides a way for your enterprise to extend your I/T tools to your active
+workers via Relay devices. There are APIs for text-to-speech (say),
+speech-to-text (listen), LED control, vibration control, location
+information, NFC tag taps, etc. See https://developer.relaypro.com
+"""
 
 # Copyright © 2022 Relay Inc.
 
 import asyncio
 import json
 import logging
-import time
 import uuid
 import websockets
-import sys
 import time
 import os
 import urllib.parse
@@ -18,19 +23,44 @@ from typing import List, Optional
 
 logging.basicConfig(format='%(levelname)s: %(asctime)s: %(message)s')
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-# without a specific handler, it will log to the console. Uncomment below to not send to console.
-# logger.addHandler(logging.NullHandler())
+# default log level for this module
+logger.setLevel(logging.WARNING)
+# no default handler, meaning use logger.lastResort (usually StderrHandler)
 
-version = "relay-sdk-python/2.0.0"
+VERSION = "relay-sdk-python/2.0.0-alpha"
 
-# used only for send_http_trigger and get_device_info
+# used only for trigger_workflow and fetch_device
 server_hostname = "all-main-pro-ibot.relaysvr.com"
 auth_hostname = "auth.relaygo.com"
 
-class Server:
 
-    def __init__(self, host:str, port:int, **kwargs):
+class Server:
+    """
+    A websocket server that gets connected to when a new workflow
+    is instantiated via a trigger.
+
+    Events are sent here, and the connection is also used to send actions to the Relay server.
+    """
+
+    def __init__(self, host: str, port: int, **kwargs):
+        """
+        Args:
+            host: the IP address of the interface that this server should
+             listen on. Typically is "0.0.0.0", which represents all interfaces.
+            port: the port number that this server should listen on.
+            **kwargs: see below
+
+        Keyword Args:
+            log_level: sets the threshold level for the logger in this module.
+            log_handler: a log handler object to be added to the logger in this
+             module. To disable logging output, use `logging.NullHandler()`.
+            ssl_key_filename: if an SSLContext is desired for this server,
+             this is the filename where the key in PEM format can be found.
+             Should also use ssl_cert_filename if this is specified.
+            ssl_cert_filename: if an SSLContext is desired for this server,
+             this is the filename where the certificate in PEM format can
+             be found. Should also use ssl_key_filename if this is specified.
+        """
 
         self.host = host
         self.port = port
@@ -40,8 +70,16 @@ class Server:
                 self.ssl_key_filename = kwargs[key]
             elif key == 'ssl_cert_filename':
                 self.ssl_cert_filename = kwargs[key]
+            elif key == 'log_level':
+                this_logger = logging.getLogger(__name__)
+                this_logger.setLevel(kwargs[key])
+            elif key == 'log_handler':
+                # if logging.NullHandler() is added then nothing will appear on the console
+                this_logger = logging.getLogger(__name__)
+                this_logger.addHandler(kwargs[key])
+                print(f'__name: {__name__}, this_logger: {this_logger}, handler: {kwargs[key]}, handlers: {this_logger.handlers} lastResort: {logging.lastResort}')
 
-    def register(self, workflow, path:str):
+    def register(self, workflow, path: str):
 
         if path in self.workflows:
             raise ServerException(f'a workflow is already registered at path {path}')
@@ -49,19 +87,19 @@ class Server:
 
     def start(self):
 
-        custom_headers = { 'Server': f'{version}' }
+        custom_headers = {'Server': f'{VERSION}'}
         if hasattr(self, 'ssl_key_filename') and hasattr(self, 'ssl_cert_filename') :
             if not os.access(self.ssl_cert_filename, os.R_OK):
-                raise ServerException(f"can't read ssl_cert_file {ssl_cert_filename}")
+                raise ServerException(f"can't read ssl_cert_file {self.ssl_cert_filename}")
             if not os.access(self.ssl_key_filename, os.R_OK):
-                raise ServerException(f"can't read ssl_key_file {ssl_key_filename}")
+                raise ServerException(f"can't read ssl_key_file {self.ssl_key_filename}")
             ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
             ssl_context.load_cert_chain(self.ssl_cert_filename, self.ssl_key_filename)
             start_server = websockets.serve(self.handler, self.host, self.port, extra_headers=custom_headers, ssl=ssl_context)
-            logger.info(f'Relay workflow server ({version}) listening on {self.host} port {self.port} with ssl_context {ssl_context}')
+            logger.info(f'Relay workflow server ({VERSION}) listening on {self.host} port {self.port} with ssl_context {ssl_context}')
         else:
             start_server = websockets.serve(self.handler, self.host, self.port, extra_headers=custom_headers)
-            logger.info(f'Relay workflow server ({version}) listening on {self.host} port {self.port} with plaintext')
+            logger.info(f'Relay workflow server ({VERSION}) listening on {self.host} port {self.port} with plaintext')
 
         asyncio.get_event_loop().run_until_complete(start_server)
 
@@ -299,6 +337,14 @@ def is_relay_uri(uri:str):
         return True
     return False
 
+
+# other constants
+
+# interaction event types
+TYPE_ENDED = 'ended'
+TYPE_STARTED = 'started'
+
+
 class Workflow:
     
     def __init__(self, name:str):
@@ -306,30 +352,29 @@ class Workflow:
         self.type_handlers = {}  # {(type, args): func}
 
     def on_start(self, func):
-        self.type_handlers[('wf_api_start_event')] = func
+        self.type_handlers['wf_api_start_event'] = func
 
     def on_stop(self, func):
-        self.type_handlers[('wf_api_stop_event')] = func
+        self.type_handlers['wf_api_stop_event'] = func
 
     ####### TODO: should this be simply on_prompt_event like the message is?
 
     def on_prompt(self, func):
-        self.type_handlers[('wf_api_prompt_event')] = func
+        self.type_handlers['wf_api_prompt_event'] = func
 
     def on_button(self, _func=None, *, button='*', taps='*'):
         def on_button_decorator(func):
-            self.type_handlers[('wf_api_button_event', button, taps)] = func
+            self.type_handlers['wf_api_button_event', button, taps] = func
 
         if _func:
             return on_button_decorator(_func)
 
         else:
             return on_button_decorator
-
     
     def on_notification(self, _func=None, *, name='*', event='*'):
         def on_notification_decorator(func):
-            self.type_handlers[('wf_api_notification_event', name, event)] = func
+            self.type_handlers['wf_api_notification_event', name, event] = func
 
         if _func:
             return on_notification_decorator(_func)
@@ -337,63 +382,62 @@ class Workflow:
         else:
             return on_notification_decorator
 
-
     def on_timer(self, func):
         # unnamed timer
-        self.type_handlers[('wf_api_timer_event')] = func
+        self.type_handlers['wf_api_timer_event'] = func
 
     def on_timer_fired(self, func):
         # named timer
-        self.type_handlers[('wf_api_timer_fired_event')] = func
+        self.type_handlers['wf_api_timer_fired_event'] = func
 
     def on_speech(self, func):
-        self.type_handlers[('wf_api_speech_event')] = func
+        self.type_handlers['wf_api_speech_event'] = func
 
     def on_progress(self, func):
-        self.type_handlers[('wf_api_progress_event')] = func
+        self.type_handlers['wf_api_progress_event'] = func
 
     def on_play_inbox_message(self, func):
-        self.type_handlers[('wf_api_play_inbox_message_event')] = func
+        self.type_handlers['wf_api_play_inbox_message_event'] = func
 
     def on_call_connected(self, func):
-        self.type_handlers[('wf_api_call_connected_event')] = func
+        self.type_handlers['wf_api_call_connected_event'] = func
 
     def on_call_disconnected(self, func):
-        self.type_handlers[('wf_api_call_disconnected_event')] = func
+        self.type_handlers['wf_api_call_disconnected_event'] = func
 
     def on_call_failed(self, func):
-        self.type_handlers[('wf_api_call_failed_event')] = func
+        self.type_handlers['wf_api_call_failed_event'] = func
 
     def on_call_received(self, func):
-        self.type_handlers[('wf_api_call_received_event')] = func
+        self.type_handlers['wf_api_call_received_event'] = func
 
     def on_call_ringing(self, func):
-        self.type_handlers[('wf_api_call_ringing_event')] = func
+        self.type_handlers['wf_api_call_ringing_event'] = func
 
     def on_call_start_request(self, func):
-        self.type_handlers[('wf_api_call_start_request_event')] = func
+        self.type_handlers['wf_api_call_start_request_event'] = func
 
     def on_call_progressing(self, func):
-        self.type_handlers[('wf_api_call_progressing_event')] = func
+        self.type_handlers['wf_api_call_progressing_event'] = func
 
     def on_sms(self, func):
-        self.type_handlers[('wf_api_sms_event')] = func
+        self.type_handlers['wf_api_sms_event'] = func
 
     def on_incident(self, func):
-        self.type_handlers[('wf_api_incident_event')] = func
+        self.type_handlers['wf_api_incident_event'] = func
 
     def on_interaction_lifecycle(self, func):
-        self.type_handlers[('wf_api_interaction_lifecycle_event')] = func
+        self.type_handlers['wf_api_interaction_lifecycle_event'] = func
 
     def on_resume(self, func):
-        self.type_handlers[('wf_api_resume_event')] = func
+        self.type_handlers['wf_api_resume_event'] = func
 
     def get_handler(self, event:dict):
         t = event['_type']
 
         # assume no-arg handler; if not, check the handlers that require args
         # for args, check for handler registered with specific values first; if not, then check variations with wildcard values
-        h = self.type_handlers.get((t), None)
+        h = self.type_handlers.get(t, None)
         if not h:
             if t == 'wf_api_button_event':
                 h = self.type_handlers.get((t, event['button'], event['taps']), None)
@@ -433,6 +477,7 @@ class WorkflowException(Exception):
 @singledispatch
 def remove_null(obj):
     return obj
+
 
 @remove_null.register(list)
 def _process_list(l):
@@ -484,11 +529,11 @@ class Relay:
                 if isinstance(dictMessage[key], (list, dict)):
                     dictMessage[key] = self.cleanIntArrays(dictMessage[key])
         elif isinstance(dictMessage, list):
-            allInt = True;
+            allInt = True
             for item in dictMessage:
                 if not isinstance(item, int):
-                    allInt = False;
-                    break;
+                    allInt = False
+                    break
             if allInt and (len(dictMessage) > 0):
                 dictMessage = "".join(chr(i) for i in dictMessage)
         return dictMessage
@@ -540,7 +585,7 @@ class Relay:
         self.websocket = websocket
         self.logger = CustomAdapter(logger, {'cid': self.get_cid()})
 
-        self.logger.info(f'workflow started from {self.websocket.path}')
+        self.logger.info(f'workflow instance started for {self.websocket.path}')
 
         try:
             async for m in websocket:
@@ -665,7 +710,11 @@ class Relay:
                             asyncio.create_task(self.wrapper(h, e['trigger']))
     
                     elif not handled:
-                        self.logger.warning(f'no handler found for _type {e["_type"]}')
+                        if (_type == 'wf_api_prompt_event') or (_type == 'wf_api_speech_event') or (_type == 'wf_api_stop_event'):
+                            level = logging.DEBUG
+                        else:
+                            level = logging.WARNING
+                        self.logger.log(level, f'no handler found for _type {e["_type"]}')
 
         except websockets.exceptions.ConnectionClosedError:
             # ibot closes the connection on terminate(); this is expected
@@ -675,7 +724,7 @@ class Relay:
             self.logger.error(f'{x}', exc_info=True)
 
         finally:
-            self.logger.info('workflow terminated')
+            self.logger.info('workflow instance terminated')
 
     # run handlers with exception logging; needed since we cannot await handlers
     async def wrapper(self, h, *args):
@@ -1748,7 +1797,7 @@ class Relay:
         """Checks whether a device is a member of a particular group.
 
         Args:
-            group_uri (str): the URN of a group.
+            group_name_uri (str): the URN of a group.
             potential_member_name_uri: the URN of the device name.
 
         Returns:
@@ -1938,7 +1987,7 @@ class Relay:
 def __update_access_token(refresh_token:str, client_id:str):
     grant_url = f'https://{auth_hostname}/oauth2/token'
     grant_headers = {
-        'User-Agent': version
+        'User-Agent': VERSION
     }
     grant_payload = {
         'grant_type': 'refresh_token',
@@ -1996,7 +2045,7 @@ def trigger_workflow(access_token:str, refresh_token:str, client_id:str, workflo
     url = f'https://{server_hostname}/ibot/workflow/{workflow_id}'
     headers = {
         'Authorization': f'Bearer {access_token}',
-        'User-Agent': version
+        'User-Agent': VERSION
     }
     query_params = {
         'subscriber_id': subscriber_id,
@@ -2044,7 +2093,7 @@ def fetch_device(access_token:str, refresh_token:str, client_id:str, subscriber_
     url = f'https://{server_hostname}/relaypro/api/v1/device/{user_id}'
     headers = {
         'Authorization': f'Bearer {access_token}',
-        'User-Agent': version
+        'User-Agent': VERSION
     }
     query_params = { 'subscriber_id': subscriber_id }
     response = requests.get(url, headers=headers, params=query_params, timeout=10.0)
