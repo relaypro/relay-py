@@ -9,7 +9,11 @@
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>workflow</strong></big></big></font></td
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/runner/work/relay-py/relay-py/src/relay/workflow.py">/home/runner/work/relay-py/relay-py/src/relay/workflow.py</a></font></td></tr></table>
-    <p><tt>#&nbsp;Copyright&nbsp;©&nbsp;2022&nbsp;<a href="#Relay">Relay</a>&nbsp;Inc.</tt></p>
+    <p><tt>A&nbsp;module&nbsp;for&nbsp;implementing&nbsp;<a href="#Relay">Relay</a>&nbsp;workflows&nbsp;in&nbsp;Python.&nbsp;This&nbsp;is&nbsp;the&nbsp;SDK&nbsp;that<br>
+provides&nbsp;a&nbsp;way&nbsp;for&nbsp;your&nbsp;enterprise&nbsp;to&nbsp;extend&nbsp;your&nbsp;I/T&nbsp;tools&nbsp;to&nbsp;your&nbsp;active<br>
+workers&nbsp;via&nbsp;<a href="#Relay">Relay</a>&nbsp;devices.&nbsp;There&nbsp;are&nbsp;APIs&nbsp;for&nbsp;text-to-speech&nbsp;(say),<br>
+speech-to-text&nbsp;(listen),&nbsp;LED&nbsp;control,&nbsp;vibration&nbsp;control,&nbsp;location<br>
+information,&nbsp;NFC&nbsp;tag&nbsp;taps,&nbsp;etc.&nbsp;See&nbsp;<a href="https://developer.relaypro.com">https://developer.relaypro.com</a></tt></p>
 <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
@@ -23,11 +27,10 @@
 </td><td width="25%" valign=top><a href="os.html">os</a><br>
 <a href="requests.html">requests</a><br>
 <a href="ssl.html">ssl</a><br>
-</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
-<a href="time.html">time</a><br>
+</td><td width="25%" valign=top><a href="time.html">time</a><br>
 <a href="urllib.html">urllib</a><br>
-</td><td width="25%" valign=top><a href="uuid.html">uuid</a><br>
-<a href="websockets.html">websockets</a><br>
+<a href="uuid.html">uuid</a><br>
+</td><td width="25%" valign=top><a href="websockets.html">websockets</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
@@ -413,7 +416,7 @@ Returns:<br>
 <dl><dt>async <a name="Relay-is_group_member"><strong>is_group_member</strong></a>(self, group_name_uri: str, potential_member_name_uri: str)</dt><dd><tt>Checks&nbsp;whether&nbsp;a&nbsp;device&nbsp;is&nbsp;a&nbsp;member&nbsp;of&nbsp;a&nbsp;particular&nbsp;group.<br>
 &nbsp;<br>
 Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;group_uri&nbsp;(str):&nbsp;the&nbsp;URN&nbsp;of&nbsp;a&nbsp;group.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;group_name_uri&nbsp;(str):&nbsp;the&nbsp;URN&nbsp;of&nbsp;a&nbsp;group.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;potential_member_name_uri:&nbsp;the&nbsp;URN&nbsp;of&nbsp;the&nbsp;device&nbsp;name.<br>
 &nbsp;<br>
 Returns:<br>
@@ -730,10 +733,28 @@ Data descriptors defined here:<br>
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#Server">Server</a>(host:&nbsp;str,&nbsp;port:&nbsp;int,&nbsp;**kwargs)<br>
 &nbsp;<br>
-<br>&nbsp;</tt></td></tr>
+A&nbsp;websocket&nbsp;server&nbsp;that&nbsp;gets&nbsp;connected&nbsp;to&nbsp;when&nbsp;a&nbsp;new&nbsp;workflow<br>
+is&nbsp;instantiated&nbsp;via&nbsp;a&nbsp;trigger.<br>
+&nbsp;<br>
+Events&nbsp;are&nbsp;sent&nbsp;here,&nbsp;and&nbsp;the&nbsp;connection&nbsp;is&nbsp;also&nbsp;used&nbsp;to&nbsp;send&nbsp;actions&nbsp;to&nbsp;the&nbsp;<a href="#Relay">Relay</a>&nbsp;server.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="Server-__init__"><strong>__init__</strong></a>(self, host: str, port: int, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+<dl><dt><a name="Server-__init__"><strong>__init__</strong></a>(self, host: str, port: int, **kwargs)</dt><dd><tt>Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;host:&nbsp;the&nbsp;IP&nbsp;address&nbsp;of&nbsp;the&nbsp;interface&nbsp;that&nbsp;this&nbsp;server&nbsp;should<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;listen&nbsp;on.&nbsp;Typically&nbsp;is&nbsp;"0.0.0.0",&nbsp;which&nbsp;represents&nbsp;all&nbsp;interfaces.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;port:&nbsp;the&nbsp;port&nbsp;number&nbsp;that&nbsp;this&nbsp;server&nbsp;should&nbsp;listen&nbsp;on.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs:&nbsp;see&nbsp;below<br>
+&nbsp;<br>
+Keyword&nbsp;Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;log_level:&nbsp;sets&nbsp;the&nbsp;threshold&nbsp;level&nbsp;for&nbsp;the&nbsp;logger&nbsp;in&nbsp;this&nbsp;module.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;log_handler:&nbsp;a&nbsp;log&nbsp;handler&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;be&nbsp;added&nbsp;to&nbsp;the&nbsp;logger&nbsp;in&nbsp;this<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;module.&nbsp;To&nbsp;disable&nbsp;logging&nbsp;output,&nbsp;use&nbsp;`logging.NullHandler()`.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ssl_key_filename:&nbsp;if&nbsp;an&nbsp;SSLContext&nbsp;is&nbsp;desired&nbsp;for&nbsp;this&nbsp;server,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;is&nbsp;the&nbsp;filename&nbsp;where&nbsp;the&nbsp;key&nbsp;in&nbsp;PEM&nbsp;format&nbsp;can&nbsp;be&nbsp;found.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Should&nbsp;also&nbsp;use&nbsp;ssl_cert_filename&nbsp;if&nbsp;this&nbsp;is&nbsp;specified.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ssl_cert_filename:&nbsp;if&nbsp;an&nbsp;SSLContext&nbsp;is&nbsp;desired&nbsp;for&nbsp;this&nbsp;server,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;is&nbsp;the&nbsp;filename&nbsp;where&nbsp;the&nbsp;certificate&nbsp;in&nbsp;PEM&nbsp;format&nbsp;can<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;found.&nbsp;Should&nbsp;also&nbsp;use&nbsp;ssl_key_filename&nbsp;if&nbsp;this&nbsp;is&nbsp;specified.</tt></dd></dl>
 
 <dl><dt>async <a name="Server-handler"><strong>handler</strong></a>(self, websocket, path: str)</dt></dl>
 
@@ -1125,8 +1146,10 @@ Args:<br>
 <strong>Optional</strong> = typing.Optional<br>
 <strong>ROOT</strong> = 'relay-resource'<br>
 <strong>SCHEME</strong> = 'urn'<br>
+<strong>TYPE_ENDED</strong> = 'ended'<br>
+<strong>TYPE_STARTED</strong> = 'started'<br>
+<strong>VERSION</strong> = 'relay-sdk-python/2.0.0-alpha'<br>
 <strong>auth_hostname</strong> = 'auth.relaygo.com'<br>
-<strong>logger</strong> = &lt;Logger workflow (DEBUG)&gt;<br>
-<strong>server_hostname</strong> = 'all-main-pro-ibot.relaysvr.com'<br>
-<strong>version</strong> = 'relay-sdk-python/2.0.0'</td></tr></table>
+<strong>logger</strong> = &lt;Logger workflow (WARNING)&gt;<br>
+<strong>server_hostname</strong> = 'all-main-pro-ibot.relaysvr.com'</td></tr></table>
 </body></html>
