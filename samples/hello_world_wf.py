@@ -2,45 +2,31 @@
 
 # Copyright © 2022 Relay Inc.
 
-import asyncio
-import os
 import relay.workflow
+import os
 import logging
-import time
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+port = os.getenv('PORT', 8080)
+wf_server = relay.workflow.Server('0.0.0.0', port, log_level=logging.INFO)
+hello_workflow = relay.workflow.Workflow('hello workflow')
+wf_server.register(hello_workflow, '/hellopath')
 
-wf = relay.workflow.Workflow('hello')
-port = os.getenv('PORT')
-if port is None:
-    port = 8080
-
-@wf.on_start
-async def start_handler(relay, trigger):
-
-    device_urn = trigger['args']['source_uri']
-    target = relay.make_target_uris(trigger)
-
-    await relay.start_interaction(target, 'hello world')
+interaction_name = 'hello interaction'
 
 
-@wf.on_interaction_lifecycle
-async def lifecycle_handler(relay, itype, interaction_uri, reason):
-    if itype == 'started':
-        device_name = await relay.get_device_name(interaction_uri)
-        await relay.say_and_wait(interaction_uri, 'What is your name?')
-        user_provided_name = await relay.listen(interaction_uri, 'request1')
-        greeting = await relay.get_var('greeting')
-        await relay.say_and_wait(interaction_uri, f'{greeting} {user_provided_name}! You are currently using {device_name}')
-        await relay.end_interaction(interaction_uri, 'hello world')
-    if itype == 'ended':
-        await relay.terminate()
+@hello_workflow.on_start
+async def start_handler(workflow, trigger):
+    target = workflow.make_target_uris(trigger)
+    await workflow.start_interaction(target, interaction_name)
 
-@wf.on_stop
-async def stop_handler(relay, reason):
-    logger.debug(f'stopped: {reason}')
 
-@wf.on_prompt
-async def prompt_handler(relay, source_uri, type):
-    logger.debug(f'source uri: {source_uri}, type: {type}')
+@hello_workflow.on_interaction_lifecycle
+async def lifecycle_handler(workflow, itype, interaction_uri, reason):
+    if itype == relay.workflow.TYPE_STARTED:
+        await workflow.say_and_wait(interaction_uri, 'hello world')
+        await workflow.end_interaction(interaction_uri, interaction_name)
+    if itype == relay.workflow.TYPE_ENDED:
+        await workflow.terminate()
+
+
+wf_server.start()
