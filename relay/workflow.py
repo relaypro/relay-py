@@ -21,11 +21,7 @@ import ssl
 from functools import singledispatch
 from typing import List, Optional
 
-logging.basicConfig(format='%(levelname)s: %(asctime)s: %(message)s')
 logger = logging.getLogger(__name__)
-# default log level for this module
-logger.setLevel(logging.WARNING)
-# no default handler, meaning use logger.lastResort (usually StderrHandler)
 
 VERSION = "relay-sdk-python/2.0.0-alpha"
 
