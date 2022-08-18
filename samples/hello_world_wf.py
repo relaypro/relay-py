@@ -6,6 +6,7 @@ import relay.workflow
 import os
 import logging
 
+logging.basicConfig()
 port = os.getenv('PORT', 8080)
 wf_server = relay.workflow.Server('0.0.0.0', port, log_level=logging.INFO)
 hello_workflow = relay.workflow.Workflow('hello workflow')
