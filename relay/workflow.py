@@ -1135,29 +1135,6 @@ class Relay:
         """
         await self._send_notification(target, None, 'cancel', None, name)
 
-    async def notify(self, target, originator:str, name:str, text:str, push_options:dict=None):
-        """Sends out a notification message to a group of devices.  
-
-        Args:
-            target(str): the group URN that you would like to notify.
-            originator (str): the device URN that triggered the notification.
-            name (str): a name for your notification.
-            text (str): the text that you would like to be spoken out of the device as your notification.
-            push_options (dict, optional): push options for if the notification is sent to the Relay app on a virtual device. Defaults to an empty value.
-        """
-        if push_options is None:
-            push_options = {}
-        await self._send_notification(target, originator, 'notify', text, name, push_options)
-    
-    async def cancel_notify(self, target, name:str):
-        """Cancels the notification that was sent to a group of devices.
-
-        Args:
-            target (str): the device URN that is cancelling the notification.
-            name (str): the name of the notification that you would like to cancel.
-        """
-        await self._send_notification(target, None, 'cancel', None, name)
-
     async def _send_notification(self, target, originator:str, ntype:str, text:str, name:str, push_options:dict=None):
         """Used for sending a notification on the server.  Private method that is
         used by alert(), broadcast(), and notify().
