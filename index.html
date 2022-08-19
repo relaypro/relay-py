@@ -206,12 +206,6 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target(str):&nbsp;the&nbsp;device&nbsp;URN&nbsp;that&nbsp;is&nbsp;cancelling&nbsp;the&nbsp;broadcast.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;broadcast&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;cancel.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-cancel_notify"><strong>cancel_notify</strong></a>(self, target, name: str)</dt><dd><tt>Cancels&nbsp;the&nbsp;notification&nbsp;that&nbsp;was&nbsp;sent&nbsp;to&nbsp;a&nbsp;group&nbsp;of&nbsp;devices.<br>
-&nbsp;<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;device&nbsp;URN&nbsp;that&nbsp;is&nbsp;cancelling&nbsp;the&nbsp;notification.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;notification&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;cancel.</tt></dd></dl>
-
 <dl><dt><a name="Relay-cleanIntArrays"><strong>cleanIntArrays</strong></a>(self, dictMessage)</dt></dl>
 
 <dl><dt>async <a name="Relay-clear_timer"><strong>clear_timer</strong></a>(self, name: str)</dt><dd><tt>Clears&nbsp;the&nbsp;specified&nbsp;timer.<br>
@@ -490,15 +484,6 @@ Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;target&nbsp;<a href="builtins.html#object">object</a>&nbsp;created&nbsp;from&nbsp;the&nbsp;trigger.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-missing_type"><strong>missing_type</strong></a>(self)</dt></dl>
-
-<dl><dt>async <a name="Relay-notify"><strong>notify</strong></a>(self, target, originator: str, name: str, text: str, push_options: dict = None)</dt><dd><tt>Sends&nbsp;out&nbsp;a&nbsp;notification&nbsp;message&nbsp;to&nbsp;a&nbsp;group&nbsp;of&nbsp;devices.&nbsp;&nbsp;<br>
-&nbsp;<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;target(str):&nbsp;the&nbsp;group&nbsp;URN&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;notify.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;originator&nbsp;(str):&nbsp;the&nbsp;device&nbsp;URN&nbsp;that&nbsp;triggered&nbsp;the&nbsp;notification.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;a&nbsp;name&nbsp;for&nbsp;your&nbsp;notification.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;text&nbsp;(str):&nbsp;the&nbsp;text&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;be&nbsp;spoken&nbsp;out&nbsp;of&nbsp;the&nbsp;device&nbsp;as&nbsp;your&nbsp;notification.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;push_options&nbsp;(dict,&nbsp;optional):&nbsp;push&nbsp;options&nbsp;for&nbsp;if&nbsp;the&nbsp;notification&nbsp;is&nbsp;sent&nbsp;to&nbsp;the&nbsp;<a href="#Relay">Relay</a>&nbsp;app&nbsp;on&nbsp;a&nbsp;virtual&nbsp;device.&nbsp;Defaults&nbsp;to&nbsp;an&nbsp;empty&nbsp;value.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-place_call"><strong>place_call</strong></a>(self, target, uri: str)</dt><dd><tt>Places&nbsp;a&nbsp;call&nbsp;to&nbsp;another&nbsp;device.<br>
 &nbsp;<br>
