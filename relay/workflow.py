@@ -21,11 +21,7 @@ import ssl
 from functools import singledispatch
 from typing import List, Optional
 
-logging.basicConfig(format='%(levelname)s: %(asctime)s: %(message)s')
 logger = logging.getLogger(__name__)
-# default log level for this module
-logger.setLevel(logging.WARNING)
-# no default handler, meaning use logger.lastResort (usually StderrHandler)
 
 VERSION = "relay-sdk-python/2.0.0-alpha"
 
@@ -1137,29 +1133,6 @@ class Relay:
         Args:
             target(str): the device URN that is cancelling the broadcast.
             name (str): the name of the broadcast that you would like to cancel.
-        """
-        await self._send_notification(target, None, 'cancel', None, name)
-
-    async def notify(self, target, originator:str, name:str, text:str, push_options:dict=None):
-        """Sends out a notification message to a group of devices.  
-
-        Args:
-            target(str): the group URN that you would like to notify.
-            originator (str): the device URN that triggered the notification.
-            name (str): a name for your notification.
-            text (str): the text that you would like to be spoken out of the device as your notification.
-            push_options (dict, optional): push options for if the notification is sent to the Relay app on a virtual device. Defaults to an empty value.
-        """
-        if push_options is None:
-            push_options = {}
-        await self._send_notification(target, originator, 'notify', text, name, push_options)
-
-    async def cancel_notify(self, target, name:str):
-        """Cancels the notification that was sent to a group of devices.
-
-        Args:
-            target (str): the device URN that is cancelling the notification.
-            name (str): the name of the notification that you would like to cancel.
         """
         await self._send_notification(target, None, 'cancel', None, name)
 
