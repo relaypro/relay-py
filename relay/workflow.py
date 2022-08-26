@@ -106,7 +106,7 @@ class Server:
             logger.debug('server terminated')
 
     async def handler(self, websocket, path:str):
- 
+
         workflow = self.workflows.get(path, None)
         if workflow:
             logger.debug(f'handling request on path {path}')
@@ -236,7 +236,7 @@ def parse_group_name(uri:str):
     if id_type == NAME and resource_type == GROUP:
         return name
     logger.error('invalid group urn')
-    
+
 def parse_group_id(uri:str):
     """Parses out a group ID from a group URN. 
 
@@ -303,7 +303,7 @@ def parse_interaction(uri:str):
     uri = urllib.parse.unquote(uri)
     if is_interaction_uri(uri):
         scheme, root, id_type, resource_type, i_name, i_root, i_id_type, i_resource_type, name = uri.split(':')
-        interaction_name, discard = i_name.split('?') 
+        interaction_name, discard = i_name.split('?')
         return interaction_name
     logger.error('not an interaction urn')
 
@@ -342,7 +342,7 @@ TYPE_STARTED = 'started'
 
 
 class Workflow:
-    
+
     def __init__(self, name:str):
         self.name = name
         self.type_handlers = {}  # {(type, args): func}
@@ -367,7 +367,7 @@ class Workflow:
 
         else:
             return on_button_decorator
-    
+
     def on_notification(self, _func=None, *, name='*', event='*'):
         def on_notification_decorator(func):
             self.type_handlers['wf_api_notification_event', name, event] = func
@@ -585,21 +585,18 @@ class Relay:
 
         try:
             async for m in websocket:
-                 # TODO: restore after PE-17571
-                # self.logger.debug(f'recv: {m}')
+                # TODO: restore after PE-17571
+                # self.logger.debug(f'recv raw: {m}')
                 e = self.fromJson(m)
                 self.logger.debug(f'recv: {e}')
 
                 _id = e.get('_id', None)
                 _type = e.get('_type', None)
                 request_id = e.get('request_id', None)
-    
-                if _id:
-                    fut = self.id_futures.pop(_id, None)
-                    if fut:
-                        fut.set_result(e)
-                    else:
-                        self.logger.warning(f'found response for unknown _id {_id}')
+
+                fut = self.id_futures.pop(_id, None)
+                if fut:
+                    fut.set_result(e)
 
                 else:
                     handled = False
@@ -618,25 +615,25 @@ class Relay:
                         elif _type == 'wf_api_stop_event':
                             # logger.debug(f"handle stop_event with reason: {e['reason']}")
                             asyncio.create_task(self.wrapper(h, e['reason']))
-    
+
                         elif _type == 'wf_api_prompt_event':
                             type = e['type'] if 'type' in e else None
                             # logger.debug(f"handle prompt_start_event with source_uri: {e['source_uri']}, type: {e['type']}")
                             asyncio.create_task(self.wrapper(h, e['source_uri'], e['type']))
-  
+
                         elif _type == 'wf_api_prompt_stop_event':
                             # logger.debug(f"handle prompt_stop_event with source_uri: {e['source_uri']}, id: {e['id']}")
                             asyncio.create_task(self.wrapper(h, e['source_uri']))
- 
+
 
                         elif _type == 'wf_api_button_event':
                             # logger.debug(f"wf_api_button_event with button: {e['button']}, taps: {e['taps']}, source_uri: {e['source_uri']}")
                             asyncio.create_task(self.wrapper(h, e['button'], e['taps'], e['source_uri']))
-    
+
                         elif _type == 'wf_api_notification_event':
                             # logger.debug(f"wf_api_notification_event with source_uri: {e['source_uri']}, name: {e['name']}, notification_state: {e['notification_state']}")
                             asyncio.create_task(self.wrapper(h, e['event'], e['name'], e['notification_state'], e['source_uri']))
-    
+
                         elif _type == 'wf_api_timer_event':
                             # logger.debug(f"wf_api_timer_event")
                             asyncio.create_task(self.wrapper(h))
@@ -670,41 +667,41 @@ class Relay:
                         elif _type == 'wf_api_call_failed_event':
                             # logger.debug(f"wf_api_call_failed_event with e: {e}")
                             asyncio.create_task(self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'], e['uri'], e['onnet'], e['reason'], e['start_time_epoch'], e['connect_time_epoch'], e['end_time_epoch']))
-    
+
                         elif _type == 'wf_api_call_received_event':
                             # logger.debug(f"wf_api_call_received_event with e: {e}")
                             asyncio.create_task(self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'], e['uri'], e['onnet'], e['start_time_epoch']))
-    
+
                         elif _type == 'wf_api_call_ringing_event':
                             # logger.debug(f"wf_api_call_ringing_event with e: {e}")
                             asyncio.create_task(self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'], e['uri'], e['onnet'], e['start_time_epoch']))
-    
+
                         elif _type == 'wf_api_call_progressing_event':
                             # logger.debug(f"wf_api_call_progressing_event with e: {e}")
                             asyncio.create_task(self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'], e['uri'], e['onnet'], e['start_time_epoch'], e['connect_time_epoch']))
-    
+
                         elif _type == 'wf_api_call_start_request_event':
                             # logger.debug(f"wf_api_call_start_request_event with uri: {e['uri']}")
                             asyncio.create_task(self.wrapper(h, e['uri']))
-    
+
                         elif _type == 'wf_api_sms_event':
                             # logger.debug(f"wf_api_sms_event with id: {e['id']}, event: {e['event']}")
                             asyncio.create_task(self.wrapper(h, e['id'], e['event']))
-    
+
                         elif _type == 'wf_api_incident_event':
                             # logger.debug(f"wf_api_incident_event with type: {e['type']}, id: {e['id']}, reason: {e['reason']}")
                             asyncio.create_task(self.wrapper(h, e['type'], e['incident_id'], e['reason']))
-    
+
                         elif _type == 'wf_api_interaction_lifecycle_event':
                             reason = e['reason'] if 'reason' in e else None
 
                             # logger.debug(f"wf_api_interaction_lifecycle_event with type: {e['type']}, source_uri: {e['source_uri']}, reason: {reason}")
                             asyncio.create_task(self.wrapper(h, e['type'], e['source_uri'], reason))
-    
+
                         elif _type == 'wf_api_resume_event':
                             # logger.debug(f"wf_api_resume_event with trigger: {e['trigger']}")
                             asyncio.create_task(self.wrapper(h, e['trigger']))
-    
+
                     elif not handled:
                         if (_type == 'wf_api_prompt_event') or (_type == 'wf_api_speech_event') or (_type == 'wf_api_stop_event'):
                             level = logging.DEBUG
@@ -900,9 +897,10 @@ class Relay:
             for key in criteria:
                 if key == '_timestamp' or key == '_future':
                     continue
-                # no criteria will match always
-                if not key in event:
-                    continue
+                # if event doesn't have criteria item, then fail
+                if key not in event:
+                    matches = False
+                    break
                 if self.event_futures[uid][key] != event[key]:
                     matches = False
                     break
@@ -1076,7 +1074,7 @@ class Relay:
             the options for priority and sound as specified.
         """
 
-        options = { 
+        options = {
             'priority': priority,
             'sound': sound
         }
@@ -1100,7 +1098,7 @@ class Relay:
         if push_options is None:
             push_options = {}
         await self._send_notification(target, originator, 'alert', text, name, push_options)
-    
+
     async def cancel_alert(self, target, name:str):
         """Cancels an alert that was sent to a group of devices.  Particularly useful if you would like to cancel the alert
         on all devices after one device has acknowledged the alert.
@@ -1125,7 +1123,7 @@ class Relay:
         if push_options is None:
             push_options = {}
         await self._send_notification(target, originator, 'broadcast', text, name, push_options)
-    
+
     async def cancel_broadcast(self, target, name:str):
         """Cancels the broadcast that was sent to a group of devices.
 
@@ -1276,7 +1274,7 @@ class Relay:
         """
         v = await self._get_device_info(target, 'type')
         return v['type']
-    
+
     async def get_device_id(self, target):
         """Returns the ID of a targeted device.
 
@@ -1367,7 +1365,7 @@ class Relay:
             target (str): the device or interaction URN.
         """
         await self._set_device_info(target, 'location_enabled', 'true')
-    
+
     async def disable_location(self, target):
         """Disables location services on a device.  Location services will remain
         disabled until they are enabled on the Relay Dash or through a workflow.
@@ -1624,7 +1622,7 @@ class Relay:
             'reason': reason
         }
         await self.sendReceive(event)
-    
+
     # restart/powering down device is currently not supported
 
     # async def restart_device(self, target):
@@ -1641,7 +1639,7 @@ class Relay:
     #         'restart': True
     #     }
     #     await self.sendReceive(event)
-    
+
     # async def power_down_device(self, target):
     #     """Powers down a device during a workflow, without
     #     having to physically power down the device via holding down the '+' button.
@@ -1655,7 +1653,7 @@ class Relay:
     #         'restart': False
     #     }
     #     await self.sendReceive(event)
-    
+
     async def stop_playback(self, target, id:str=None):
         event = None
         if type(id) == list:
@@ -1731,7 +1729,7 @@ class Relay:
             'call_id': call_id
         }
         await self.sendReceive(event)
-    
+
     # target can have only one item
     async def hangup_call(self, target, call_id:str):
         """Ends a call on your device.
@@ -1785,7 +1783,7 @@ class Relay:
             'group_uri': group_uri
         }
         response = await self.sendReceive(event)
-        return response['is_member']   
+        return response['is_member']
 
     # target can have only one item
     async def set_user_profile(self, target:str, username:str, force:bool=False):
@@ -1916,7 +1914,7 @@ class Relay:
 
     async def enable_home_channel(self, target):
         await self._set_home_channel_state(target, True)
-    
+
     async def disable_home_channel(self, target):
         await self._set_home_channel_state(target, False)
 
