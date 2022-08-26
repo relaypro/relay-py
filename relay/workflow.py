@@ -594,12 +594,9 @@ class Relay:
                 _type = e.get('_type', None)
                 request_id = e.get('request_id', None)
 
-                if _id in self.id_futures.keys():
-                    fut = self.id_futures.pop(_id, None)
-                    if fut:
-                        fut.set_result(e)
-                    else:
-                        self.logger.warning(f'found response for unknown _id {_id}')
+                fut = self.id_futures.pop(_id, None)
+                if fut:
+                    fut.set_result(e)
 
                 else:
                     handled = False
