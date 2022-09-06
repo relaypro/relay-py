@@ -1659,20 +1659,20 @@ class Relay:
         if type(id) == list:
             event = {
                 '_type': 'wf_api_stop_playback_request',
-                '_target': target,
+                '_target': self.targets_from_source_uri(target),
                 'ids': id
             }
         elif type(id) == str:
             id = [id]
             event = {
                 '_type': 'wf_api_stop_playback_request',
-                '_target': target,
+                '_target': self.targets_from_source_uri(target),
                 'ids': id
             }
         elif id is None:
             event = {
                 '_type': 'wf_api_stop_playback_request',
-                '_target': target
+                '_target': self.targets_from_source_uri(target)
             }
         await self.sendReceive(event)
 
@@ -1709,7 +1709,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_call_request',
-            '_target': target,
+            '_target': self.targets_from_source_uri(target),
             'uri': uri
         }
         response = await self.sendReceive(event)
@@ -1725,7 +1725,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_answer_request',
-            '_target': target,
+            '_target': self.targets_from_source_uri(target),
             'call_id': call_id
         }
         await self.sendReceive(event)
@@ -1740,7 +1740,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_hangup_request',
-            '_target': target,
+            '_target': self.targets_from_source_uri(target),
             'call_id': call_id
         }
         await self.sendReceive(event)
@@ -1930,7 +1930,7 @@ class Relay:
     async def register(self, target, uri:str, password:str, expires:int):
         event = {
             '_type': 'wf_api_register_request',
-            '_target': target,
+            '_target': self.targets_from_source_uri(target),
             'uri': uri,
             'password': password,
             'expires': expires
