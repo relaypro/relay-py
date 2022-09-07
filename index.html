@@ -159,14 +159,15 @@ on&nbsp;the&nbsp;device&nbsp;such&nbsp;as&nbsp;manipulating&nbsp;LEDs&nbsp;and&n
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;workflow&nbsp;(<a href="#Workflow">Workflow</a>):&nbsp;your&nbsp;workflow.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-alert"><strong>alert</strong></a>(self, target, originator: str, name: str, text: str, push_options: dict = None)</dt><dd><tt>Sends&nbsp;out&nbsp;an&nbsp;alert&nbsp;to&nbsp;the&nbsp;specified&nbsp;group&nbsp;of&nbsp;devices&nbsp;and&nbsp;the&nbsp;<a href="#Relay">Relay</a>&nbsp;Dash.<br>
+<dl><dt>async <a name="Relay-alert"><strong>alert</strong></a>(self, target, originator: str, name: str, text: str, push_opts: dict = None)</dt><dd><tt>Sends&nbsp;out&nbsp;an&nbsp;alert&nbsp;to&nbsp;the&nbsp;specified&nbsp;group&nbsp;of&nbsp;devices&nbsp;and&nbsp;the&nbsp;<a href="#Relay">Relay</a>&nbsp;Dash.<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target(str):&nbsp;the&nbsp;group&nbsp;URN&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;send&nbsp;an&nbsp;alert&nbsp;to.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;originator&nbsp;(str):&nbsp;the&nbsp;URN&nbsp;of&nbsp;the&nbsp;device&nbsp;that&nbsp;triggered&nbsp;the&nbsp;alert.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;a&nbsp;name&nbsp;for&nbsp;your&nbsp;alert.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;text&nbsp;(str):&nbsp;the&nbsp;text&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;be&nbsp;spoken&nbsp;to&nbsp;the&nbsp;group&nbsp;as&nbsp;your&nbsp;alert.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;push_options&nbsp;(dict,&nbsp;optional):&nbsp;push&nbsp;options&nbsp;for&nbsp;if&nbsp;the&nbsp;alert&nbsp;is&nbsp;sent&nbsp;to&nbsp;the&nbsp;<a href="#Relay">Relay</a>&nbsp;app&nbsp;on&nbsp;a&nbsp;virtual&nbsp;device.&nbsp;Defaults&nbsp;to&nbsp;an&nbsp;empty&nbsp;value.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;push_opts&nbsp;(dict,&nbsp;optional):&nbsp;push&nbsp;options&nbsp;for&nbsp;if&nbsp;the&nbsp;alert&nbsp;is&nbsp;sent&nbsp;to&nbsp;the&nbsp;<a href="#Relay">Relay</a>&nbsp;app&nbsp;on&nbsp;a&nbsp;virtual&nbsp;device.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Defaults&nbsp;to&nbsp;an&nbsp;empty&nbsp;value.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-answer_call"><strong>answer_call</strong></a>(self, target, call_id: str)</dt><dd><tt>Answers&nbsp;a&nbsp;call&nbsp;on&nbsp;your&nbsp;device.<br>
 &nbsp;<br>
@@ -174,7 +175,7 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;device&nbsp;URN.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;call_id&nbsp;(str):&nbsp;the&nbsp;call&nbsp;ID.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-breathe"><strong>breathe</strong></a>(self, target, color: str = '0000ff', count: int = -1)</dt><dd><tt>Switches&nbsp;all&nbsp;of&nbsp;the&nbsp;LEDs&nbsp;on&nbsp;a&nbsp;device&nbsp;to&nbsp;a&nbsp;certain&nbsp;color&nbsp;and&nbsp;creates&nbsp;a&nbsp;'breathing'&nbsp;effect,&nbsp;<br>
+<dl><dt>async <a name="Relay-breathe"><strong>breathe</strong></a>(self, target, color: str = '0000ff', count: int = -1)</dt><dd><tt>Switches&nbsp;all&nbsp;the&nbsp;LEDs&nbsp;on&nbsp;a&nbsp;device&nbsp;to&nbsp;a&nbsp;certain&nbsp;color&nbsp;and&nbsp;creates&nbsp;a&nbsp;'breathing'&nbsp;effect,<br>
 where&nbsp;the&nbsp;LEDs&nbsp;will&nbsp;slowly&nbsp;light&nbsp;up&nbsp;a&nbsp;specified&nbsp;number&nbsp;of&nbsp;times.<br>
 &nbsp;<br>
 Args:<br>
@@ -183,7 +184,7 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;count&nbsp;(int,&nbsp;optional):&nbsp;the&nbsp;number&nbsp;of&nbsp;times&nbsp;you&nbsp;would&nbsp;like&nbsp;the&nbsp;LEDs&nbsp;to&nbsp;'breathe'.&nbsp;Defaults&nbsp;to&nbsp;-1,&nbsp;meaning<br>
 &nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;LEDs&nbsp;will&nbsp;'breathe'&nbsp;indefinitely.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-broadcast"><strong>broadcast</strong></a>(self, target, originator: str, name: str, text: str, push_options: dict = None)</dt><dd><tt>Sends&nbsp;out&nbsp;a&nbsp;broadcasted&nbsp;message&nbsp;to&nbsp;a&nbsp;group&nbsp;of&nbsp;devices.&nbsp;&nbsp;The&nbsp;message&nbsp;is&nbsp;played&nbsp;out&nbsp;on&nbsp;<br>
+<dl><dt>async <a name="Relay-broadcast"><strong>broadcast</strong></a>(self, target, originator: str, name: str, text: str, push_opts: dict = None)</dt><dd><tt>Sends&nbsp;out&nbsp;a&nbsp;broadcast&nbsp;message&nbsp;to&nbsp;a&nbsp;group&nbsp;of&nbsp;devices.&nbsp;&nbsp;The&nbsp;message&nbsp;is&nbsp;played&nbsp;out&nbsp;on<br>
 all&nbsp;devices,&nbsp;as&nbsp;well&nbsp;as&nbsp;sent&nbsp;to&nbsp;the&nbsp;<a href="#Relay">Relay</a>&nbsp;Dash.<br>
 &nbsp;<br>
 Args:<br>
@@ -191,10 +192,11 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;originator&nbsp;(str):&nbsp;the&nbsp;device&nbsp;URN&nbsp;that&nbsp;triggered&nbsp;the&nbsp;broadcast.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;a&nbsp;name&nbsp;for&nbsp;your&nbsp;broadcast.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;text&nbsp;(str):&nbsp;the&nbsp;text&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;be&nbsp;broadcasted&nbsp;to&nbsp;your&nbsp;group.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;push_options&nbsp;(dict,&nbsp;optional):&nbsp;push&nbsp;options&nbsp;for&nbsp;if&nbsp;the&nbsp;broadcast&nbsp;is&nbsp;sent&nbsp;to&nbsp;the&nbsp;<a href="#Relay">Relay</a>&nbsp;app&nbsp;on&nbsp;a&nbsp;virtual&nbsp;device.&nbsp;Defaults&nbsp;to&nbsp;an&nbsp;empty&nbsp;value.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;push_opts&nbsp;(dict,&nbsp;optional):&nbsp;push&nbsp;options&nbsp;for&nbsp;if&nbsp;the&nbsp;broadcast&nbsp;is&nbsp;sent&nbsp;to&nbsp;the&nbsp;<a href="#Relay">Relay</a>&nbsp;app&nbsp;on&nbsp;a&nbsp;virtual<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;device.&nbsp;Defaults&nbsp;to&nbsp;an&nbsp;empty&nbsp;value.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-cancel_alert"><strong>cancel_alert</strong></a>(self, target, name: str)</dt><dd><tt>Cancels&nbsp;an&nbsp;alert&nbsp;that&nbsp;was&nbsp;sent&nbsp;to&nbsp;a&nbsp;group&nbsp;of&nbsp;devices.&nbsp;&nbsp;Particularly&nbsp;useful&nbsp;if&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;cancel&nbsp;the&nbsp;alert<br>
-on&nbsp;all&nbsp;devices&nbsp;after&nbsp;one&nbsp;device&nbsp;has&nbsp;acknowledged&nbsp;the&nbsp;alert.<br>
+<dl><dt>async <a name="Relay-cancel_alert"><strong>cancel_alert</strong></a>(self, target, name: str)</dt><dd><tt>Cancels&nbsp;an&nbsp;alert&nbsp;that&nbsp;was&nbsp;sent&nbsp;to&nbsp;a&nbsp;group&nbsp;of&nbsp;devices.&nbsp;&nbsp;Particularly&nbsp;useful&nbsp;if&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;cancel<br>
+&nbsp;the&nbsp;alert&nbsp;on&nbsp;all&nbsp;devices&nbsp;after&nbsp;one&nbsp;device&nbsp;has&nbsp;acknowledged&nbsp;the&nbsp;alert.<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target(str):&nbsp;the&nbsp;device&nbsp;URN&nbsp;that&nbsp;has&nbsp;acknowledged&nbsp;the&nbsp;alert.<br>
@@ -206,7 +208,7 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target(str):&nbsp;the&nbsp;device&nbsp;URN&nbsp;that&nbsp;is&nbsp;cancelling&nbsp;the&nbsp;broadcast.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;broadcast&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;cancel.</tt></dd></dl>
 
-<dl><dt><a name="Relay-cleanIntArrays"><strong>cleanIntArrays</strong></a>(self, dictMessage)</dt></dl>
+<dl><dt><a name="Relay-clean_int_arrays"><strong>clean_int_arrays</strong></a>(self, dict_message)</dt></dl>
 
 <dl><dt>async <a name="Relay-clear_timer"><strong>clear_timer</strong></a>(self, name: str)</dt><dd><tt>Clears&nbsp;the&nbsp;specified&nbsp;timer.<br>
 &nbsp;<br>
@@ -245,16 +247,16 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target(str):&nbsp;the&nbsp;device&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;end&nbsp;an&nbsp;interaction&nbsp;with.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;interaction&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;end.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-flash"><strong>flash</strong></a>(self, target, color: str = '0000ff', count: int = -1)</dt><dd><tt>Switches&nbsp;all&nbsp;of&nbsp;the&nbsp;LEDs&nbsp;on&nbsp;a&nbsp;device&nbsp;to&nbsp;a&nbsp;certain&nbsp;color&nbsp;and&nbsp;flashes&nbsp;them<br>
+<dl><dt>async <a name="Relay-flash"><strong>flash</strong></a>(self, target, color: str = '0000ff', count: int = -1)</dt><dd><tt>Switches&nbsp;all&nbsp;the&nbsp;LEDs&nbsp;on&nbsp;a&nbsp;device&nbsp;to&nbsp;a&nbsp;certain&nbsp;color&nbsp;and&nbsp;flashes&nbsp;them<br>
 a&nbsp;specified&nbsp;number&nbsp;of&nbsp;times.<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;interaction&nbsp;URN.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;color&nbsp;(str,&nbsp;optional):&nbsp;the&nbsp;hex&nbsp;color&nbsp;code&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;turn&nbsp;the&nbsp;LEDs&nbsp;to.&nbsp;Defaults&nbsp;to&nbsp;'0000ff'.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;count&nbsp;(int,&nbsp;optional):&nbsp;the&nbsp;number&nbsp;of&nbsp;times&nbsp;you&nbsp;would&nbsp;like&nbsp;the&nbsp;LEDs&nbsp;to&nbsp;flash.&nbsp;Defaults&nbsp;to&nbsp;-1,&nbsp;meaning&nbsp;the&nbsp;LEDs<br>
-&nbsp;&nbsp;&nbsp;&nbsp;will&nbsp;flash&nbsp;indefinitely.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;count&nbsp;(int,&nbsp;optional):&nbsp;the&nbsp;number&nbsp;of&nbsp;times&nbsp;you&nbsp;would&nbsp;like&nbsp;the&nbsp;LEDs&nbsp;to&nbsp;flash.&nbsp;Defaults&nbsp;to&nbsp;-1,&nbsp;meaning<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;LEDs&nbsp;will&nbsp;flash&nbsp;indefinitely.</tt></dd></dl>
 
-<dl><dt><a name="Relay-fromJson"><strong>fromJson</strong></a>(self, websocketMessage)</dt></dl>
+<dl><dt><a name="Relay-from_json"><strong>from_json</strong></a>(self, websocket_message)</dt></dl>
 
 <dl><dt><a name="Relay-get_cid"><strong>get_cid</strong></a>(self)</dt></dl>
 
@@ -262,7 +264,8 @@ Args:<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;device&nbsp;or&nbsp;interaction&nbsp;URN.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;refresh&nbsp;(bool,&nbsp;optional):&nbsp;whether&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;refresh&nbsp;before&nbsp;retrieving&nbsp;the&nbsp;address.&nbsp;Defaults&nbsp;to&nbsp;False.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;refresh&nbsp;(bool,&nbsp;optional):&nbsp;whether&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;refresh&nbsp;before&nbsp;retrieving&nbsp;the&nbsp;address.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Defaults&nbsp;to&nbsp;False.<br>
 &nbsp;<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;the&nbsp;address&nbsp;of&nbsp;the&nbsp;device.</tt></dd></dl>
@@ -271,7 +274,8 @@ Returns:<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;device&nbsp;or&nbsp;interaction&nbsp;URN.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;refresh&nbsp;(bool,&nbsp;optional):&nbsp;whether&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;refresh&nbsp;before&nbsp;retrieving&nbsp;the&nbsp;battery.&nbsp;Defaults&nbsp;to&nbsp;False.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;refresh&nbsp;(bool,&nbsp;optional):&nbsp;whether&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;refresh&nbsp;before&nbsp;retrieving&nbsp;the&nbsp;battery.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Defaults&nbsp;to&nbsp;False.<br>
 &nbsp;<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;int:&nbsp;the&nbsp;battery&nbsp;of&nbsp;the&nbsp;device.</tt></dd></dl>
@@ -280,7 +284,8 @@ Returns:<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;device&nbsp;or&nbsp;interaction&nbsp;URN.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;refresh&nbsp;(bool,&nbsp;optional):&nbsp;whether&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;refresh&nbsp;before&nbsp;retreiving&nbsp;the&nbsp;coordinates.&nbsp;Defaults&nbsp;to&nbsp;False.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;refresh&nbsp;(bool,&nbsp;optional):&nbsp;whether&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;refresh&nbsp;before&nbsp;retreiving&nbsp;the&nbsp;coordinates.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Defaults&nbsp;to&nbsp;False.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-get_device_id"><strong>get_device_id</strong></a>(self, target)</dt><dd><tt>Returns&nbsp;the&nbsp;ID&nbsp;of&nbsp;a&nbsp;targeted&nbsp;device.<br>
 &nbsp;<br>
@@ -294,7 +299,8 @@ Returns:<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;device&nbsp;or&nbsp;interaction&nbsp;URN.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;refresh&nbsp;(bool,&nbsp;optional):&nbsp;whether&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;refresh&nbsp;before&nbsp;retrieving&nbsp;the&nbsp;location.&nbsp;Defaults&nbsp;to&nbsp;False.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;refresh&nbsp;(bool,&nbsp;optional):&nbsp;whether&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;refresh&nbsp;before&nbsp;retrieving&nbsp;the&nbsp;location.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Defaults&nbsp;to&nbsp;False.<br>
 &nbsp;<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;the&nbsp;indoor&nbsp;location&nbsp;of&nbsp;the&nbsp;device.</tt></dd></dl>
@@ -303,7 +309,8 @@ Returns:<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;device&nbsp;or&nbsp;interaction&nbsp;URN.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;refresh&nbsp;(bool,&nbsp;optional):&nbsp;whether&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;refresh&nbsp;before&nbsp;retrieving&nbsp;the&nbsp;coordinates.&nbsp;Defaults&nbsp;to&nbsp;False.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;refresh&nbsp;(bool,&nbsp;optional):&nbsp;whether&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;refresh&nbsp;before&nbsp;retrieving&nbsp;the&nbsp;coordinates.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Defaults&nbsp;to&nbsp;False.<br>
 &nbsp;<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;float[]:&nbsp;an&nbsp;array&nbsp;containing&nbsp;the&nbsp;latitude&nbsp;and&nbsp;longitude&nbsp;of&nbsp;the&nbsp;device.</tt></dd></dl>
@@ -312,7 +319,8 @@ Returns:<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;device&nbsp;or&nbsp;interaction&nbsp;URN.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;refresh&nbsp;(bool,&nbsp;optional):&nbsp;whether&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;refresh&nbsp;before&nbsp;retrieving&nbsp;the&nbsp;location.&nbsp;Defaults&nbsp;to&nbsp;False.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;refresh&nbsp;(bool,&nbsp;optional):&nbsp;whether&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;refresh&nbsp;before&nbsp;retrieving&nbsp;the&nbsp;location.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Defaults&nbsp;to&nbsp;False.<br>
 &nbsp;<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;the&nbsp;location&nbsp;of&nbsp;the&nbsp;device.</tt></dd></dl>
@@ -395,16 +403,6 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;device&nbsp;URN.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;call_id&nbsp;(str):&nbsp;the&nbsp;call&nbsp;ID.</tt></dd></dl>
 
-<dl><dt><a name="Relay-interaction_options"><strong>interaction_options</strong></a>(color: str = '0000ff', input_types: list = None, home_channel: str = 'suspend')</dt><dd><tt>Options&nbsp;for&nbsp;when&nbsp;an&nbsp;interaction&nbsp;is&nbsp;started&nbsp;via&nbsp;a&nbsp;workflow.<br>
-&nbsp;<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;color&nbsp;(str,&nbsp;optional):&nbsp;desired&nbsp;color&nbsp;of&nbsp;LEDs&nbsp;when&nbsp;an&nbsp;interaction&nbsp;is&nbsp;started.&nbsp;Defaults&nbsp;to&nbsp;"0000ff".<br>
-&nbsp;&nbsp;&nbsp;&nbsp;input_types&nbsp;(list,&nbsp;optional):&nbsp;input&nbsp;types&nbsp;you&nbsp;would&nbsp;like&nbsp;for&nbsp;the&nbsp;interaction.&nbsp;Defaults&nbsp;to&nbsp;an&nbsp;empty&nbsp;list.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;home_channel&nbsp;(str,&nbsp;optional):&nbsp;home&nbsp;channel&nbsp;for&nbsp;the&nbsp;device&nbsp;during&nbsp;the&nbsp;interaction.&nbsp;Defaults&nbsp;to&nbsp;"suspend".<br>
-&nbsp;<br>
-Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;options&nbsp;specified.</tt></dd></dl>
-
 <dl><dt>async <a name="Relay-invalid_type"><strong>invalid_type</strong></a>(self)</dt></dl>
 
 <dl><dt>async <a name="Relay-is_group_member"><strong>is_group_member</strong></a>(self, group_name_uri: str, potential_member_name_uri: str)</dt><dd><tt>Checks&nbsp;whether&nbsp;a&nbsp;device&nbsp;is&nbsp;a&nbsp;member&nbsp;of&nbsp;a&nbsp;particular&nbsp;group.<br>
@@ -421,32 +419,21 @@ a&nbsp;rainbow,&nbsp;flashing,&nbsp;rotating,&nbsp;etc.<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;interaction&nbsp;URN.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;effect&nbsp;(str,&nbsp;optional):&nbsp;effect&nbsp;to&nbsp;perform&nbsp;on&nbsp;LEDs,&nbsp;can&nbsp;be&nbsp;'rainbow',&nbsp;'rotate',&nbsp;'flash',&nbsp;'breath',&nbsp;'static',&nbsp;or&nbsp;'off'.&nbsp;Defaults&nbsp;to&nbsp;'flash'.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;effect&nbsp;(str,&nbsp;optional):&nbsp;effect&nbsp;to&nbsp;perform&nbsp;on&nbsp;LEDs,&nbsp;can&nbsp;be&nbsp;'rainbow',&nbsp;'rotate',&nbsp;'flash',&nbsp;'breath',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'static',&nbsp;or&nbsp;'off'.&nbsp;Defaults&nbsp;to&nbsp;'flash'.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;args&nbsp;(optional):&nbsp;use&nbsp;<a href="#Relay-led_info">led_info</a>()&nbsp;to&nbsp;create&nbsp;args.&nbsp;Defaults&nbsp;to&nbsp;None.</tt></dd></dl>
-
-<dl><dt><a name="Relay-led_info"><strong>led_info</strong></a>(self, rotations: int = None, count: int = None, duration: int = None, repeat_delay: int = None, pattern_repeats=None, colors=None)</dt><dd><tt>Sets&nbsp;information&nbsp;on&nbsp;a&nbsp;device,&nbsp;such&nbsp;as&nbsp;the&nbsp;number&nbsp;of&nbsp;rotations,&nbsp;count,&nbsp;duration,&nbsp;repeat&nbsp;delay,&nbsp;pattern&nbsp;repeats,&nbsp;<br>
-and&nbsp;colors.<br>
-&nbsp;<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;rotations&nbsp;(int,&nbsp;optional):&nbsp;number&nbsp;of&nbsp;rotations.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;count&nbsp;(int,&nbsp;optional):&nbsp;the&nbsp;number&nbsp;of&nbsp;times&nbsp;the&nbsp;LEDs&nbsp;will&nbsp;perform&nbsp;an&nbsp;action.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;duration&nbsp;(int,&nbsp;optional):&nbsp;duration&nbsp;of&nbsp;the&nbsp;LED&nbsp;action&nbsp;in&nbsp;milliseconds.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;repeat_delay&nbsp;(int,&nbsp;optional):&nbsp;the&nbsp;length&nbsp;of&nbsp;delay&nbsp;in&nbsp;milliseconds.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;pattern_repeats&nbsp;(_type_,&nbsp;optional):&nbsp;the&nbsp;number&nbsp;of&nbsp;times&nbsp;a&nbsp;pattern&nbsp;should&nbsp;repeat.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;colors&nbsp;(_type_,&nbsp;optional):&nbsp;hex-code&nbsp;of&nbsp;the&nbsp;color&nbsp;for&nbsp;the&nbsp;LEDs.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
-&nbsp;<br>
-Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;information&nbsp;field&nbsp;that&nbsp;was&nbsp;set&nbsp;on&nbsp;the&nbsp;LEDs.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-listen"><strong>listen</strong></a>(self, target, phrases=None, transcribe: bool = True, alt_lang: str = None, timeout: int = 60)</dt><dd><tt>Listens&nbsp;for&nbsp;the&nbsp;user&nbsp;to&nbsp;speak&nbsp;into&nbsp;the&nbsp;device.&nbsp;&nbsp;Utilizes&nbsp;speech&nbsp;to&nbsp;text&nbsp;functionality&nbsp;to&nbsp;interact<br>
 with&nbsp;the&nbsp;user.<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;interaction&nbsp;URN.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;phrases&nbsp;(string[],&nbsp;optional):&nbsp;optional&nbsp;phrases&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;limit&nbsp;the&nbsp;user's&nbsp;response&nbsp;to.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;phrases&nbsp;(string[],&nbsp;optional):&nbsp;optional&nbsp;phrases&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;limit&nbsp;the&nbsp;user's&nbsp;response&nbsp;to.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Defaults&nbsp;to&nbsp;None.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;transcribe&nbsp;(bool,&nbsp;optional):&nbsp;whether&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;transcribe&nbsp;the&nbsp;user's&nbsp;reponse.&nbsp;Defaults&nbsp;to&nbsp;True.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;timeout&nbsp;(int,&nbsp;optional):&nbsp;timeout&nbsp;for&nbsp;how&nbsp;long&nbsp;the&nbsp;device&nbsp;will&nbsp;wait&nbsp;for&nbsp;user's&nbsp;response.&nbsp;Defaults&nbsp;to&nbsp;60.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;alt_lang&nbsp;(str,&nbsp;optional):&nbsp;if&nbsp;you&nbsp;would&nbsp;like&nbsp;the&nbsp;device&nbsp;to&nbsp;listen&nbsp;for&nbsp;a&nbsp;response&nbsp;in&nbsp;a&nbsp;specific&nbsp;language.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;alt_lang&nbsp;(str,&nbsp;optional):&nbsp;if&nbsp;you&nbsp;would&nbsp;like&nbsp;the&nbsp;device&nbsp;to&nbsp;listen&nbsp;for&nbsp;a&nbsp;response&nbsp;in&nbsp;a&nbsp;specific&nbsp;language.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Defaults&nbsp;to&nbsp;None.<br>
 &nbsp;<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;text&nbsp;representation&nbsp;of&nbsp;what&nbsp;the&nbsp;user&nbsp;had&nbsp;spoken&nbsp;into&nbsp;the&nbsp;device.</tt></dd></dl>
@@ -469,19 +456,6 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;message&nbsp;(str):&nbsp;a&nbsp;description&nbsp;for&nbsp;your&nbsp;analytical&nbsp;event.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str,&nbsp;optional):&nbsp;the&nbsp;URN&nbsp;of&nbsp;a&nbsp;the&nbsp;device&nbsp;that&nbsp;triggered&nbsp;this&nbsp;function.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;category&nbsp;(str):&nbsp;a&nbsp;category&nbsp;for&nbsp;your&nbsp;analytical&nbsp;event.</tt></dd></dl>
-
-<dl><dt><a name="Relay-make_target_uris"><strong>make_target_uris</strong></a>(self, trigger: dict)</dt><dd><tt>Creates&nbsp;a&nbsp;target&nbsp;URN&nbsp;after&nbsp;receiving&nbsp;a&nbsp;workflow&nbsp;trigger.<br>
-&nbsp;<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;trigger&nbsp;(dict):&nbsp;workflow&nbsp;trigger.<br>
-&nbsp;<br>
-Raises:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#WorkflowException">WorkflowException</a>:&nbsp;thrown&nbsp;if&nbsp;the&nbsp;trigger&nbsp;param&nbsp;is&nbsp;not&nbsp;a&nbsp;dictionary.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#WorkflowException">WorkflowException</a>:&nbsp;thrown&nbsp;if&nbsp;the&nbsp;trigger&nbsp;param&nbsp;is&nbsp;not&nbsp;a&nbsp;trigger&nbsp;dictionary.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#WorkflowException">WorkflowException</a>:&nbsp;thrown&nbsp;if&nbsp;there&nbsp;is&nbsp;no&nbsp;source_uri&nbsp;definition&nbsp;in&nbsp;the&nbsp;trigger.<br>
-&nbsp;<br>
-Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;target&nbsp;<a href="builtins.html#object">object</a>&nbsp;created&nbsp;from&nbsp;the&nbsp;trigger.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-missing_type"><strong>missing_type</strong></a>(self)</dt></dl>
 
@@ -519,24 +493,13 @@ Returns:<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;device&nbsp;or&nbsp;interaction&nbsp;URN&nbsp;whose&nbsp;inbox&nbsp;messages&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;play.</tt></dd></dl>
 
-<dl><dt><a name="Relay-push_options"><strong>push_options</strong></a>(self, priority: str = 'normal', title: str = None, body: str = None, sound: str = 'default')</dt><dd><tt>Push&nbsp;options&nbsp;for&nbsp;a&nbsp;virtual&nbsp;device&nbsp;after&nbsp;receiving&nbsp;a&nbsp;notification&nbsp;on&nbsp;the&nbsp;<a href="#Relay">Relay</a>&nbsp;App.<br>
-&nbsp;<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;priority&nbsp;(str,&nbsp;optional):&nbsp;priority&nbsp;of&nbsp;the&nbsp;notification.&nbsp;Can&nbsp;be&nbsp;'normal',&nbsp;'high',&nbsp;or&nbsp;'critical'.&nbsp;Defaults&nbsp;to&nbsp;'normal'.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;title&nbsp;(str,&nbsp;optional):&nbsp;title&nbsp;of&nbsp;the&nbsp;notification.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;body&nbsp;(str,&nbsp;optional):&nbsp;body&nbsp;of&nbsp;the&nbsp;notification.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;sound&nbsp;(str,&nbsp;optional):&nbsp;sound&nbsp;to&nbsp;be&nbsp;played&nbsp;when&nbsp;notification&nbsp;appears&nbsp;on&nbsp;app.&nbsp;Can&nbsp;be&nbsp;'default',&nbsp;or&nbsp;'sos'.&nbsp;&nbsp;Defaults&nbsp;to&nbsp;'default'.<br>
-&nbsp;<br>
-Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;options&nbsp;for&nbsp;priority&nbsp;and&nbsp;sound&nbsp;as&nbsp;specified.</tt></dd></dl>
-
-<dl><dt>async <a name="Relay-rainbow"><strong>rainbow</strong></a>(self, target, rotations: int = -1)</dt><dd><tt>Switches&nbsp;all&nbsp;of&nbsp;the&nbsp;LEDs&nbsp;on&nbsp;to&nbsp;a&nbsp;configured&nbsp;rainbow&nbsp;pattern&nbsp;and&nbsp;rotates&nbsp;the&nbsp;rainbow<br>
+<dl><dt>async <a name="Relay-rainbow"><strong>rainbow</strong></a>(self, target, rotations: int = -1)</dt><dd><tt>Switches&nbsp;all&nbsp;the&nbsp;LEDs&nbsp;on&nbsp;to&nbsp;a&nbsp;configured&nbsp;rainbow&nbsp;pattern&nbsp;and&nbsp;rotates&nbsp;the&nbsp;rainbow<br>
 a&nbsp;specified&nbsp;number&nbsp;of&nbsp;times.<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;interaction&nbsp;URN.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;rotations&nbsp;(int,&nbsp;optional):&nbsp;the&nbsp;number&nbsp;of&nbsp;times&nbsp;you&nbsp;would&nbsp;like&nbsp;the&nbsp;rainbow&nbsp;to&nbsp;rotate.&nbsp;Defaults&nbsp;to&nbsp;-1,&nbsp;meaning&nbsp;the&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;rainbow&nbsp;will&nbsp;rotate&nbsp;indefinitely.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;rotations&nbsp;(int,&nbsp;optional):&nbsp;the&nbsp;number&nbsp;of&nbsp;times&nbsp;you&nbsp;would&nbsp;like&nbsp;the&nbsp;rainbow&nbsp;to&nbsp;rotate.&nbsp;Defaults&nbsp;to&nbsp;-1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;meaning&nbsp;the&nbsp;rainbow&nbsp;will&nbsp;rotate&nbsp;indefinitely.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-register"><strong>register</strong></a>(self, target, uri: str, password: str, expires: int)</dt><dd><tt>#&nbsp;target&nbsp;can&nbsp;have&nbsp;only&nbsp;one&nbsp;item</tt></dd></dl>
 
@@ -546,7 +509,7 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;incident_id&nbsp;(str):&nbsp;the&nbsp;ID&nbsp;of&nbsp;the&nbsp;incident&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;resolve.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;reason&nbsp;(str):&nbsp;the&nbsp;reason&nbsp;for&nbsp;resolving&nbsp;the&nbsp;incident.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-rotate"><strong>rotate</strong></a>(self, target, color: str = '0000ff', rotations: int = -1)</dt><dd><tt>Switches&nbsp;all&nbsp;of&nbsp;the&nbsp;LEDs&nbsp;on&nbsp;a&nbsp;device&nbsp;to&nbsp;a&nbsp;certain&nbsp;color&nbsp;and&nbsp;rotates&nbsp;them&nbsp;a&nbsp;specified&nbsp;number<br>
+<dl><dt>async <a name="Relay-rotate"><strong>rotate</strong></a>(self, target, color: str = '0000ff', rotations: int = -1)</dt><dd><tt>Switches&nbsp;all&nbsp;the&nbsp;LEDs&nbsp;on&nbsp;a&nbsp;device&nbsp;to&nbsp;a&nbsp;certain&nbsp;color&nbsp;and&nbsp;rotates&nbsp;them&nbsp;a&nbsp;specified&nbsp;number<br>
 of&nbsp;times.<br>
 &nbsp;<br>
 Args:<br>
@@ -578,7 +541,7 @@ Returns:<br>
 
 <dl><dt>async <a name="Relay-send"><strong>send</strong></a>(self, obj)</dt></dl>
 
-<dl><dt>async <a name="Relay-sendReceive"><strong>sendReceive</strong></a>(self, obj, uid=None)</dt></dl>
+<dl><dt>async <a name="Relay-send_receive"><strong>send_receive</strong></a>(self, obj, uid=None)</dt></dl>
 
 <dl><dt>async <a name="Relay-set_channel"><strong>set_channel</strong></a>(self, target, channel_name: str, suppress_tts: bool = False, disable_home_channel: bool = False)</dt><dd><tt>Sets&nbsp;the&nbsp;channel&nbsp;that&nbsp;a&nbsp;device&nbsp;is&nbsp;on.&nbsp;&nbsp;This&nbsp;can&nbsp;be&nbsp;used&nbsp;to&nbsp;change&nbsp;the&nbsp;channel&nbsp;of&nbsp;a&nbsp;device&nbsp;during&nbsp;a&nbsp;workflow,<br>
 where&nbsp;the&nbsp;channel&nbsp;will&nbsp;also&nbsp;be&nbsp;updated&nbsp;on&nbsp;the&nbsp;<a href="#Relay">Relay</a>&nbsp;Dash.<br>
@@ -587,7 +550,8 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;device&nbsp;or&nbsp;interaction&nbsp;URN.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;channel_name&nbsp;(str):&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;channel&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;set&nbsp;your&nbsp;device&nbsp;to.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;suppress_tts&nbsp;(bool,&nbsp;optional):&nbsp;whether&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;surpress&nbsp;text&nbsp;to&nbsp;speech.&nbsp;Defaults&nbsp;to&nbsp;False.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;disable_home_channel&nbsp;(bool,&nbsp;optional):&nbsp;whether&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;disable&nbsp;the&nbsp;home&nbsp;channel.&nbsp;Defaults&nbsp;to&nbsp;False.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;disable_home_channel&nbsp;(bool,&nbsp;optional):&nbsp;whether&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;disable&nbsp;the&nbsp;home&nbsp;channel.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Defaults&nbsp;to&nbsp;False.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-set_device_name"><strong>set_device_name</strong></a>(self, target, name: str)</dt><dd><tt>Sets&nbsp;the&nbsp;name&nbsp;of&nbsp;a&nbsp;targeted&nbsp;device&nbsp;and&nbsp;updates&nbsp;it&nbsp;on&nbsp;the&nbsp;<a href="#Relay">Relay</a>&nbsp;Dash.<br>
 The&nbsp;name&nbsp;remains&nbsp;updated&nbsp;until&nbsp;it&nbsp;is&nbsp;set&nbsp;again&nbsp;via&nbsp;a&nbsp;workflow&nbsp;or&nbsp;updated&nbsp;manually<br>
@@ -637,16 +601,16 @@ The&nbsp;timer&nbsp;will&nbsp;fire&nbsp;when&nbsp;it&nbsp;reaches&nbsp;the&nbsp;
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;timeout&nbsp;(int):&nbsp;the&nbsp;number&nbsp;of&nbsp;seconds&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;wait&nbsp;until&nbsp;the&nbsp;timer&nbsp;fires.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-stop_playback"><strong>stop_playback</strong></a>(self, target, id: str = None)</dt></dl>
+<dl><dt>async <a name="Relay-stop_playback"><strong>stop_playback</strong></a>(self, target, pb_id: str = None)</dt></dl>
 
 <dl><dt>async <a name="Relay-stop_timer"><strong>stop_timer</strong></a>(self)</dt><dd><tt>Stops&nbsp;an&nbsp;unnamed&nbsp;timer.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-switch_all_led_off"><strong>switch_all_led_off</strong></a>(self, target)</dt><dd><tt>Switches&nbsp;all&nbsp;of&nbsp;the&nbsp;LEDs&nbsp;on&nbsp;a&nbsp;device&nbsp;off.<br>
+<dl><dt>async <a name="Relay-switch_all_led_off"><strong>switch_all_led_off</strong></a>(self, target)</dt><dd><tt>Switches&nbsp;all&nbsp;the&nbsp;LEDs&nbsp;on&nbsp;a&nbsp;device&nbsp;off.<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;interaction&nbsp;URN.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-switch_all_led_on"><strong>switch_all_led_on</strong></a>(self, target, color: str = '0000ff')</dt><dd><tt>Switches&nbsp;all&nbsp;of&nbsp;the&nbsp;LEDs&nbsp;on&nbsp;a&nbsp;device&nbsp;on&nbsp;to&nbsp;a&nbsp;specified&nbsp;color.<br>
+<dl><dt>async <a name="Relay-switch_all_led_on"><strong>switch_all_led_on</strong></a>(self, target, color: str = '0000ff')</dt><dd><tt>Switches&nbsp;all&nbsp;the&nbsp;LEDs&nbsp;on&nbsp;a&nbsp;device&nbsp;on&nbsp;to&nbsp;a&nbsp;specified&nbsp;color.<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;interaction&nbsp;URN.<br>
@@ -659,19 +623,8 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;index&nbsp;(int):&nbsp;the&nbsp;index&nbsp;of&nbsp;an&nbsp;LED,&nbsp;numbered&nbsp;1-12.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;color&nbsp;(str,&nbsp;optional):&nbsp;the&nbsp;hex&nbsp;color&nbsp;code&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;turn&nbsp;the&nbsp;LED&nbsp;to.&nbsp;Defaults&nbsp;to&nbsp;'0000ff'.</tt></dd></dl>
 
-<dl><dt><a name="Relay-targets_from_source_uri"><strong>targets_from_source_uri</strong></a>(self, source_uri: str)</dt><dd><tt>Creates&nbsp;a&nbsp;target&nbsp;<a href="builtins.html#object">object</a>&nbsp;from&nbsp;a&nbsp;source&nbsp;URN.<br>
-Enables&nbsp;the&nbsp;device&nbsp;to&nbsp;perform&nbsp;the&nbsp;desired&nbsp;action&nbsp;after&nbsp;the&nbsp;function<br>
-has&nbsp;been&nbsp;called.&nbsp;&nbsp;Used&nbsp;interanlly&nbsp;by&nbsp;interaction&nbsp;functions&nbsp;such&nbsp;as<br>
-<a href="#Relay-say">say</a>(),&nbsp;<a href="#Relay-listen">listen</a>(),&nbsp;vibration(),&nbsp;etc.<br>
-&nbsp;<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;source_uri&nbsp;(str):&nbsp;source&nbsp;uri&nbsp;that&nbsp;will&nbsp;be&nbsp;used&nbsp;to&nbsp;create&nbsp;a&nbsp;target.<br>
-&nbsp;<br>
-Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;target&nbsp;that&nbsp;was&nbsp;created&nbsp;from&nbsp;a&nbsp;source&nbsp;URN.</tt></dd></dl>
-
 <dl><dt>async <a name="Relay-terminate"><strong>terminate</strong></a>(self)</dt><dd><tt>Terminates&nbsp;a&nbsp;workflow.&nbsp;&nbsp;This&nbsp;method&nbsp;is&nbsp;usually&nbsp;called<br>
-after&nbsp;your&nbsp;workflow&nbsp;has&nbsp;completed&nbsp;and&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;end&nbsp;the&nbsp;<br>
+after&nbsp;your&nbsp;workflow&nbsp;has&nbsp;completed,&nbsp;and&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;end&nbsp;the<br>
 workflow&nbsp;by&nbsp;calling&nbsp;<a href="#Relay-end_interaction">end_interaction</a>(),&nbsp;where&nbsp;you&nbsp;can&nbsp;then&nbsp;terminate<br>
 the&nbsp;workflow.</tt></dd></dl>
 
@@ -700,6 +653,69 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;pattern&nbsp;(list,&nbsp;optional):&nbsp;an&nbsp;array&nbsp;representing&nbsp;the&nbsp;pattern&nbsp;of&nbsp;your&nbsp;vibration.&nbsp;Defaults&nbsp;to&nbsp;None.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-wrapper"><strong>wrapper</strong></a>(self, h, *args)</dt><dd><tt>#&nbsp;run&nbsp;handlers&nbsp;with&nbsp;exception&nbsp;logging;&nbsp;needed&nbsp;since&nbsp;we&nbsp;cannot&nbsp;await&nbsp;handlers</tt></dd></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="Relay-interaction_options"><strong>interaction_options</strong></a>(color: str = '0000ff', input_types: list = None, home_channel: str = 'suspend')</dt><dd><tt>Options&nbsp;for&nbsp;when&nbsp;an&nbsp;interaction&nbsp;is&nbsp;started&nbsp;via&nbsp;a&nbsp;workflow.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;color&nbsp;(str,&nbsp;optional):&nbsp;desired&nbsp;color&nbsp;of&nbsp;LEDs&nbsp;when&nbsp;an&nbsp;interaction&nbsp;is&nbsp;started.&nbsp;Defaults&nbsp;to&nbsp;"0000ff".<br>
+&nbsp;&nbsp;&nbsp;&nbsp;input_types&nbsp;(list,&nbsp;optional):&nbsp;input&nbsp;types&nbsp;you&nbsp;would&nbsp;like&nbsp;for&nbsp;the&nbsp;interaction.&nbsp;Defaults&nbsp;to&nbsp;an&nbsp;empty&nbsp;list.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;home_channel&nbsp;(str,&nbsp;optional):&nbsp;home&nbsp;channel&nbsp;for&nbsp;the&nbsp;device&nbsp;during&nbsp;the&nbsp;interaction.&nbsp;Defaults&nbsp;to&nbsp;"suspend".<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;options&nbsp;specified.</tt></dd></dl>
+
+<dl><dt><a name="Relay-led_info"><strong>led_info</strong></a>(rotations: int = None, count: int = None, duration: int = None, repeat_delay: int = None, pattern_repeats=None, colors=None)</dt><dd><tt>Sets&nbsp;information&nbsp;on&nbsp;a&nbsp;device,&nbsp;such&nbsp;as&nbsp;the&nbsp;number&nbsp;of&nbsp;rotations,&nbsp;count,&nbsp;duration,&nbsp;repeat&nbsp;delay,<br>
+pattern&nbsp;repeats,&nbsp;and&nbsp;colors.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;rotations&nbsp;(int,&nbsp;optional):&nbsp;number&nbsp;of&nbsp;rotations.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;count&nbsp;(int,&nbsp;optional):&nbsp;the&nbsp;number&nbsp;of&nbsp;times&nbsp;the&nbsp;LEDs&nbsp;will&nbsp;perform&nbsp;an&nbsp;action.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;duration&nbsp;(int,&nbsp;optional):&nbsp;duration&nbsp;of&nbsp;the&nbsp;LED&nbsp;action&nbsp;in&nbsp;milliseconds.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;repeat_delay&nbsp;(int,&nbsp;optional):&nbsp;the&nbsp;length&nbsp;of&nbsp;delay&nbsp;in&nbsp;milliseconds.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;pattern_repeats&nbsp;(_type_,&nbsp;optional):&nbsp;the&nbsp;number&nbsp;of&nbsp;times&nbsp;a&nbsp;pattern&nbsp;should&nbsp;repeat.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;colors&nbsp;(_type_,&nbsp;optional):&nbsp;hex-code&nbsp;of&nbsp;the&nbsp;color&nbsp;for&nbsp;the&nbsp;LEDs.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;information&nbsp;field&nbsp;that&nbsp;was&nbsp;set&nbsp;on&nbsp;the&nbsp;LEDs.</tt></dd></dl>
+
+<dl><dt><a name="Relay-make_target_uris"><strong>make_target_uris</strong></a>(trigger: dict)</dt><dd><tt>Creates&nbsp;a&nbsp;target&nbsp;URN&nbsp;after&nbsp;receiving&nbsp;a&nbsp;workflow&nbsp;trigger.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;trigger&nbsp;(dict):&nbsp;workflow&nbsp;trigger.<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#WorkflowException">WorkflowException</a>:&nbsp;thrown&nbsp;if&nbsp;the&nbsp;trigger&nbsp;param&nbsp;is&nbsp;not&nbsp;a&nbsp;dictionary.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#WorkflowException">WorkflowException</a>:&nbsp;thrown&nbsp;if&nbsp;the&nbsp;trigger&nbsp;param&nbsp;is&nbsp;not&nbsp;a&nbsp;trigger&nbsp;dictionary.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#WorkflowException">WorkflowException</a>:&nbsp;thrown&nbsp;if&nbsp;there&nbsp;is&nbsp;no&nbsp;source_uri&nbsp;definition&nbsp;in&nbsp;the&nbsp;trigger.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;target&nbsp;<a href="builtins.html#object">object</a>&nbsp;created&nbsp;from&nbsp;the&nbsp;trigger.</tt></dd></dl>
+
+<dl><dt><a name="Relay-push_options"><strong>push_options</strong></a>(priority: str = 'normal', title: str = None, body: str = None, sound: str = 'default')</dt><dd><tt>Push&nbsp;options&nbsp;for&nbsp;a&nbsp;virtual&nbsp;device&nbsp;after&nbsp;receiving&nbsp;a&nbsp;notification&nbsp;on&nbsp;the&nbsp;<a href="#Relay">Relay</a>&nbsp;App.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;priority&nbsp;(str,&nbsp;optional):&nbsp;priority&nbsp;of&nbsp;the&nbsp;notification.&nbsp;Can&nbsp;be&nbsp;'normal',&nbsp;'high',&nbsp;or&nbsp;'critical'.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Defaults&nbsp;to&nbsp;'normal'.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;title&nbsp;(str,&nbsp;optional):&nbsp;title&nbsp;of&nbsp;the&nbsp;notification.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;body&nbsp;(str,&nbsp;optional):&nbsp;body&nbsp;of&nbsp;the&nbsp;notification.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sound&nbsp;(str,&nbsp;optional):&nbsp;sound&nbsp;to&nbsp;be&nbsp;played&nbsp;when&nbsp;notification&nbsp;appears&nbsp;on&nbsp;app.&nbsp;Can&nbsp;be&nbsp;'default',&nbsp;or&nbsp;'sos'.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Defaults&nbsp;to&nbsp;'default'.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;options&nbsp;for&nbsp;priority&nbsp;and&nbsp;sound&nbsp;as&nbsp;specified.</tt></dd></dl>
+
+<dl><dt><a name="Relay-targets_from_source_uri"><strong>targets_from_source_uri</strong></a>(source_uri: str)</dt><dd><tt>Creates&nbsp;a&nbsp;target&nbsp;<a href="builtins.html#object">object</a>&nbsp;from&nbsp;a&nbsp;source&nbsp;URN.<br>
+Enables&nbsp;the&nbsp;device&nbsp;to&nbsp;perform&nbsp;the&nbsp;desired&nbsp;action&nbsp;after&nbsp;the&nbsp;function<br>
+has&nbsp;been&nbsp;called.&nbsp;&nbsp;Used&nbsp;interanlly&nbsp;by&nbsp;interaction&nbsp;functions&nbsp;such&nbsp;as<br>
+<a href="#Relay-say">say</a>(),&nbsp;<a href="#Relay-listen">listen</a>(),&nbsp;vibration(),&nbsp;etc.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;source_uri&nbsp;(str):&nbsp;source&nbsp;uri&nbsp;that&nbsp;will&nbsp;be&nbsp;used&nbsp;to&nbsp;create&nbsp;a&nbsp;target.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;target&nbsp;that&nbsp;was&nbsp;created&nbsp;from&nbsp;a&nbsp;source&nbsp;URN.</tt></dd></dl>
 
 <hr>
 Data descriptors defined here:<br>
@@ -969,10 +985,10 @@ Args:<br>
 &nbsp;<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;the&nbsp;newly&nbsp;constructed&nbsp;URN.</tt></dd></dl>
- <dl><dt><a name="-device_id"><strong>device_id</strong></a>(id: str)</dt><dd><tt>Creates&nbsp;a&nbsp;URN&nbsp;from&nbsp;a&nbsp;device&nbsp;ID.<br>
+ <dl><dt><a name="-device_id"><strong>device_id</strong></a>(gid: str)</dt><dd><tt>Creates&nbsp;a&nbsp;URN&nbsp;from&nbsp;a&nbsp;device&nbsp;ID.<br>
 &nbsp;<br>
 Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;id&nbsp;(str):&nbsp;the&nbsp;ID&nbsp;of&nbsp;the&nbsp;device.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;gid&nbsp;(str):&nbsp;the&nbsp;ID&nbsp;of&nbsp;the&nbsp;device.<br>
 &nbsp;<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;the&nbsp;newly&nbsp;constructed&nbsp;URN.</tt></dd></dl>
@@ -1004,10 +1020,10 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;subscriber_id(str):&nbsp;the&nbsp;subcriber&nbsp;UUID&nbsp;as&nbsp;returned&nbsp;from&nbsp;"relay&nbsp;whoami".<br>
 &nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;user_id(str):&nbsp;the&nbsp;IMEI&nbsp;of&nbsp;the&nbsp;target&nbsp;device,&nbsp;such&nbsp;as&nbsp;990007560023456.</tt></dd></dl>
- <dl><dt><a name="-group_id"><strong>group_id</strong></a>(id: str)</dt><dd><tt>Creates&nbsp;a&nbsp;URN&nbsp;from&nbsp;a&nbsp;group&nbsp;ID.<br>
+ <dl><dt><a name="-group_id"><strong>group_id</strong></a>(gid: str)</dt><dd><tt>Creates&nbsp;a&nbsp;URN&nbsp;from&nbsp;a&nbsp;group&nbsp;ID.<br>
 &nbsp;<br>
 Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;id&nbsp;(str):&nbsp;the&nbsp;ID&nbsp;of&nbsp;the&nbsp;group.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;gid&nbsp;(str):&nbsp;the&nbsp;ID&nbsp;of&nbsp;the&nbsp;group.<br>
 &nbsp;<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;the&nbsp;newly&nbsp;constructed&nbsp;URN.</tt></dd></dl>
@@ -1111,6 +1127,9 @@ Args:<br>
 &nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;user_id(str):&nbsp;the&nbsp;IMEI&nbsp;of&nbsp;the&nbsp;target&nbsp;device,&nbsp;such&nbsp;as&nbsp;990007560023456.<br>
 &nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;targets:&nbsp;the&nbsp;device&nbsp;targets&nbsp;that&nbsp;the&nbsp;workflow&nbsp;should&nbsp;be&nbsp;considered&nbsp;as<br>
+&nbsp;&nbsp;&nbsp;&nbsp;having&nbsp;been&nbsp;triggered&nbsp;from.<br>
+&nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;action_args&nbsp;(optional):&nbsp;a&nbsp;dict&nbsp;of&nbsp;any&nbsp;key/value&nbsp;arguments&nbsp;you&nbsp;want<br>
 &nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;pass&nbsp;in&nbsp;to&nbsp;the&nbsp;workflow&nbsp;that&nbsp;gets&nbsp;started&nbsp;by&nbsp;this&nbsp;trigger.</tt></dd></dl>
 </td></tr></table><p>
@@ -1133,6 +1152,7 @@ Args:<br>
 <strong>SCHEME</strong> = 'urn'<br>
 <strong>TYPE_ENDED</strong> = 'ended'<br>
 <strong>TYPE_STARTED</strong> = 'started'<br>
+<strong>Union</strong> = typing.Union<br>
 <strong>VERSION</strong> = 'relay-sdk-python/2.0.0-alpha'<br>
 <strong>auth_hostname</strong> = 'auth.relaygo.com'<br>
 <strong>logger</strong> = &lt;Logger workflow (WARNING)&gt;<br>
