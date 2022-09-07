@@ -24,10 +24,6 @@ Install into a virtual environment (Python 3.6.1+).
 
 - The following demonstrates a simple Hello World program, located in the `samples/hello_world_wf.py` file:
 <pre>
-#!/usr/bin/env python3
-
-# Copyright © 2022 Relay Inc.
-
 import relay.workflow
 import os
 import logging
@@ -42,7 +38,7 @@ interaction_name = 'hello interaction'
 
 @hello_workflow.on_start
 async def start_handler(workflow, trigger):
-    target = relay.workflow.make_target_uris(trigger)
+    target = workflow.make_target_uris(trigger)
     await workflow.start_interaction(target, interaction_name)
 
 
