@@ -17,7 +17,7 @@ interaction_name = 'hello interaction'
 
 @hello_workflow.on_start
 async def start_handler(workflow, trigger):
-    target = relay.workflow.make_target_uris(trigger)
+    target = workflow.make_target_uris(trigger)
     await workflow.start_interaction(target, interaction_name)
 
 
