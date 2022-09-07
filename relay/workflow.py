@@ -19,7 +19,7 @@ import urllib.parse
 import requests
 import ssl
 from functools import singledispatch
-from typing import List, Optional
+from typing import List, Optional, Union
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +60,7 @@ class Server:
 
         self.host = host
         self.port = port
-        self.workflows = {}   # {path: workflow}
+        self.workflows = {}  # {path: workflow}
         for key in kwargs:
             if key == 'ssl_key_filename':
                 self.ssl_key_filename = kwargs[key]
@@ -73,7 +73,6 @@ class Server:
                 # if logging.NullHandler() is added then nothing will appear on the console
                 this_logger = logging.getLogger(__name__)
                 this_logger.addHandler(kwargs[key])
-                print(f'__name: {__name__}, this_logger: {this_logger}, handler: {kwargs[key]}, handlers: {this_logger.handlers} lastResort: {logging.lastResort}')
 
     def register(self, workflow, path: str):
 
@@ -84,18 +83,22 @@ class Server:
     def start(self):
 
         custom_headers = {'Server': f'{VERSION}'}
-        if hasattr(self, 'ssl_key_filename') and hasattr(self, 'ssl_cert_filename') :
+        if hasattr(self, 'ssl_key_filename') and hasattr(self, 'ssl_cert_filename'):
             if not os.access(self.ssl_cert_filename, os.R_OK):
                 raise ServerException(f"can't read ssl_cert_file {self.ssl_cert_filename}")
             if not os.access(self.ssl_key_filename, os.R_OK):
                 raise ServerException(f"can't read ssl_key_file {self.ssl_key_filename}")
             ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
             ssl_context.load_cert_chain(self.ssl_cert_filename, self.ssl_key_filename)
-            start_server = websockets.serve(self.handler, self.host, self.port, extra_headers=custom_headers, ssl=ssl_context)
-            logger.info(f'Relay workflow server ({VERSION}) listening on {self.host} port {self.port} with ssl_context {ssl_context}')
+            start_server = websockets.serve(self.handler, self.host, self.port,
+                                            extra_headers=custom_headers, ssl=ssl_context)
+            logger.info(
+                f'Relay workflow server ({VERSION}) listening on {self.host} port {self.port}'
+                ' with ssl_context {ssl_context}')
         else:
             start_server = websockets.serve(self.handler, self.host, self.port, extra_headers=custom_headers)
-            logger.info(f'Relay workflow server ({VERSION}) listening on {self.host} port {self.port} with plaintext')
+            logger.info(f'Relay workflow server ({VERSION}) listening on {self.host}'
+                        ' port {self.port} with plaintext')
 
         asyncio.get_event_loop().run_until_complete(start_server)
 
@@ -105,7 +108,7 @@ class Server:
         except KeyboardInterrupt:
             logger.debug('server terminated')
 
-    async def handler(self, websocket, path:str):
+    async def handler(self, websocket, path: str):
 
         workflow = self.workflows.get(path, None)
         if workflow:
@@ -122,6 +125,7 @@ class ServerException(Exception):
     def __init__(self, message):
         self.message = message
         super().__init__(self.message)
+
 
 # Helper constants and methods for creating and parsing out a URN.
 
@@ -152,7 +156,8 @@ INTERACTION_URI_NAME = 'urn:relay-resource:name:interaction'
 # Beginning of an interaction URN that uses the ID of a device.
 INTERACTION_URI_ID = 'urn:relay-resource:id:interaction'
 
-def construct(resource_type:str, id_type:str, id_or_name:str):
+
+def construct(resource_type: str, id_type: str, id_or_name: str):
     """Constructs a URN based off of the resource type, id type, and
     id/name.  Used by methods that need to create a URN when given a
     name or ID of a device or group.
@@ -167,18 +172,20 @@ def construct(resource_type:str, id_type:str, id_or_name:str):
     """
     return f'{SCHEME}:{ROOT}:{id_type}:{resource_type}:{id_or_name}'
 
-def group_id(id:str):
+
+def group_id(gid: str):
     """Creates a URN from a group ID.
 
     Args:
-        id (str): the ID of the group.
+        gid (str): the ID of the group.
 
     Returns:
         str: the newly constructed URN.
     """
-    return construct(GROUP, ID, urllib.parse.quote(id))
+    return construct(GROUP, ID, urllib.parse.quote(gid))
 
-def group_name(name:str):
+
+def group_name(name: str):
     """Creates a URN from a group name.
 
     Args:
@@ -189,7 +196,8 @@ def group_name(name:str):
     """
     return construct(GROUP, NAME, urllib.parse.quote(name))
 
-def device_name(name:str):
+
+def device_name(name: str):
     """Creates a URN from a device name.
 
     Args:
@@ -200,7 +208,8 @@ def device_name(name:str):
     """
     return construct(DEVICE, NAME, urllib.parse.quote(name))
 
-def group_member(group:str, device:str):
+
+def group_member(group: str, device: str):
     """Creates a URN for a group member.
 
     Args:
@@ -210,20 +219,23 @@ def group_member(group:str, device:str):
     Returns:
         str: the newly constructed URN.
     """
-    return f'{SCHEME}:{ROOT}:{NAME}:{GROUP}:{urllib.parse.quote(group)}{DEVICE_PATTERN}' + urllib.parse.quote(f'{SCHEME}:{ROOT}:{NAME}:{DEVICE}:{device}')
+    return f'{SCHEME}:{ROOT}:{NAME}:{GROUP}:{urllib.parse.quote(group)}{DEVICE_PATTERN}' + urllib.parse.quote(
+        f'{SCHEME}:{ROOT}:{NAME}:{DEVICE}:{device}')
 
-def device_id(id:str):
+
+def device_id(gid: str):
     """Creates a URN from a device ID.
 
     Args:
-        id (str): the ID of the device.
+        gid (str): the ID of the device.
 
     Returns:
         str: the newly constructed URN.
     """
-    return construct(DEVICE, ID, urllib.parse.quote(id))
+    return construct(DEVICE, ID, urllib.parse.quote(gid))
 
-def parse_group_name(uri:str):
+
+def parse_group_name(uri: str):
     """Parses out a group name from a group URN.
 
     Args:
@@ -237,7 +249,8 @@ def parse_group_name(uri:str):
         return name
     logger.error('invalid group urn')
 
-def parse_group_id(uri:str):
+
+def parse_group_id(uri: str):
     """Parses out a group ID from a group URN. 
 
     Args:
@@ -246,12 +259,13 @@ def parse_group_id(uri:str):
     Returns:
         str: the group ID.
     """
-    scheme, root, id_type, resource_type, id = urllib.parse.unquote(uri).split(':')
+    scheme, root, id_type, resource_type, gid = urllib.parse.unquote(uri).split(':')
     if id_type == ID and resource_type == GROUP:
-        return id
+        return gid
     logger.error('invalid group urn')
 
-def parse_device_name(uri:str):
+
+def parse_device_name(uri: str):
     """Parses out a device name from a device or interaction URN.
 
     Args:
@@ -271,7 +285,8 @@ def parse_device_name(uri:str):
             return name
     logger.error('invalid device urn')
 
-def parse_device_id(uri:str):
+
+def parse_device_id(uri: str):
     """Parses out a device ID from a device or interaction URN.
 
     Args:
@@ -282,16 +297,17 @@ def parse_device_id(uri:str):
     """
     uri = urllib.parse.unquote(uri)
     if not is_interaction_uri(uri):
-        scheme, root, id_type, resource_type, id = uri.split(':')
+        scheme, root, id_type, resource_type, gid = uri.split(':')
         if id_type == ID:
-            return id
+            return gid
     elif is_interaction_uri(uri):
-        scheme, root, id_type, resource_type, i_id, i_root, i_id_type, i_resource_type, id = uri.split(':')
+        scheme, root, id_type, resource_type, i_id, i_root, i_id_type, i_resource_type, gid = uri.split(':')
         if id_type == ID and i_id_type == ID:
-            return id
+            return gid
     logger.error('invalid device urn')
 
-def parse_interaction(uri:str):
+
+def parse_interaction(uri: str):
     """Parses out the name of an interaction from an interaction URN.
 
     Args:
@@ -307,7 +323,8 @@ def parse_interaction(uri:str):
         return interaction_name
     logger.error('not an interaction urn')
 
-def is_interaction_uri(uri:str):
+
+def is_interaction_uri(uri: str):
     """Checks if the URN is for an interaction.
 
     Args:
@@ -320,7 +337,8 @@ def is_interaction_uri(uri:str):
         return True
     return False
 
-def is_relay_uri(uri:str):
+
+def is_relay_uri(uri: str):
     """Checks if the URN is a Relay URN.
 
     Args:
@@ -343,7 +361,7 @@ TYPE_STARTED = 'started'
 
 class Workflow:
 
-    def __init__(self, name:str):
+    def __init__(self, name: str):
         self.name = name
         self.type_handlers = {}  # {(type, args): func}
 
@@ -352,8 +370,6 @@ class Workflow:
 
     def on_stop(self, func):
         self.type_handlers['wf_api_stop_event'] = func
-
-    ####### TODO: should this be simply on_prompt_event like the message is?
 
     def on_prompt(self, func):
         self.type_handlers['wf_api_prompt_event'] = func
@@ -428,11 +444,12 @@ class Workflow:
     def on_resume(self, func):
         self.type_handlers['wf_api_resume_event'] = func
 
-    def get_handler(self, event:dict):
+    def get_handler(self, event: dict):
         t = event['_type']
 
-        # assume no-arg handler; if not, check the handlers that require args
-        # for args, check for handler registered with specific values first; if not, then check variations with wildcard values
+        # Assume no-arg handler; if not, check the handlers that require args.
+        # For args, check for handler registered with specific values first; if not,
+        # then check variations with wildcard values.
         h = self.type_handlers.get(t, None)
         if not h:
             if t == 'wf_api_button_event':
@@ -455,17 +472,11 @@ class Workflow:
                         if not h:
                             h = self.type_handlers.get((t, '*', '*'), None)
 
-            elif t == 'wf_prompt_event':
-                if event['type'] == 'started':
-                    h = self.type_handlers.get(('wf_api_prompt_start_event'), None)
-                elif event['type'] == 'stopped' or event['type'] == 'failed':
-                    h = self.type_handlers.get(('wf_api_prompt_stop_event'), None)
-
         return h
 
 
 class WorkflowException(Exception):
-    def __init__(self, message:str):
+    def __init__(self, message: str):
         self.message = message
         super().__init__(self.message)
 
@@ -476,12 +487,13 @@ def remove_null(obj):
 
 
 @remove_null.register(list)
-def _process_list(l):
-    return [remove_null(v) for v in l]
+def _process_list(mylist):
+    return [remove_null(v) for v in mylist]
+
 
 @remove_null.register(dict)
 def _process_list(d):
-    return {k:remove_null(v) for k,v in d.items() if v is not None}
+    return {k: remove_null(v) for k, v in d.items() if v is not None}
 
 
 class CustomAdapter(logging.LoggerAdapter):
@@ -495,7 +507,8 @@ class Relay:
     notifications to groups, handling workflow events, and performing physical actions
     on the device such as manipulating LEDs and creating vibrations.
     """
-    def __init__(self, workflow:Workflow):
+
+    def __init__(self, workflow: Workflow):
         """Initializes workflow fields.
 
         Args:
@@ -511,30 +524,31 @@ class Relay:
         # correlation id
         return f'{self.workflow.name}:{id(self.websocket)}'
 
-    def fromJson(self, websocketMessage):
-        dictMessage = json.loads(websocketMessage)
-        return self.cleanIntArrays(dictMessage)
+    def from_json(self, websocket_message):
+        dict_message = json.loads(websocket_message)
+        return self.clean_int_arrays(dict_message)
 
-    def cleanIntArrays(self, dictMessage):
+    def clean_int_arrays(self, dict_message):
         # work around the JSON formatting issue in iBot
         # that gives us an array of ints instead of a string:
         # will be fixed in iBot 3.10 via PE-17571
 
-        if isinstance(dictMessage, dict):
-            for key in dictMessage.keys():
-                if isinstance(dictMessage[key], (list, dict)):
-                    dictMessage[key] = self.cleanIntArrays(dictMessage[key])
-        elif isinstance(dictMessage, list):
-            allInt = True
-            for item in dictMessage:
+        if isinstance(dict_message, dict):
+            for key in dict_message.keys():
+                if isinstance(dict_message[key], (list, dict)):
+                    dict_message[key] = self.clean_int_arrays(dict_message[key])
+        elif isinstance(dict_message, list):
+            all_int = True
+            for item in dict_message:
                 if not isinstance(item, int):
-                    allInt = False
+                    all_int = False
                     break
-            if allInt and (len(dictMessage) > 0):
-                dictMessage = "".join(chr(i) for i in dictMessage)
-        return dictMessage
+            if all_int and (len(dict_message) > 0):
+                dict_message = "".join(chr(i) for i in dict_message)
+        return dict_message
 
-    def make_target_uris(self, trigger:dict):
+    @staticmethod
+    def make_target_uris(trigger: dict):
         """Creates a target URN after receiving a workflow trigger.
 
         Args:
@@ -550,16 +564,17 @@ class Relay:
         """
         if not isinstance(trigger, dict):
             raise WorkflowException('trigger parameter is not a dictionary')
-        if not 'args' in trigger:
+        if 'args' not in trigger:
             raise WorkflowException('trigger parameter is not a trigger dictionary')
-        if not 'source_uri' in trigger['args']:
+        if 'source_uri' not in trigger['args']:
             raise WorkflowException('there is no source_uri definition in the trigger')
         target = {
-            'uris': [ trigger['args']['source_uri'] ]
+            'uris': [trigger['args']['source_uri']]
         }
         return target
 
-    def targets_from_source_uri(self, source_uri:str):
+    @staticmethod
+    def targets_from_source_uri(source_uri: str):
         """Creates a target object from a source URN.
         Enables the device to perform the desired action after the function
         has been called.  Used interanlly by interaction functions such as
@@ -572,7 +587,7 @@ class Relay:
             the target that was created from a source URN.
         """
         targets = {
-            'uris': [ source_uri ]
+            'uris': [source_uri]
         }
         return targets
 
@@ -587,12 +602,11 @@ class Relay:
             async for m in websocket:
                 # TODO: restore after PE-17571
                 # self.logger.debug(f'recv raw: {m}')
-                e = self.fromJson(m)
+                e = self.from_json(m)
                 self.logger.debug(f'recv: {e}')
 
                 _id = e.get('_id', None)
                 _type = e.get('_type', None)
-                request_id = e.get('request_id', None)
 
                 fut = self.id_futures.pop(_id, None)
                 if fut:
@@ -609,106 +623,95 @@ class Relay:
                     h = self.workflow.get_handler(e)
                     if h:
                         if _type == 'wf_api_start_event':
-                            # logger.debug(f"handle start_event with trigger: {e['trigger']}")
                             asyncio.create_task(self.wrapper(h, e['trigger']))
 
                         elif _type == 'wf_api_stop_event':
-                            # logger.debug(f"handle stop_event with reason: {e['reason']}")
                             asyncio.create_task(self.wrapper(h, e['reason']))
 
                         elif _type == 'wf_api_prompt_event':
-                            type = e['type'] if 'type' in e else None
-                            # logger.debug(f"handle prompt_start_event with source_uri: {e['source_uri']}, type: {e['type']}")
                             asyncio.create_task(self.wrapper(h, e['source_uri'], e['type']))
 
-                        elif _type == 'wf_api_prompt_stop_event':
-                            # logger.debug(f"handle prompt_stop_event with source_uri: {e['source_uri']}, id: {e['id']}")
-                            asyncio.create_task(self.wrapper(h, e['source_uri']))
-
-
                         elif _type == 'wf_api_button_event':
-                            # logger.debug(f"wf_api_button_event with button: {e['button']}, taps: {e['taps']}, source_uri: {e['source_uri']}")
                             asyncio.create_task(self.wrapper(h, e['button'], e['taps'], e['source_uri']))
 
                         elif _type == 'wf_api_notification_event':
-                            # logger.debug(f"wf_api_notification_event with source_uri: {e['source_uri']}, name: {e['name']}, notification_state: {e['notification_state']}")
-                            asyncio.create_task(self.wrapper(h, e['event'], e['name'], e['notification_state'], e['source_uri']))
+                            asyncio.create_task(
+                                self.wrapper(h, e['event'], e['name'], e['notification_state'], e['source_uri']))
 
                         elif _type == 'wf_api_timer_event':
-                            # logger.debug(f"wf_api_timer_event")
                             asyncio.create_task(self.wrapper(h))
 
                         elif _type == 'wf_api_timer_fired_event':
-                            # logger.debug(f"wf_api_timer_fired_event, name={e['name']}")
                             asyncio.create_task(self.wrapper(h, e['name']))
 
                         elif _type == 'wf_api_speech_event':
                             text = e['text'] if 'text' in e else None
                             audio = e['audio'] if 'audio' in e else None
-                            # logger.debug(f"wf_api_speech_event: text: {text}, audio: {audio}, lang: {e['lang']}, request_id: {e['request_id']}, source_uri{e['source_uri']}")
-                            asyncio.create_task(self.wrapper(h, text, audio, e['lang'], e['request_id'], e['source_uri']))
+                            asyncio.create_task(
+                                self.wrapper(h, text, audio, e['lang'], e['request_id'], e['source_uri']))
 
                         elif _type == 'wf_api_progress_event':
-                            # logger.debug(f"wf_api_progress_event: _id: {_id}")
                             asyncio.create_task(self.wrapper(h))
 
                         elif _type == 'wf_api_play_inbox_message_event':
-                            # logger.debug(f"wf_api_play_inbox_message_event with action: {e['action']}")
                             asyncio.create_task(self.wrapper(h, e['action']))
 
                         elif _type == 'wf_api_call_connected_event':
-                            # logger.debug(f"wf_api_call_connected_event with e: {e}")
-                            asyncio.create_task(self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'], e['uri'], e['onnet'], e['start_time_epoch'], e['connect_time_epoch']))
+                            asyncio.create_task(
+                                self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'],
+                                             e['uri'], e['onnet'], e['start_time_epoch'], e['connect_time_epoch']))
 
                         elif _type == 'wf_api_call_disconnected_event':
-                            # logger.debug(f"wf_api_call_disconnected_event with e: {e}")
-                            asyncio.create_task(self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'], e['uri'], e['onnet'], e['reason'], e['start_time_epoch'], e['connect_time_epoch'], e['end_time_epoch']))
+                            asyncio.create_task(
+                                self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'],
+                                             e['uri'], e['onnet'], e['reason'], e['start_time_epoch'],
+                                             e['connect_time_epoch'], e['end_time_epoch']))
 
                         elif _type == 'wf_api_call_failed_event':
-                            # logger.debug(f"wf_api_call_failed_event with e: {e}")
-                            asyncio.create_task(self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'], e['uri'], e['onnet'], e['reason'], e['start_time_epoch'], e['connect_time_epoch'], e['end_time_epoch']))
+                            asyncio.create_task(
+                                self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'],
+                                             e['uri'], e['onnet'], e['reason'], e['start_time_epoch'],
+                                             e['connect_time_epoch'], e['end_time_epoch']))
 
                         elif _type == 'wf_api_call_received_event':
-                            # logger.debug(f"wf_api_call_received_event with e: {e}")
-                            asyncio.create_task(self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'], e['uri'], e['onnet'], e['start_time_epoch']))
+                            asyncio.create_task(
+                                self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'],
+                                             e['uri'], e['onnet'], e['start_time_epoch']))
 
                         elif _type == 'wf_api_call_ringing_event':
-                            # logger.debug(f"wf_api_call_ringing_event with e: {e}")
-                            asyncio.create_task(self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'], e['uri'], e['onnet'], e['start_time_epoch']))
+                            asyncio.create_task(
+                                self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'],
+                                             e['uri'], e['onnet'], e['start_time_epoch']))
 
                         elif _type == 'wf_api_call_progressing_event':
-                            # logger.debug(f"wf_api_call_progressing_event with e: {e}")
-                            asyncio.create_task(self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'], e['uri'], e['onnet'], e['start_time_epoch'], e['connect_time_epoch']))
+                            asyncio.create_task(
+                                self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'],
+                                             e['uri'], e['onnet'], e['start_time_epoch'], e['connect_time_epoch']))
 
                         elif _type == 'wf_api_call_start_request_event':
-                            # logger.debug(f"wf_api_call_start_request_event with uri: {e['uri']}")
                             asyncio.create_task(self.wrapper(h, e['uri']))
 
                         elif _type == 'wf_api_sms_event':
-                            # logger.debug(f"wf_api_sms_event with id: {e['id']}, event: {e['event']}")
                             asyncio.create_task(self.wrapper(h, e['id'], e['event']))
 
                         elif _type == 'wf_api_incident_event':
-                            # logger.debug(f"wf_api_incident_event with type: {e['type']}, id: {e['id']}, reason: {e['reason']}")
                             asyncio.create_task(self.wrapper(h, e['type'], e['incident_id'], e['reason']))
 
                         elif _type == 'wf_api_interaction_lifecycle_event':
                             reason = e['reason'] if 'reason' in e else None
-
-                            # logger.debug(f"wf_api_interaction_lifecycle_event with type: {e['type']}, source_uri: {e['source_uri']}, reason: {reason}")
                             asyncio.create_task(self.wrapper(h, e['type'], e['source_uri'], reason))
 
                         elif _type == 'wf_api_resume_event':
-                            # logger.debug(f"wf_api_resume_event with trigger: {e['trigger']}")
                             asyncio.create_task(self.wrapper(h, e['trigger']))
 
                     elif not handled:
-                        if (_type == 'wf_api_prompt_event') or (_type == 'wf_api_speech_event') or (_type == 'wf_api_stop_event'):
+                        if (_type == 'wf_api_prompt_event') or (_type == 'wf_api_speech_event') or (
+                                _type == 'wf_api_stop_event'):
                             level = logging.DEBUG
                         else:
                             level = logging.WARNING
                         self.logger.log(level, f'no handler found for _type {e["_type"]}')
-
+        # the "exceptions" module is really what we receive
         except websockets.exceptions.ConnectionClosedError:
             # ibot closes the connection on terminate(); this is expected
             pass
@@ -721,7 +724,6 @@ class Relay:
 
     # run handlers with exception logging; needed since we cannot await handlers
     async def wrapper(self, h, *args):
-
         try:
             await h(self, *args)
         except Exception as x:
@@ -735,8 +737,7 @@ class Relay:
 
         await self._send(json.dumps(obj))
 
-
-    async def sendReceive(self, obj, uid=None):
+    async def send_receive(self, obj, uid=None):
         _id = uid if uid else uuid.uuid4().hex
         obj['_id'] = _id
         fut = asyncio.get_event_loop().create_future()
@@ -751,13 +752,11 @@ class Relay:
             raise WorkflowException(rsp['error'])
         return fut.result()
 
-
     async def _send(self, s):
         self.logger.debug(f'send: {s}')
         await self.websocket.send(s)
 
-
-    async def get_var(self, name:str, default=None):
+    async def get_var(self, name: str, default=None):
         """Retrieves a variable that was set either during workflow registration
         or through the set_var() function.  The variable can be retrieved anywhere
         within the workflow, but is erased after the workflow terminates.
@@ -769,15 +768,15 @@ class Relay:
         Returns:
             the variable requested.
         """
-        ### TODO: look in self.workflow.state to see all of what is available
+        # TODO: look in self.workflow.state to see all of what is available
         event = {
             '_type': 'wf_api_get_var_request',
             'name': name
         }
-        v = await self.sendReceive(event)
+        v = await self.send_receive(event)
         return v.get('value', default)
 
-    async def get_number_var(self, name:str, default=None):
+    async def get_number_var(self, name: str, default=None):
         """Retrieves a variable that was set either during workflow registration
         or through the set_var() function of type integer.  The variable can be retrieved anywhere
         within the workflow, but is erased after the workflow terminates.
@@ -791,7 +790,7 @@ class Relay:
         """
         return int(await self.get_var(name, default))
 
-    async def set_var(self, name:str, value:str):
+    async def set_var(self, name: str, value: str):
         """Sets a variable with the corresponding name and value. Scope of
         the variable is from start to end of a workflow.  Note that you 
         can only set values of type string.
@@ -804,10 +803,10 @@ class Relay:
             'name': name,
             'value': value
         }
-        response = await self.sendReceive(event)
+        response = await self.send_receive(event)
         return response['value']
 
-    async def unset_var(self, name:str):
+    async def unset_var(self, name: str):
         """Unsets the value of a variable.  
 
         Args:
@@ -817,9 +816,10 @@ class Relay:
             '_type': 'wf_api_unset_var_request',
             'name': name
         }
-        await self.sendReceive(event)
+        await self.send_receive(event)
 
-    def interaction_options(color:str="0000ff", input_types:list=None, home_channel:str="suspend"):
+    @staticmethod
+    def interaction_options(color: str = "0000ff", input_types: list = None, home_channel: str = "suspend"):
         """Options for when an interaction is started via a workflow.
 
         Args:
@@ -839,7 +839,7 @@ class Relay:
         }
         return options
 
-    async def start_interaction(self, target, name:str, options=None):
+    async def start_interaction(self, target, name: str, options=None):
         """Starts an interaction with the user.  Triggers an INTERACTION_STARTED event
         and allows the user to interact with the device via functions that require an 
         interaction URN.
@@ -855,7 +855,7 @@ class Relay:
             'name': name,
             'options': options
         }
-        await self.sendReceive(event)
+        await self.send_receive(event)
 
     async def end_interaction(self, target, name: str):
         """Ends an interaction with the user.  Triggers an INTERACTION_ENDED event to signify
@@ -870,9 +870,9 @@ class Relay:
             '_target': self.targets_from_source_uri(target),
             'name': name
         }
-        await self.sendReceive(event)
+        await self.send_receive(event)
 
-    def _set_event_match(self, criteria:dict):
+    def _set_event_match(self, criteria: dict):
         if not isinstance(criteria, dict):
             raise WorkflowException("criteria is not a dict")
         match_data = criteria.copy()
@@ -882,6 +882,14 @@ class Relay:
         match_data['_future'] = future
         self.event_futures[uid] = match_data
         return future
+
+    @staticmethod
+    async def _wait_for_event_match(future, timeout: int):
+        await asyncio.wait_for(future, timeout)
+        event = future.result()
+        if event['_type'] == 'wf_api_error_response':
+            raise WorkflowException(event['error'])
+        return event
 
     def _pop_event_match(self, event):
         # check if event matches anything we are waiting for
@@ -910,31 +918,26 @@ class Relay:
                 return future
         return None
 
-    async def _wait_for_event_match(self, future, timeout:int):
-        await asyncio.wait_for(future, timeout)
-        event = future.result()
-        if event['_type'] == 'wf_api_error_response':
-            raise WorkflowException(event['error'])
-        return event
-
-    async def listen(self, target, phrases=None, transcribe:bool=True, alt_lang:str=None, timeout:int=60):
+    async def listen(self, target, phrases=None, transcribe: bool = True, alt_lang: str = None, timeout: int = 60):
         """Listens for the user to speak into the device.  Utilizes speech to text functionality to interact
         with the user.
 
         Args:
             target (str): the interaction URN.
-            phrases (string[], optional): optional phrases that you would like to limit the user's response to. Defaults to None.
+            phrases (string[], optional): optional phrases that you would like to limit the user's response to.
+             Defaults to None.
             transcribe (bool, optional): whether you would like to transcribe the user's reponse. Defaults to True.
             timeout (int, optional): timeout for how long the device will wait for user's response. Defaults to 60.
-            alt_lang (str, optional): if you would like the device to listen for a response in a specific language. Defaults to None.
+            alt_lang (str, optional): if you would like the device to listen for a response in a specific language.
+             Defaults to None.
 
         Returns:
             text representation of what the user had spoken into the device.
         """
         if phrases is None:
-            phrases = [ ]
+            phrases = []
         if isinstance(phrases, str):
-            phrases = [ phrases ]
+            phrases = [phrases]
 
         _id = uuid.uuid4().hex
         event = {
@@ -952,7 +955,7 @@ class Relay:
         }
         # need to add this before sendReceive to avoid race condition
         event_future = self._set_event_match(criteria)
-        await self.sendReceive(event, _id)
+        await self.send_receive(event, _id)
         speech_event = await self._wait_for_event_match(event_future, timeout)
 
         if transcribe:
@@ -960,7 +963,7 @@ class Relay:
         else:
             return speech_event['audio']
 
-    async def play(self, target, filename:str):
+    async def play(self, target, filename: str):
         """Plays a custom audio file that was uploaded by the user.
 
         Args:
@@ -975,10 +978,10 @@ class Relay:
             '_target': self.targets_from_source_uri(target),
             'filename': filename
         }
-        response = await self.sendReceive(event)
+        response = await self.send_receive(event)
         return response['id']
 
-    async def play_and_wait(self, target, filename:str):
+    async def play_and_wait(self, target, filename: str):
         """Plays a custom audio file that was uploaded by the user.
         Waits until the audio file has finished playing before continuing through
         the workflow.
@@ -1004,11 +1007,11 @@ class Relay:
         }
 
         event_future = self._set_event_match(criteria)
-        response = await self.sendReceive(event, _id)
+        response = await self.send_receive(event, _id)
         await self._wait_for_event_match(event_future, 30)
         return response['id']
 
-    async def say(self, target, text:str, lang:str='en-US'):
+    async def say(self, target, text: str, lang: str = 'en-US'):
         """Utilizes text to speech capabilities to make the device 'speak' to the user.
 
         Args:
@@ -1025,10 +1028,10 @@ class Relay:
             'text': text,
             'lang': lang
         }
-        response = await self.sendReceive(event)
+        response = await self.send_receive(event)
         return response['id']
 
-    async def say_and_wait(self, target, text:str, lang:str='en-US'):
+    async def say_and_wait(self, target, text: str, lang: str = 'en-US'):
         """Utilizes text to speech capabilities to make the device 'speak' to the user.
         Waits until the text is fully played out on the device before continuing.
 
@@ -1051,24 +1054,25 @@ class Relay:
         criteria = {
             '_type': 'wf_api_prompt_event',
             'type': 'stopped',
-            'id': _id }
+            'id': _id}
 
         event_future = self._set_event_match(criteria)
-        response = await self.sendReceive(event, _id)
+        response = await self.send_receive(event, _id)
         await self._wait_for_event_match(event_future, 30)
         logger.debug(f'wait complete for {target}')
         return response['id']
 
-    # target properties: uri: array of string ids
-
-    def push_options(self, priority:str='normal', title:str=None, body:str=None, sound:str='default'):
+    @staticmethod
+    def push_options(priority: str = 'normal', title: str = None, body: str = None, sound: str = 'default'):
         """Push options for a virtual device after receiving a notification on the Relay App.
 
         Args:
-            priority (str, optional): priority of the notification. Can be 'normal', 'high', or 'critical'. Defaults to 'normal'.
+            priority (str, optional): priority of the notification. Can be 'normal', 'high', or 'critical'.
+             Defaults to 'normal'.
             title (str, optional): title of the notification. Defaults to None.
             body (str, optional): body of the notification. Defaults to None.
-            sound (str, optional): sound to be played when notification appears on app. Can be 'default', or 'sos'.  Defaults to 'default'.
+            sound (str, optional): sound to be played when notification appears on app. Can be 'default', or 'sos'.
+              Defaults to 'default'.
 
         Returns:
             the options for priority and sound as specified.
@@ -1084,8 +1088,10 @@ class Relay:
             options['body'] = body
         return options
 
+    # target properties: uri: array of string ids
+
     # repeating tone plus tts until button press
-    async def alert(self, target, originator:str, name:str, text:str, push_options:dict=None):
+    async def alert(self, target, originator: str, name: str, text: str, push_opts: dict = None):
         """Sends out an alert to the specified group of devices and the Relay Dash.
 
         Args:
@@ -1093,15 +1099,16 @@ class Relay:
             originator (str): the URN of the device that triggered the alert.
             name (str): a name for your alert.
             text (str): the text that you would like to be spoken to the group as your alert.
-            push_options (dict, optional): push options for if the alert is sent to the Relay app on a virtual device. Defaults to an empty value.
+            push_opts (dict, optional): push options for if the alert is sent to the Relay app on a virtual device.
+             Defaults to an empty value.
         """
-        if push_options is None:
-            push_options = {}
-        await self._send_notification(target, originator, 'alert', text, name, push_options)
+        if push_opts is None:
+            push_opts = {}
+        await self._send_notification(target, originator, 'alert', text, name, push_opts)
 
-    async def cancel_alert(self, target, name:str):
-        """Cancels an alert that was sent to a group of devices.  Particularly useful if you would like to cancel the alert
-        on all devices after one device has acknowledged the alert.
+    async def cancel_alert(self, target, name: str):
+        """Cancels an alert that was sent to a group of devices.  Particularly useful if you would like to cancel
+         the alert on all devices after one device has acknowledged the alert.
 
         Args:
             target(str): the device URN that has acknowledged the alert.
@@ -1109,8 +1116,8 @@ class Relay:
         """
         await self._send_notification(target, None, 'cancel', None, name)
 
-    async def broadcast(self, target, originator:str, name:str, text:str, push_options:dict=None):
-        """Sends out a broadcasted message to a group of devices.  The message is played out on 
+    async def broadcast(self, target, originator: str, name: str, text: str, push_opts: dict = None):
+        """Sends out a broadcast message to a group of devices.  The message is played out on
         all devices, as well as sent to the Relay Dash.
 
         Args:
@@ -1118,13 +1125,14 @@ class Relay:
             originator (str): the device URN that triggered the broadcast.
             name (str): a name for your broadcast.
             text (str): the text that you would like to be broadcasted to your group.
-            push_options (dict, optional): push options for if the broadcast is sent to the Relay app on a virtual device. Defaults to an empty value.
+            push_opts (dict, optional): push options for if the broadcast is sent to the Relay app on a virtual
+             device. Defaults to an empty value.
         """
-        if push_options is None:
-            push_options = {}
-        await self._send_notification(target, originator, 'broadcast', text, name, push_options)
+        if push_opts is None:
+            push_opts = {}
+        await self._send_notification(target, originator, 'broadcast', text, name, push_opts)
 
-    async def cancel_broadcast(self, target, name:str):
+    async def cancel_broadcast(self, target, name: str):
         """Cancels the broadcast that was sent to a group of devices.
 
         Args:
@@ -1133,7 +1141,8 @@ class Relay:
         """
         await self._send_notification(target, None, 'cancel', None, name)
 
-    async def _send_notification(self, target, originator:str, ntype:str, text:str, name:str, push_options:dict=None):
+    async def _send_notification(self, target, originator: Union[str, None], ntype: str,
+                                 text: Union[str, None], name: str, push_opts: dict = None):
         """Used for sending a notification on the server.  Private method that is
         used by alert(), broadcast(), and notify().
 
@@ -1143,7 +1152,8 @@ class Relay:
             ntype (str): the type of notification, either 'alert', 'broadcast', or 'notify'.
             name (str): a name for your notification.
             text (str): the text of your notification.
-            push_options (dict, optional): allows you to customize the push notification sent to a virtual device. Defaults to None.
+            push_opts (dict, optional): allows you to customize the push notification sent to a virtual device.
+             Defaults to None.
         """
         event = {
             '_type': 'wf_api_notification_request',
@@ -1153,12 +1163,12 @@ class Relay:
             'name': name,
             'text': text,
             'target': self.targets_from_source_uri(target),
-            'push_opts': push_options
+            'push_opts': push_opts
         }
-        await self.sendReceive(event)
+        await self.send_receive(event)
 
-
-    async def set_channel(self, target, channel_name:str, suppress_tts:bool=False, disable_home_channel:bool=False):
+    async def set_channel(self, target, channel_name: str, suppress_tts: bool = False,
+                          disable_home_channel: bool = False):
         """Sets the channel that a device is on.  This can be used to change the channel of a device during a workflow,
         where the channel will also be updated on the Relay Dash.
 
@@ -1166,7 +1176,8 @@ class Relay:
             target (str): the device or interaction URN.
             channel_name (str): the name of the channel you would like to set your device to.
             suppress_tts (bool, optional): whether you would like to surpress text to speech. Defaults to False.
-            disable_home_channel (bool, optional): whether you would like to disable the home channel. Defaults to False.
+            disable_home_channel (bool, optional): whether you would like to disable the home channel.
+             Defaults to False.
         """
         event = {
             '_type': 'wf_api_set_channel_request',
@@ -1175,8 +1186,7 @@ class Relay:
             'suppress_tts': suppress_tts,
             'disable_home_channel': disable_home_channel
         }
-        await self.sendReceive(event)
-
+        await self.send_receive(event)
 
     async def get_device_name(self, target):
         """Returns the name of a targeted device.
@@ -1190,24 +1200,26 @@ class Relay:
         v = await self._get_device_info(target, 'name')
         return v['name']
 
-    async def get_device_address(self, target, refresh:bool=False):
+    async def get_device_address(self, target, refresh: bool = False):
         """Returns the address of a targeted device.
 
         Args:
             target (str): the device or interaction URN.
-            refresh (bool, optional): whether you would like to refresh before retrieving the address. Defaults to False.
+            refresh (bool, optional): whether you would like to refresh before retrieving the address.
+             Defaults to False.
 
         Returns:
             str: the address of the device.
         """
         return await self.get_device_location(target, refresh)
 
-    async def get_device_location(self, target, refresh:bool=False):
+    async def get_device_location(self, target, refresh: bool = False):
         """Returns the location of a targeted device.
 
         Args:
             target (str): the device or interaction URN.
-            refresh (bool, optional): whether you would like to refresh before retrieving the location. Defaults to False.
+            refresh (bool, optional): whether you would like to refresh before retrieving the location.
+             Defaults to False.
 
         Returns:
             str: the location of the device.
@@ -1215,34 +1227,37 @@ class Relay:
         v = await self._get_device_info(target, 'address', refresh)
         return v['address']
 
-    async def get_device_latlong(self, target, refresh:bool=False):
+    async def get_device_latlong(self, target, refresh: bool = False):
         """Returns the latitude and longitude coordinates of a targeted device.
 
         Args:
             target (str): the device or interaction URN.
-            refresh (bool, optional): whether you would like to refresh before retrieving the coordinates. Defaults to False.
+            refresh (bool, optional): whether you would like to refresh before retrieving the coordinates.
+             Defaults to False.
 
         Returns:
             float[]: an array containing the latitude and longitude of the device.
         """
         return await self.get_device_coordinates(target, refresh)
 
-    async def get_device_coordinates(self, target, refresh:bool=False):
+    async def get_device_coordinates(self, target, refresh: bool = False):
         """Retrieves the coordinates of the device's location.
 
         Args:
             target (str): the device or interaction URN.
-            refresh (bool, optional): whether you would like to refresh before retreiving the coordinates. Defaults to False.
+            refresh (bool, optional): whether you would like to refresh before retreiving the coordinates.
+             Defaults to False.
         """
         v = await self._get_device_info(target, 'latlong', refresh)
         return v['latlong']
 
-    async def get_device_indoor_location(self, target, refresh:bool=False):
+    async def get_device_indoor_location(self, target, refresh: bool = False):
         """Returns the indoor location of a targeted device.
 
         Args:
             target (str): the device or interaction URN.
-            refresh (bool, optional): whether you would like to refresh before retrieving the location. Defaults to False.
+            refresh (bool, optional): whether you would like to refresh before retrieving the location.
+             Defaults to False.
 
         Returns:
             str: the indoor location of the device.
@@ -1250,12 +1265,13 @@ class Relay:
         v = await self._get_device_info(target, 'indoor_location', refresh)
         return v['indoor_location']
 
-    async def get_device_battery(self, target, refresh:bool=False):
+    async def get_device_battery(self, target, refresh: bool = False):
         """Returns the battery of a targeted device.
 
         Args:
             target (str): the device or interaction URN.
-            refresh (bool, optional): whether you would like to refresh before retrieving the battery. Defaults to False.
+            refresh (bool, optional): whether you would like to refresh before retrieving the battery.
+             Defaults to False.
 
         Returns:
             int: the battery of the device.
@@ -1312,7 +1328,7 @@ class Relay:
         return v['location_enabled']
 
     # target can have only one item
-    async def _get_device_info(self, target, query, refresh:bool=False):
+    async def _get_device_info(self, target, query, refresh: bool = False) -> dict:
         """Used privately by device information functions to retrieve varying information
          on the device, such as the ID, location, battery, name and type.
 
@@ -1330,11 +1346,10 @@ class Relay:
             'query': query,
             'refresh': refresh
         }
-        v = await self.sendReceive(event)
+        v = await self.send_receive(event)
         return v
 
-
-    async def set_device_name(self, target, name:str):
+    async def set_device_name(self, target, name: str):
         """Sets the name of a targeted device and updates it on the Relay Dash.
         The name remains updated until it is set again via a workflow or updated manually
         on the Relay Dash.
@@ -1394,7 +1409,7 @@ class Relay:
             'field': field,
             'value': value
         }
-        v = await self.sendReceive(event)
+        await self.send_receive(event)
         return event
 
     # set_device_mode is currently not supported
@@ -1403,7 +1418,8 @@ class Relay:
     #
     #     Args:
     #         target (str): the device or interaction URN.
-    #         mode (str, optional): the updated mode of the device, which can be 'panic', 'alarm', or 'none'. Defaults to 'none'.
+    #         mode (str, optional): the updated mode of the device, which can be 'panic', 'alarm', or 'none'.
+    #         Defaults to 'none'.
     #     """
     #     event = {
     #         '_type': 'wf_api_set_device_channel_request',
@@ -1413,9 +1429,11 @@ class Relay:
     #     await self.sendReceive(event)
     #     # await self._set_device_info(target, )
 
-    def led_info(self, rotations:int=None, count:int=None, duration:int=None, repeat_delay:int=None, pattern_repeats=None, colors=None):
-        """Sets information on a device, such as the number of rotations, count, duration, repeat delay, pattern repeats, 
-        and colors.
+    @staticmethod
+    def led_info(rotations: int = None, count: int = None, duration: int = None, repeat_delay: int = None,
+                 pattern_repeats=None, colors=None):
+        """Sets information on a device, such as the number of rotations, count, duration, repeat delay,
+        pattern repeats, and colors.
 
         Args:
             rotations (int, optional): number of rotations. Defaults to None.
@@ -1428,7 +1446,7 @@ class Relay:
         Returns:
             information field that was set on the LEDs.
         """
-        info = { }
+        info = {}
         if rotations is not None:
             info['rotations'] = rotations
         if count is not None:
@@ -1443,13 +1461,14 @@ class Relay:
             info['colors'] = colors
         return info
 
-    async def led_action(self, target, effect:str='flash', args=None):
+    async def led_action(self, target, effect: str = 'flash', args=None):
         """Private method used for performing actions on the LEDs, such as creating 
         a rainbow, flashing, rotating, etc.
 
         Args:
             target (str): the interaction URN.
-            effect (str, optional): effect to perform on LEDs, can be 'rainbow', 'rotate', 'flash', 'breath', 'static', or 'off'. Defaults to 'flash'.
+            effect (str, optional): effect to perform on LEDs, can be 'rainbow', 'rotate', 'flash', 'breath',
+                'static', or 'off'. Defaults to 'flash'.
             args (optional): use led_info() to create args. Defaults to None.
         """
         event = {
@@ -1458,18 +1477,18 @@ class Relay:
             'effect': effect,
             'args': args
         }
-        await self.sendReceive(event)
+        await self.send_receive(event)
 
-    async def switch_all_led_on(self, target, color:str='0000ff'):
-        """Switches all of the LEDs on a device on to a specified color.
+    async def switch_all_led_on(self, target, color: str = '0000ff'):
+        """Switches all the LEDs on a device on to a specified color.
 
         Args:
             target (str): the interaction URN.
             color (str, optional): the hex color code you would like the LEDs to be. Defaults to '0000ff'.
         """
-        await self.led_action(target, 'static', {'colors':{'ring': color}})
+        await self.led_action(target, 'static', {'colors': {'ring': color}})
 
-    async def switch_led_on(self, target, index:int, color:str='0000ff'):
+    async def switch_led_on(self, target, index: int, color: str = '0000ff'):
         """Switches on an LED at a particular index to a specified color.
 
         Args:
@@ -1477,33 +1496,33 @@ class Relay:
             index (int): the index of an LED, numbered 1-12.
             color (str, optional): the hex color code you would like to turn the LED to. Defaults to '0000ff'.
         """
-        await self.led_action(target, 'static', {'colors':{index: color}})
+        await self.led_action(target, 'static', {'colors': {index: color}})
 
-    async def rainbow(self, target, rotations:int=-1):
-        """Switches all of the LEDs on to a configured rainbow pattern and rotates the rainbow
+    async def rainbow(self, target, rotations: int = -1):
+        """Switches all the LEDs on to a configured rainbow pattern and rotates the rainbow
         a specified number of times.
 
         Args:
             target (str): the interaction URN.
-            rotations (int, optional): the number of times you would like the rainbow to rotate. Defaults to -1, meaning the 
-            rainbow will rotate indefinitely.
+            rotations (int, optional): the number of times you would like the rainbow to rotate. Defaults to -1,
+             meaning the rainbow will rotate indefinitely.
         """
         await self.led_action(target, 'rainbow', {'rotations': rotations})
 
-    async def flash(self, target, color:str='0000ff', count:int=-1):
-        """Switches all of the LEDs on a device to a certain color and flashes them
+    async def flash(self, target, color: str = '0000ff', count: int = -1):
+        """Switches all the LEDs on a device to a certain color and flashes them
         a specified number of times.
 
         Args:
             target (str): the interaction URN.
             color (str, optional): the hex color code you would like to turn the LEDs to. Defaults to '0000ff'.
-            count (int, optional): the number of times you would like the LEDs to flash. Defaults to -1, meaning the LEDs
-            will flash indefinitely.
+            count (int, optional): the number of times you would like the LEDs to flash. Defaults to -1, meaning
+             the LEDs will flash indefinitely.
         """
         await self.led_action(target, 'flash', {'colors': {'ring': color}, 'count': count})
 
-    async def breathe(self, target, color:str='0000ff', count:int=-1):
-        """Switches all of the LEDs on a device to a certain color and creates a 'breathing' effect, 
+    async def breathe(self, target, color: str = '0000ff', count: int = -1):
+        """Switches all the LEDs on a device to a certain color and creates a 'breathing' effect,
         where the LEDs will slowly light up a specified number of times.
 
         Args:
@@ -1514,8 +1533,8 @@ class Relay:
         """
         await self.led_action(target, 'breathe', {'colors': {'ring': color}, 'count': count})
 
-    async def rotate(self, target, color:str='0000ff', rotations:int=-1):
-        """Switches all of the LEDs on a device to a certain color and rotates them a specified number
+    async def rotate(self, target, color: str = '0000ff', rotations: int = -1):
+        """Switches all the LEDs on a device to a certain color and rotates them a specified number
         of times.
 
         Args:
@@ -1527,15 +1546,14 @@ class Relay:
         await self.led_action(target, 'rotate', {'colors': {'1': color}, 'rotations': rotations})
 
     async def switch_all_led_off(self, target):
-        """Switches all of the LEDs on a device off.
+        """Switches all the LEDs on a device off.
 
         Args:
             target (str): the interaction URN.
         """
         await self.led_action(target, 'off', {})
 
-
-    async def vibrate(self, target, pattern:list=None):
+    async def vibrate(self, target, pattern: list = None):
         """Makes the device vibrate in a particular pattern.  You can specify
         how many vibrations you would like, the duration of each vibration in
         milliseconds, and how long you would like the pauses between each vibration to last
@@ -1553,9 +1571,9 @@ class Relay:
             '_target': self.targets_from_source_uri(target),
             'pattern': pattern
         }
-        await self.sendReceive(event)
+        await self.send_receive(event)
 
-    async def start_timer(self, timeout:int=60):
+    async def start_timer(self, timeout: int = 60):
         """Starts an unnamed timer, meaning this will be the only timer on your device.
         The timer will fire when it reaches the value of the 'timeout' parameter.
 
@@ -1566,7 +1584,7 @@ class Relay:
             '_type': 'wf_api_start_timer_request',
             'timeout': timeout
         }
-        await self.sendReceive(event)
+        await self.send_receive(event)
 
     async def stop_timer(self):
         """Stops an unnamed timer.
@@ -1574,12 +1592,11 @@ class Relay:
         event = {
             '_type': 'wf_api_stop_timer_request'
         }
-        await self.sendReceive(event)
-
+        await self.send_receive(event)
 
     async def terminate(self):
         """Terminates a workflow.  This method is usually called
-        after your workflow has completed and you would like to end the 
+        after your workflow has completed, and you would like to end the
         workflow by calling end_interaction(), where you can then terminate
         the workflow.
         """
@@ -1589,8 +1606,7 @@ class Relay:
         # there is no response
         await self.send(event)
 
-
-    async def create_incident(self, originator, itype:str):
+    async def create_incident(self, originator, itype: str):
         """Creates an incident that will alert the Relay Dash.
 
         Args:
@@ -1606,10 +1622,10 @@ class Relay:
             'type': itype,
             'originator_uri': originator
         }
-        v = await self.sendReceive(event)
+        v = await self.send_receive(event)
         return v['incident_id']
 
-    async def resolve_incident(self, incident_id:str, reason:str):
+    async def resolve_incident(self, incident_id: str, reason: str):
         """Resolves an incident that was created.
 
         Args:
@@ -1621,7 +1637,7 @@ class Relay:
             'incident_id': incident_id,
             'reason': reason
         }
-        await self.sendReceive(event)
+        await self.send_receive(event)
 
     # restart/powering down device is currently not supported
 
@@ -1654,29 +1670,29 @@ class Relay:
     #     }
     #     await self.sendReceive(event)
 
-    async def stop_playback(self, target, id:str=None):
+    async def stop_playback(self, target, pb_id: str = None):
         event = None
-        if type(id) == list:
+        if type(pb_id) == list:
             event = {
                 '_type': 'wf_api_stop_playback_request',
                 '_target': self.targets_from_source_uri(target),
-                'ids': id
+                'ids': pb_id
             }
-        elif type(id) == str:
-            id = [id]
+        elif type(pb_id) == str:
+            pb_id = [pb_id]
             event = {
                 '_type': 'wf_api_stop_playback_request',
                 '_target': self.targets_from_source_uri(target),
-                'ids': id
+                'ids': pb_id
             }
-        elif id is None:
+        elif pb_id is None:
             event = {
                 '_type': 'wf_api_stop_playback_request',
                 '_target': self.targets_from_source_uri(target)
             }
-        await self.sendReceive(event)
+        await self.send_receive(event)
 
-    async def translate(self, text:str, from_lang:str='en-US', to_lang:str='es-ES'):
+    async def translate(self, text: str, from_lang: str = 'en-US', to_lang: str = 'es-ES'):
         """Translates text from one language to another.
 
         Args:
@@ -1693,11 +1709,11 @@ class Relay:
             'from_lang': from_lang,
             'to_lang': to_lang
         }
-        response = await self.sendReceive(event)
+        response = await self.send_receive(event)
         return response['text']
 
     # target can have only one item
-    async def place_call(self, target, uri:str):
+    async def place_call(self, target, uri: str):
         """Places a call to another device.
 
         Args:
@@ -1712,11 +1728,11 @@ class Relay:
             '_target': self.targets_from_source_uri(target),
             'uri': uri
         }
-        response = await self.sendReceive(event)
+        response = await self.send_receive(event)
         return response['call_id']
 
     # target can have only one item
-    async def answer_call(self, target, call_id:str):
+    async def answer_call(self, target, call_id: str):
         """Answers a call on your device.
 
         Args:
@@ -1728,10 +1744,10 @@ class Relay:
             '_target': self.targets_from_source_uri(target),
             'call_id': call_id
         }
-        await self.sendReceive(event)
+        await self.send_receive(event)
 
     # target can have only one item
-    async def hangup_call(self, target, call_id:str):
+    async def hangup_call(self, target, call_id: str):
         """Ends a call on your device.
 
         Args:
@@ -1743,11 +1759,9 @@ class Relay:
             '_target': self.targets_from_source_uri(target),
             'call_id': call_id
         }
-        await self.sendReceive(event)
+        await self.send_receive(event)
 
-    ##### TODO: test me from this point down
-
-    async def get_group_members(self, group_uri:str):
+    async def get_group_members(self, group_uri: str):
         """Returns the members of a particular group.
 
         Args:
@@ -1761,10 +1775,10 @@ class Relay:
             'query': 'list_members',
             'group_uri': group_uri
         }
-        response = await self.sendReceive(event)
+        response = await self.send_receive(event)
         return response['member_uris']
 
-    async def is_group_member(self, group_name_uri:str, potential_member_name_uri:str):
+    async def is_group_member(self, group_name_uri: str, potential_member_name_uri: str):
         """Checks whether a device is a member of a particular group.
 
         Args:
@@ -1774,19 +1788,19 @@ class Relay:
         Returns:
             str: 'true' if the device is a member of the specified group, 'false' otherwise.
         """
-        group_name = parse_group_name(group_name_uri)
-        device_name = parse_device_name(potential_member_name_uri)
-        group_uri = group_member(group_name, device_name)
+        this_group_name = parse_group_name(group_name_uri)
+        this_device_name = parse_device_name(potential_member_name_uri)
+        this_group_uri = group_member(this_group_name, this_device_name)
         event = {
             '_type': 'wf_api_group_query_request',
             'query': 'is_member',
-            'group_uri': group_uri
+            'group_uri': this_group_uri
         }
-        response = await self.sendReceive(event)
+        response = await self.send_receive(event)
         return response['is_member']
 
     # target can have only one item
-    async def set_user_profile(self, target:str, username:str, force:bool=False):
+    async def set_user_profile(self, target: str, username: str, force: bool = False):
         """Sets the profile of a user by updating the username.
 
         Args:
@@ -1800,7 +1814,7 @@ class Relay:
             'username': username,
             'force': force
         }
-        await self.sendReceive(event)
+        await self.send_receive(event)
 
     # target can have only one item
     async def get_unread_inbox_size(self, target):
@@ -1816,7 +1830,7 @@ class Relay:
             '_type': 'wf_api_inbox_count_request',
             '_target': self.targets_from_source_uri(target)
         }
-        response = await self.sendReceive(event)
+        response = await self.send_receive(event)
         return response['count']
 
     async def play_unread_inbox_messages(self, target):
@@ -1829,9 +1843,10 @@ class Relay:
             '_type': 'wf_api_play_inbox_messages_request',
             '_target': self.targets_from_source_uri(target)
         }
-        await self.sendReceive(event)
+        await self.send_receive(event)
 
-    async def log_message(self, message:str, category: Optional[str]='default', target: Optional[str]=None, content_type: Optional[str]='text/plain'):
+    async def log_message(self, message: str, category: Optional[str] = 'default', target: Optional[str] = None,
+                          content_type: Optional[str] = 'text/plain'):
         """Log an analytics event from a workflow with the specified content and
         under a specified category. This does not log the device who
         triggered the workflow that called this function.
@@ -1845,14 +1860,13 @@ class Relay:
         event = {
             '_type': 'wf_api_log_analytics_event_request',
             'content': message,
-            'content_type':  content_type,
+            'content_type': content_type,
             'category': category,
             'device_uri': target
         }
-        await self.sendReceive(event)
+        await self.send_receive(event)
 
-    # TODO: is this needed?
-    async def log_user_message(self, message:str, target, category:str):
+    async def log_user_message(self, message: str, target, category: str):
         """Log an analytic event from a workflow with the specified content and
         under a specified category.  This includes the device who triggered the workflow
         that called this function.
@@ -1869,9 +1883,9 @@ class Relay:
             'category': category,
             'device_uri': target
         }
-        await self.sendReceive(event)
+        await self.send_receive(event)
 
-    async def set_timer(self, name:str, timer_type:str='timeout', timeout:int=60, timeout_type:str='secs'):
+    async def set_timer(self, name: str, timer_type: str = 'timeout', timeout: int = 60, timeout_type: str = 'secs'):
         """ Serves as a named timer that can be either interval or timeout.  Allows you to specify
         the unit of time.
 
@@ -1888,9 +1902,9 @@ class Relay:
             'timeout': timeout,
             'timeout_type': timeout_type
         }
-        await self.sendReceive(event)
+        await self.send_receive(event)
 
-    async def clear_timer(self, name:str):
+    async def clear_timer(self, name: str):
         """Clears the specified timer.
 
         Args:
@@ -1900,16 +1914,16 @@ class Relay:
             '_type': 'wf_api_clear_timer_request',
             'name': name
         }
-        await self.sendReceive(event)
+        await self.send_receive(event)
 
-    async def sms(self, stype:str, text:str, uri:str):
+    async def sms(self, stype: str, text: str, uri: str):
         event = {
             '_type': 'wf_api_sms_request',
             'type': stype,
             'text': text,
             'uri': uri
         }
-        response = await self.sendReceive(event)
+        response = await self.send_receive(event)
         return response['message_id']
 
     async def enable_home_channel(self, target):
@@ -1918,16 +1932,16 @@ class Relay:
     async def disable_home_channel(self, target):
         await self._set_home_channel_state(target, False)
 
-    async def _set_home_channel_state(self, target, enabled:bool=True):
+    async def _set_home_channel_state(self, target, enabled: bool = True):
         event = {
             '_type': 'wf_api_set_home_channel_state_request',
             '_target': self.targets_from_source_uri(target),
             'enabled': enabled
         }
-        await self.sendReceive(event)
+        await self.send_receive(event)
 
     # target can have only one item
-    async def register(self, target, uri:str, password:str, expires:int):
+    async def register(self, target, uri: str, password: str, expires: int):
         event = {
             '_type': 'wf_api_register_request',
             '_target': self.targets_from_source_uri(target),
@@ -1935,7 +1949,7 @@ class Relay:
             'password': password,
             'expires': expires
         }
-        await self.sendReceive(event)
+        await self.send_receive(event)
 
     # invalid_type and missing_type are just for internal testing of error handling
 
@@ -1945,17 +1959,19 @@ class Relay:
             'device_id': 'TheQuickBrownFoxJumpedOverTheLazyDog',
             'call_id': 'you can\'t catch me'
         }
-        await self.sendReceive(event)
+        await self.send_receive(event)
 
     async def missing_type(self):
         event = {
             'device_id': 'NowIsTheTimeForAllGoodMenToComeToTheAidOfYourCountry',
             'call_id': 'you can\'t catch me'
         }
-        await self.sendReceive(event)
+        await self.send_receive(event)
 
 
-def __update_access_token(refresh_token:str, client_id:str):
+# static methods
+
+def _update_access_token(refresh_token: str, client_id: str):
     grant_url = f'https://{auth_hostname}/oauth2/token'
     grant_headers = {
         'User-Agent': VERSION
@@ -1973,7 +1989,8 @@ def __update_access_token(refresh_token:str, client_id:str):
     return access_token
 
 
-def trigger_workflow(access_token:str, refresh_token:str, client_id:str, workflow_id:str, subscriber_id:str, user_id:str, targets:List[str], action_args:dict=None):
+def trigger_workflow(access_token: str, refresh_token: str, client_id: str, workflow_id: str, subscriber_id: str,
+                     user_id: str, targets: List[str], action_args: dict = None):
     """A convenience method for sending an HTTP trigger to the Relay server.
 
     This generally would be used in a third-party system to start a Relay
@@ -2009,6 +2026,9 @@ def trigger_workflow(access_token:str, refresh_token:str, client_id:str, workflo
 
         user_id(str): the IMEI of the target device, such as 990007560023456.
 
+        targets: the device targets that the workflow should be considered as
+        having been triggered from.
+
         action_args (optional): a dict of any key/value arguments you want
         to pass in to the workflow that gets started by this trigger.
     """
@@ -2031,14 +2051,14 @@ def trigger_workflow(access_token:str, refresh_token:str, client_id:str, workflo
     # check if access token expired, and if so get a new one from the refresh_token, and resubmit
     if response.status_code == 401:
         logger.debug(f'got 401 on workflow trigger, trying to get new access token')
-        access_token = __update_access_token(refresh_token, client_id)
+        access_token = _update_access_token(refresh_token, client_id)
         headers['Authorization'] = f'Bearer {access_token}'
         response = requests.post(url, headers=headers, params=query_params, json=payload, timeout=10.0)
     logger.debug(f'workflow trigger status code={response.status_code}')
-    return (response, access_token)
+    return response, access_token
 
 
-def fetch_device(access_token:str, refresh_token:str, client_id:str, subscriber_id:str, user_id:str):
+def fetch_device(access_token: str, refresh_token: str, client_id: str, subscriber_id: str, user_id: str):
     """A convenience method for getting all the details of a device.
 
     This will return quite a bit of data regarding device configuration and
@@ -2066,14 +2086,14 @@ def fetch_device(access_token:str, refresh_token:str, client_id:str, subscriber_
         'Authorization': f'Bearer {access_token}',
         'User-Agent': VERSION
     }
-    query_params = { 'subscriber_id': subscriber_id }
+    query_params = {'subscriber_id': subscriber_id}
     response = requests.get(url, headers=headers, params=query_params, timeout=10.0)
     if response.status_code == 401:
         logger.debug(f'got 401 on get, trying to get new access token')
-        access_token = __update_access_token(refresh_token, client_id)
+        access_token = _update_access_token(refresh_token, client_id)
         headers['Authorization'] = f'Bearer {access_token}'
         response = requests.post(url, headers=headers, params=query_params, timeout=10.0)
     logger.debug(f'device_info status code={response.status_code}')
-    return (response, access_token)
+    return response, access_token
 
-######## end of SDK
+# *********************************** end of SDK
