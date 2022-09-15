@@ -94,11 +94,11 @@ class Server:
                                             extra_headers=custom_headers, ssl=ssl_context)
             logger.info(
                 f'Relay workflow server ({VERSION}) listening on {self.host} port {self.port}'
-                ' with ssl_context {ssl_context}')
+                f' with ssl_context {ssl_context}')
         else:
             start_server = websockets.serve(self.handler, self.host, self.port, extra_headers=custom_headers)
             logger.info(f'Relay workflow server ({VERSION}) listening on {self.host}'
-                        ' port {self.port} with plaintext')
+                        f' port {self.port} with plaintext')
 
         asyncio.get_event_loop().run_until_complete(start_server)
 
@@ -366,15 +366,35 @@ class Workflow:
         self.type_handlers = {}  # {(type, args): func}
 
     def on_start(self, func):
+        """
+        A decorator for a handler method for the START event (workflow is starting).
+
+        async def start_handler(workflow:obj, trigger:dict)
+        """
         self.type_handlers['wf_api_start_event'] = func
 
     def on_stop(self, func):
+        """
+        A decorator for a handler method for the STOP event (workflow is stopping).
+
+        async def stop_handler(workflow:obj, reason:str).
+        """
         self.type_handlers['wf_api_stop_event'] = func
 
     def on_prompt(self, func):
+        """
+        A decorator for a handler method for the PROMPT event (text-to-speech is streaming in).
+
+        async def prompt_handler(workflow:obj, source_uri:str, prompt_type:str).
+        """
         self.type_handlers['wf_api_prompt_event'] = func
 
     def on_button(self, _func=None, *, button='*', taps='*'):
+        """
+        A decorator for a handler method for the BUTTON event (the Talk button was pressed).
+
+        async def button_handler(workflow:obj, button:str, taps:str, source_uri:str).
+        """
         def on_button_decorator(func):
             self.type_handlers['wf_api_button_event', button, taps] = func
 
@@ -385,6 +405,11 @@ class Workflow:
             return on_button_decorator
 
     def on_notification(self, _func=None, *, name='*', event='*'):
+        """
+        A decorator for a handler method for the NOTIFICATION event (a broadcast or alert was sent).
+
+        async def button_handler(workflow:obj, button:str, taps:str, source_uri:str).
+        """
         def on_notification_decorator(func):
             self.type_handlers['wf_api_notification_event', name, event] = func
 
@@ -396,52 +421,161 @@ class Workflow:
 
     def on_timer(self, func):
         # unnamed timer
+        """
+        A decorator for a handler method for the TIMER event (the unnamed timer fired).
+
+        async def timer_handler(workflow:obj).
+        """
         self.type_handlers['wf_api_timer_event'] = func
 
     def on_timer_fired(self, func):
         # named timer
+        """
+        A decorator for a handler method for the TIMER_FIRED event (a named timer fired).
+
+        async def timer_fired_handler(workflow:obj, timer_name:str).
+        """
         self.type_handlers['wf_api_timer_fired_event'] = func
 
     def on_speech(self, func):
+        """
+        A decorator for a handler method for the SPEECH event (the listen() function is running).
+
+        async def speech_handler(workflow:obj, transcribed_text:str, audio:bytes, language:str,
+                                 request_id:str, source_uri:str).
+        """
         self.type_handlers['wf_api_speech_event'] = func
 
     def on_progress(self, func):
+        """
+        A decorator for a handler method for the PROGRESS event (a long running action is being
+        performed across a large number of devices, may get called multiple times).
+
+        async def progress_handler(workflow:obj).
+        """
         self.type_handlers['wf_api_progress_event'] = func
 
     def on_play_inbox_message(self, func):
+        """
+        A decorator for a handler method for the PLAY_INBOX_MESSAGE event (a missed message
+        is being played).
+
+        async def play_inbox_message_handler(workflow:obj, action:str).
+        """
         self.type_handlers['wf_api_play_inbox_message_event'] = func
 
     def on_call_connected(self, func):
+        """
+        A decorator for a handler method for the CALL_CONNECTED event (a full-duplex call
+        became fully connected).
+
+        async def call_connected_handler(workflow:obj, call_id:str, direction:str,
+                                         other_device_id:str, other_device_name:str,
+                                         uri:str, onnet:bool,
+                                         start_time_epoch:int, connect_time_epoch:int).
+        """
         self.type_handlers['wf_api_call_connected_event'] = func
 
     def on_call_disconnected(self, func):
+        """
+        A decorator for a handler method for the CALL_DISCONNECTED event (a full-duplex call
+        that was once connected became disconnected).
+
+        async def call_disconnected_handler(workflow:obj, call_id:str, direction:str,
+                                            other_device_id:str, other_device_name:str,
+                                            uri:str, onnet:bool, reason:str,
+                                            start_time_epoch:int, end_time_epoch:int).
+        """
         self.type_handlers['wf_api_call_disconnected_event'] = func
 
     def on_call_failed(self, func):
+        """
+        A decorator for a handler method for the CALL_FAILED event (a full-duplex call
+        failed to become initially connected).
+
+        async def call_failed_handler(workflow:obj, call_id:str, direction:str,
+                                      other_device_id:str, other_device_name:str,
+                                      uri:str, onnet:bool, reason:str,
+                                      start_time_epoch:int, connect_time_epoch:int, end_time_epoch:int).
+        """
         self.type_handlers['wf_api_call_failed_event'] = func
 
     def on_call_received(self, func):
+        """
+        A decorator for a handler method for the CALL_RECEIVED event (an incoming call
+        request has been received).
+
+        async def call_received_handler(workflow:obj, call_id:str, direction:str,
+                                        other_device_id:str, other_device_name:str,
+                                        uri:str, onnet:bool,
+                                        start_time_epoch:int).
+        """
         self.type_handlers['wf_api_call_received_event'] = func
 
     def on_call_ringing(self, func):
+        """
+        A decorator for a handler method for the CALL_RINGING event (the other party is
+        ringing for a call we placed).
+
+        async def call_ringing_handler(workflow:obj, call_id:str, direction:str,
+                                       other_device_id:str, other_device_name:str,
+                                       uri:str, onnet:bool,
+                                       start_time_epoch:int).
+        """
         self.type_handlers['wf_api_call_ringing_event'] = func
 
     def on_call_start_request(self, func):
+        """
+        A decorator for a handler method for the CALL_START_REQUEST event (we have been
+        requested to make an outbound call to the specified destination).
+
+        async def call_start_request_handler(workflow:obj, destination_uri:str).
+        """
         self.type_handlers['wf_api_call_start_request_event'] = func
 
     def on_call_progressing(self, func):
+        """
+        A decorator for a handler method for the CALL_PROGRESSING event (an outgoing call
+        we made is making progress towards getting connected).
+
+        async def call_progressing_handler(workflow:obj, call_id:str, direction:str,
+                                           other_device_id:str, other_device_name:str,
+                                           uri:str, onnet:bool,
+                                           start_time_epoch:int, connect_time_epoch:int).
+        """
         self.type_handlers['wf_api_call_progressing_event'] = func
 
     def on_sms(self, func):
+        """
+        A decorator for a handler method for the SMS event (TBD).
+
+        async def sms_handler(workflow:obj, id:str, event:dict).
+        """
         self.type_handlers['wf_api_sms_event'] = func
 
     def on_incident(self, func):
+        """
+        A decorator for a handler method for the INCIDENT event (an incident has been created).
+
+        async def incident_handler(workflow:obj, type:str, incident_id:str, reason:str).
+        """
         self.type_handlers['wf_api_incident_event'] = func
 
     def on_interaction_lifecycle(self, func):
+        """
+        A decorator for a handler method for the INTERACTION_LIFECYCLE event (an interaction
+        is starting, resuming, or ending).
+
+        async def interaction_lifecycle_handler(workflow:obj, itype:str, source_uri:str, reason:str).
+        """
         self.type_handlers['wf_api_interaction_lifecycle_event'] = func
 
     def on_resume(self, func):
+        """
+        A decorator for a handler method for the RESUME event (TBD).
+
+        async def resume_handler(workflow:obj, trigger:dict).
+        """
         self.type_handlers['wf_api_resume_event'] = func
 
     def get_handler(self, event: dict):
@@ -548,6 +682,16 @@ class Relay:
         return dict_message
 
     @staticmethod
+    def _validate_trigger(trigger: dict):
+        if not isinstance(trigger, dict):
+            raise WorkflowException('trigger parameter is not a dictionary')
+        if 'args' not in trigger:
+            raise WorkflowException('trigger parameter is not a trigger dictionary')
+        if 'source_uri' not in trigger['args']:
+            raise WorkflowException('there is no source_uri definition in the trigger')
+
+
+    @staticmethod
     def make_target_uris(trigger: dict):
         """Creates a target URN after receiving a workflow trigger.
 
@@ -562,16 +706,31 @@ class Relay:
         Returns:
             a target object created from the trigger.
         """
-        if not isinstance(trigger, dict):
-            raise WorkflowException('trigger parameter is not a dictionary')
-        if 'args' not in trigger:
-            raise WorkflowException('trigger parameter is not a trigger dictionary')
-        if 'source_uri' not in trigger['args']:
-            raise WorkflowException('there is no source_uri definition in the trigger')
+        Relay._validate_trigger(trigger)
         target = {
             'uris': [trigger['args']['source_uri']]
         }
         return target
+
+    @staticmethod
+    def get_source_uri_from_trigger(trigger: dict) -> str:
+        """Get the source URN from a workflow trigger
+
+        Args:
+            trigger (dict): workflow trigger.
+
+        Raises:
+            WorkflowException: thrown if the trigger param is not a dictionary.
+            WorkflowException: thrown if the trigger param is not a trigger dictionary.
+            WorkflowException: thrown if there is no source_uri definition in the trigger.
+
+        Returns:
+            the source URN as a string from the trigger.
+
+        """
+        Relay._validate_trigger(trigger)
+        source_uri = trigger['args']['source_uri']
+        return source_uri
 
     @staticmethod
     def targets_from_source_uri(source_uri: str):
@@ -1713,12 +1872,12 @@ class Relay:
         return response['text']
 
     # target can have only one item
-    async def place_call(self, target, uri: str):
+    async def place_call(self, target, callee_uri: str):
         """Places a call to another device.
 
         Args:
-            target (str): the device URN.
-            uri (str): the URN of the device you would like to call.
+            target (str): the device which will place the call.
+            callee_uri (str): the URN of the device you would like to call.
 
         Returns:
             the event response.
@@ -1726,7 +1885,7 @@ class Relay:
         event = {
             '_type': 'wf_api_call_request',
             '_target': self.targets_from_source_uri(target),
-            'uri': uri
+            'uri': callee_uri
         }
         response = await self.send_receive(event)
         return response['call_id']
@@ -1736,7 +1895,7 @@ class Relay:
         """Answers a call on your device.
 
         Args:
-            target (str): the device URN.
+            target (str): the device which will answer the call.
             call_id (str): the call ID.
         """
         event = {
@@ -1748,10 +1907,10 @@ class Relay:
 
     # target can have only one item
     async def hangup_call(self, target, call_id: str):
-        """Ends a call on your device.
+        """Ends (hangs up) a call on a device.
 
         Args:
-            target (str): the device URN.
+            target (str): the device which will do the hangup.
             call_id (str): the call ID.
         """
         event = {
