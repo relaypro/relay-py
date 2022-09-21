@@ -1022,18 +1022,16 @@ class Relay:
         }
         await self.send_receive(event)
 
-    async def end_interaction(self, target, name: str):
+    async def end_interaction(self, target):
         """Ends an interaction with the user.  Triggers an INTERACTION_ENDED event to signify
         that the user is done interacting with the device.
 
         Args:
             target(str): the device that you would like to end an interaction with.
-            name (str): the name of the interaction that you would like to end.
         """
         event = {
             '_type': 'wf_api_end_interaction_request',
-            '_target': self.targets_from_source_uri(target),
-            'name': name
+            '_target': self.targets_from_source_uri(target)
         }
         await self.send_receive(event)
 
