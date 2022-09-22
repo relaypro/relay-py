@@ -240,12 +240,11 @@ enabled&nbsp;until&nbsp;they&nbsp;are&nbsp;disabled&nbsp;on&nbsp;the&nbsp;<a hre
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;device&nbsp;or&nbsp;interaction&nbsp;URN.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-end_interaction"><strong>end_interaction</strong></a>(self, target, name: str)</dt><dd><tt>Ends&nbsp;an&nbsp;interaction&nbsp;with&nbsp;the&nbsp;user.&nbsp;&nbsp;Triggers&nbsp;an&nbsp;INTERACTION_ENDED&nbsp;event&nbsp;to&nbsp;signify<br>
+<dl><dt>async <a name="Relay-end_interaction"><strong>end_interaction</strong></a>(self, target)</dt><dd><tt>Ends&nbsp;an&nbsp;interaction&nbsp;with&nbsp;the&nbsp;user.&nbsp;&nbsp;Triggers&nbsp;an&nbsp;INTERACTION_ENDED&nbsp;event&nbsp;to&nbsp;signify<br>
 that&nbsp;the&nbsp;user&nbsp;is&nbsp;done&nbsp;interacting&nbsp;with&nbsp;the&nbsp;device.<br>
 &nbsp;<br>
 Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;target(str):&nbsp;the&nbsp;device&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;end&nbsp;an&nbsp;interaction&nbsp;with.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;interaction&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;end.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;target(str):&nbsp;the&nbsp;device&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;end&nbsp;an&nbsp;interaction&nbsp;with.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-flash"><strong>flash</strong></a>(self, target, color: str = '0000ff', count: int = -1)</dt><dd><tt>Switches&nbsp;all&nbsp;the&nbsp;LEDs&nbsp;on&nbsp;a&nbsp;device&nbsp;to&nbsp;a&nbsp;certain&nbsp;color&nbsp;and&nbsp;flashes&nbsp;them<br>
 a&nbsp;specified&nbsp;number&nbsp;of&nbsp;times.<br>
