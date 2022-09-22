@@ -150,6 +150,9 @@ DEVICE = 'device'
 # Pattern used when creating an interaction URN.
 DEVICE_PATTERN = '?device='
 
+# Used to specify that the URN is for an interaction.
+INTERACTION = 'interaction'
+
 # Beginning of an interaction URN that uses the name of a device.
 INTERACTION_URI_NAME = 'urn:relay-resource:name:interaction'
 
@@ -207,6 +210,18 @@ def device_name(name: str):
         str: the newly constructed URN.
     """
     return construct(DEVICE, NAME, urllib.parse.quote(name))
+
+
+def interaction_name(name: str) -> str:
+    """Creates a URN from an interaction name.
+
+    Args:
+        name (str): the name of the interaction
+
+    Returns:
+        str: the newly constructed URN.
+    """
+    return construct(INTERACTION, NAME, urllib.parse.quote(name))
 
 
 def group_member(group: str, device: str):
