@@ -1042,7 +1042,7 @@ class Relay:
         that the user is done interacting with the device.
 
         Args:
-            target(str): the device that you would like to end an interaction with.
+            target(str): the interaction that you would like to end.
         """
         event = {
             '_type': 'wf_api_end_interaction_request',
