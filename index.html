@@ -244,7 +244,7 @@ Args:<br>
 that&nbsp;the&nbsp;user&nbsp;is&nbsp;done&nbsp;interacting&nbsp;with&nbsp;the&nbsp;device.<br>
 &nbsp;<br>
 Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;target(str):&nbsp;the&nbsp;device&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;end&nbsp;an&nbsp;interaction&nbsp;with.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;target(str):&nbsp;the&nbsp;interaction&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;end.</tt></dd></dl>
 
 <dl><dt>async <a name="Relay-flash"><strong>flash</strong></a>(self, target, color: str = '0000ff', count: int = -1)</dt><dd><tt>Switches&nbsp;all&nbsp;the&nbsp;LEDs&nbsp;on&nbsp;a&nbsp;device&nbsp;to&nbsp;a&nbsp;certain&nbsp;color&nbsp;and&nbsp;flashes&nbsp;them<br>
 a&nbsp;specified&nbsp;number&nbsp;of&nbsp;times.<br>
@@ -1132,6 +1132,13 @@ Args:<br>
 &nbsp;<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;the&nbsp;newly&nbsp;constructed&nbsp;URN.</tt></dd></dl>
+ <dl><dt><a name="-interaction_name"><strong>interaction_name</strong></a>(name: str) -&gt; str</dt><dd><tt>Creates&nbsp;a&nbsp;URN&nbsp;from&nbsp;an&nbsp;interaction&nbsp;name.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;interaction<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;the&nbsp;newly&nbsp;constructed&nbsp;URN.</tt></dd></dl>
  <dl><dt><a name="-is_interaction_uri"><strong>is_interaction_uri</strong></a>(uri: str)</dt><dd><tt>Checks&nbsp;if&nbsp;the&nbsp;URN&nbsp;is&nbsp;for&nbsp;an&nbsp;interaction.<br>
 &nbsp;<br>
 Args:<br>
@@ -1233,6 +1240,7 @@ Args:<br>
 <strong>DEVICE_PATTERN</strong> = '?device='<br>
 <strong>GROUP</strong> = 'group'<br>
 <strong>ID</strong> = 'id'<br>
+<strong>INTERACTION</strong> = 'interaction'<br>
 <strong>INTERACTION_URI_ID</strong> = 'urn:relay-resource:id:interaction'<br>
 <strong>INTERACTION_URI_NAME</strong> = 'urn:relay-resource:name:interaction'<br>
 <strong>List</strong> = typing.List<br>
