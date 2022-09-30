@@ -208,8 +208,6 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target(str):&nbsp;the&nbsp;device&nbsp;URN&nbsp;that&nbsp;is&nbsp;cancelling&nbsp;the&nbsp;broadcast.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;broadcast&nbsp;that&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;cancel.</tt></dd></dl>
 
-<dl><dt><a name="Relay-clean_int_arrays"><strong>clean_int_arrays</strong></a>(self, dict_message)</dt></dl>
-
 <dl><dt>async <a name="Relay-clear_timer"><strong>clear_timer</strong></a>(self, name: str)</dt><dd><tt>Clears&nbsp;the&nbsp;specified&nbsp;timer.<br>
 &nbsp;<br>
 Args:<br>
@@ -254,10 +252,6 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;color&nbsp;(str,&nbsp;optional):&nbsp;the&nbsp;hex&nbsp;color&nbsp;code&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;turn&nbsp;the&nbsp;LEDs&nbsp;to.&nbsp;Defaults&nbsp;to&nbsp;'0000ff'.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;count&nbsp;(int,&nbsp;optional):&nbsp;the&nbsp;number&nbsp;of&nbsp;times&nbsp;you&nbsp;would&nbsp;like&nbsp;the&nbsp;LEDs&nbsp;to&nbsp;flash.&nbsp;Defaults&nbsp;to&nbsp;-1,&nbsp;meaning<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;LEDs&nbsp;will&nbsp;flash&nbsp;indefinitely.</tt></dd></dl>
-
-<dl><dt><a name="Relay-from_json"><strong>from_json</strong></a>(self, websocket_message)</dt></dl>
-
-<dl><dt><a name="Relay-get_cid"><strong>get_cid</strong></a>(self)</dt></dl>
 
 <dl><dt>async <a name="Relay-get_device_address"><strong>get_device_address</strong></a>(self, target, refresh: bool = False)</dt><dd><tt>Returns&nbsp;the&nbsp;address&nbsp;of&nbsp;a&nbsp;targeted&nbsp;device.<br>
 &nbsp;<br>
@@ -394,15 +388,11 @@ Args:<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;variable&nbsp;requested.</tt></dd></dl>
 
-<dl><dt>async <a name="Relay-handle"><strong>handle</strong></a>(self, websocket)</dt></dl>
-
 <dl><dt>async <a name="Relay-hangup_call"><strong>hangup_call</strong></a>(self, target, call_id: str)</dt><dd><tt>Ends&nbsp;(hangs&nbsp;up)&nbsp;a&nbsp;call&nbsp;on&nbsp;a&nbsp;device.<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;device&nbsp;which&nbsp;will&nbsp;do&nbsp;the&nbsp;hangup.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;call_id&nbsp;(str):&nbsp;the&nbsp;call&nbsp;ID.</tt></dd></dl>
-
-<dl><dt>async <a name="Relay-invalid_type"><strong>invalid_type</strong></a>(self)</dt></dl>
 
 <dl><dt>async <a name="Relay-is_group_member"><strong>is_group_member</strong></a>(self, group_name_uri: str, potential_member_name_uri: str)</dt><dd><tt>Checks&nbsp;whether&nbsp;a&nbsp;device&nbsp;is&nbsp;a&nbsp;member&nbsp;of&nbsp;a&nbsp;particular&nbsp;group.<br>
 &nbsp;<br>
@@ -455,8 +445,6 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;message&nbsp;(str):&nbsp;a&nbsp;description&nbsp;for&nbsp;your&nbsp;analytical&nbsp;event.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str,&nbsp;optional):&nbsp;the&nbsp;URN&nbsp;of&nbsp;a&nbsp;the&nbsp;device&nbsp;that&nbsp;triggered&nbsp;this&nbsp;function.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;category&nbsp;(str):&nbsp;a&nbsp;category&nbsp;for&nbsp;your&nbsp;analytical&nbsp;event.</tt></dd></dl>
-
-<dl><dt>async <a name="Relay-missing_type"><strong>missing_type</strong></a>(self)</dt></dl>
 
 <dl><dt>async <a name="Relay-place_call"><strong>place_call</strong></a>(self, target, callee_uri: str)</dt><dd><tt>Places&nbsp;a&nbsp;call&nbsp;to&nbsp;another&nbsp;device.<br>
 &nbsp;<br>
@@ -537,10 +525,6 @@ Args:<br>
 &nbsp;<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;response&nbsp;ID&nbsp;after&nbsp;the&nbsp;device&nbsp;speaks&nbsp;to&nbsp;the&nbsp;user.</tt></dd></dl>
-
-<dl><dt>async <a name="Relay-send"><strong>send</strong></a>(self, obj)</dt></dl>
-
-<dl><dt>async <a name="Relay-send_receive"><strong>send_receive</strong></a>(self, obj, uid=None)</dt></dl>
 
 <dl><dt>async <a name="Relay-set_channel"><strong>set_channel</strong></a>(self, target, channel_name: str, suppress_tts: bool = False, disable_home_channel: bool = False)</dt><dd><tt>Sets&nbsp;the&nbsp;channel&nbsp;that&nbsp;a&nbsp;device&nbsp;is&nbsp;on.&nbsp;&nbsp;This&nbsp;can&nbsp;be&nbsp;used&nbsp;to&nbsp;change&nbsp;the&nbsp;channel&nbsp;of&nbsp;a&nbsp;device&nbsp;during&nbsp;a&nbsp;workflow,<br>
 where&nbsp;the&nbsp;channel&nbsp;will&nbsp;also&nbsp;be&nbsp;updated&nbsp;on&nbsp;the&nbsp;<a href="#Relay">Relay</a>&nbsp;Dash.<br>
@@ -650,8 +634,6 @@ in&nbsp;milliseconds.<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;target&nbsp;(str):&nbsp;the&nbsp;interaction&nbsp;URN.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;pattern&nbsp;(list,&nbsp;optional):&nbsp;an&nbsp;array&nbsp;representing&nbsp;the&nbsp;pattern&nbsp;of&nbsp;your&nbsp;vibration.&nbsp;Defaults&nbsp;to&nbsp;None.</tt></dd></dl>
-
-<dl><dt>async <a name="Relay-wrapper"><strong>wrapper</strong></a>(self, h, *args)</dt><dd><tt>#&nbsp;run&nbsp;handlers&nbsp;with&nbsp;exception&nbsp;logging;&nbsp;needed&nbsp;since&nbsp;we&nbsp;cannot&nbsp;await&nbsp;handlers</tt></dd></dl>
 
 <hr>
 Static methods defined here:<br>
@@ -768,8 +750,6 @@ Keyword&nbsp;Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;ssl_cert_filename:&nbsp;if&nbsp;an&nbsp;SSLContext&nbsp;is&nbsp;desired&nbsp;for&nbsp;this&nbsp;server,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;is&nbsp;the&nbsp;filename&nbsp;where&nbsp;the&nbsp;certificate&nbsp;in&nbsp;PEM&nbsp;format&nbsp;can<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;found.&nbsp;Should&nbsp;also&nbsp;use&nbsp;ssl_key_filename&nbsp;if&nbsp;this&nbsp;is&nbsp;specified.</tt></dd></dl>
-
-<dl><dt>async <a name="Server-handler"><strong>handler</strong></a>(self, websocket, path: str)</dt></dl>
 
 <dl><dt><a name="Server-register"><strong>register</strong></a>(self, workflow, path: str)</dt></dl>
 
@@ -1064,18 +1044,7 @@ Data descriptors inherited from <a href="builtins.html#BaseException">builtins.B
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-construct"><strong>construct</strong></a>(resource_type: str, id_type: str, id_or_name: str)</dt><dd><tt>Constructs&nbsp;a&nbsp;URN&nbsp;based&nbsp;off&nbsp;of&nbsp;the&nbsp;resource&nbsp;type,&nbsp;id&nbsp;type,&nbsp;and<br>
-id/name.&nbsp;&nbsp;Used&nbsp;by&nbsp;methods&nbsp;that&nbsp;need&nbsp;to&nbsp;create&nbsp;a&nbsp;URN&nbsp;when&nbsp;given&nbsp;a<br>
-name&nbsp;or&nbsp;ID&nbsp;of&nbsp;a&nbsp;device&nbsp;or&nbsp;group.<br>
-&nbsp;<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;resource_type&nbsp;(str):&nbsp;indicates&nbsp;whether&nbsp;the&nbsp;URN&nbsp;is&nbsp;for&nbsp;a&nbsp;device,&nbsp;group,&nbsp;or&nbsp;interaction.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;id_type&nbsp;(str):&nbsp;indicates&nbsp;whether&nbsp;the&nbsp;URN&nbsp;has&nbsp;an&nbsp;ID&nbsp;type&nbsp;of&nbsp;'name'&nbsp;or&nbsp;'ID'.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;id_or_name&nbsp;(str):&nbsp;the&nbsp;id&nbsp;or&nbsp;name&nbsp;of&nbsp;the&nbsp;device&nbsp;or&nbsp;group.<br>
-&nbsp;<br>
-Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;the&nbsp;newly&nbsp;constructed&nbsp;URN.</tt></dd></dl>
- <dl><dt><a name="-device_id"><strong>device_id</strong></a>(gid: str)</dt><dd><tt>Creates&nbsp;a&nbsp;URN&nbsp;from&nbsp;a&nbsp;device&nbsp;ID.<br>
+<td width="100%"><dl><dt><a name="-device_id"><strong>device_id</strong></a>(gid: str)</dt><dd><tt>Creates&nbsp;a&nbsp;URN&nbsp;from&nbsp;a&nbsp;device&nbsp;ID.<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;gid&nbsp;(str):&nbsp;the&nbsp;ID&nbsp;of&nbsp;the&nbsp;device.<br>
@@ -1236,7 +1205,8 @@ Args:<br>
 <font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
     
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><strong>DEVICE</strong> = 'device'<br>
+<td width="100%"><strong>AUTH_HOSTNAME</strong> = 'auth.relaygo.com'<br>
+<strong>DEVICE</strong> = 'device'<br>
 <strong>DEVICE_PATTERN</strong> = '?device='<br>
 <strong>GROUP</strong> = 'group'<br>
 <strong>ID</strong> = 'id'<br>
@@ -1248,11 +1218,10 @@ Args:<br>
 <strong>Optional</strong> = typing.Optional<br>
 <strong>ROOT</strong> = 'relay-resource'<br>
 <strong>SCHEME</strong> = 'urn'<br>
+<strong>SERVER_HOSTNAME</strong> = 'all-main-pro-ibot.relaysvr.com'<br>
 <strong>TYPE_ENDED</strong> = 'ended'<br>
 <strong>TYPE_STARTED</strong> = 'started'<br>
 <strong>Union</strong> = typing.Union<br>
 <strong>VERSION</strong> = 'relay-sdk-python/2.0.0-alpha'<br>
-<strong>auth_hostname</strong> = 'auth.relaygo.com'<br>
-<strong>logger</strong> = &lt;Logger workflow (WARNING)&gt;<br>
-<strong>server_hostname</strong> = 'all-main-pro-ibot.relaysvr.com'</td></tr></table>
+<strong>logger</strong> = &lt;Logger workflow (WARNING)&gt;</td></tr></table>
 </body></html>
