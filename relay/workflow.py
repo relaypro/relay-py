@@ -1131,7 +1131,7 @@ class Relay:
             '_type': 'wf_api_speech_event',
             'request_id': _id
         }
-        # need to add this before sendReceive to avoid race condition
+        # need to add this before _send_receive to avoid race condition
         event_future = self._set_event_match(criteria)
         await self._send_receive(event, _id)
         speech_event = await self._wait_for_event_match(event_future, timeout)
@@ -1604,7 +1604,7 @@ class Relay:
     #         'target': target,
     #         'mode': mode,
     #     }
-    #     await self._sendReceive(event)
+    #     await self._send_receive(event)
     #     # await self._set_device_info(target, )
 
     @staticmethod
@@ -1821,7 +1821,7 @@ class Relay:
 
     # async def restart_device(self, target):
     #     """Restarts a device during a workflow, without having
-    #     to physically restart the device via hodling down the '-' button.
+    #     to physically restart the device via holding down the '-' button.
     #
     #     Args:
     #         target (str): the URN of the device you would like to restart.
@@ -1832,7 +1832,7 @@ class Relay:
     #         '_target': self.targets_from_source_uri(target),
     #         'restart': True
     #     }
-    #     await self._sendReceive(event)
+    #     await self._send_receive(event)
 
     # async def power_down_device(self, target):
     #     """Powers down a device during a workflow, without
@@ -1846,7 +1846,7 @@ class Relay:
     #         '_target': self.targets_from_source_uri(target),
     #         'restart': False
     #     }
-    #     await self._sendReceive(event)
+    #     await self._send_receive(event)
 
     async def stop_playback(self, target, pb_id: str = None):
         event = None
