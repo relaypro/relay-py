@@ -26,8 +26,8 @@ logger = logging.getLogger(__name__)
 VERSION = "relay-sdk-python/2.0.0-alpha"
 
 # used only for trigger_workflow and fetch_device
-server_hostname = "all-main-pro-ibot.relaysvr.com"
-auth_hostname = "auth.relaygo.com"
+SERVER_HOSTNAME = "all-main-pro-ibot.relaysvr.com"
+AUTH_HOSTNAME = "auth.relaygo.com"
 
 
 class Server:
@@ -90,13 +90,13 @@ class Server:
                 raise ServerException(f"can't read ssl_key_file {self.ssl_key_filename}")
             ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
             ssl_context.load_cert_chain(self.ssl_cert_filename, self.ssl_key_filename)
-            start_server = websockets.serve(self.handler, self.host, self.port,
+            start_server = websockets.serve(self._handler, self.host, self.port,
                                             extra_headers=custom_headers, ssl=ssl_context)
             logger.info(
                 f'Relay workflow server ({VERSION}) listening on {self.host} port {self.port}'
                 f' with ssl_context {ssl_context}')
         else:
-            start_server = websockets.serve(self.handler, self.host, self.port, extra_headers=custom_headers)
+            start_server = websockets.serve(self._handler, self.host, self.port, extra_headers=custom_headers)
             logger.info(f'Relay workflow server ({VERSION}) listening on {self.host}'
                         f' port {self.port} with plaintext')
 
@@ -108,13 +108,13 @@ class Server:
         except KeyboardInterrupt:
             logger.debug('server terminated')
 
-    async def handler(self, websocket, path: str):
+    async def _handler(self, websocket, path: str):
 
         workflow = self.workflows.get(path, None)
         if workflow:
             logger.debug(f'handling request on path {path}')
             relay = Relay(workflow)
-            await relay.handle(websocket)
+            await relay._handle(websocket)
 
         else:
             logger.warning(f'ignoring request for unregistered path {path}')
@@ -160,7 +160,7 @@ INTERACTION_URI_NAME = 'urn:relay-resource:name:interaction'
 INTERACTION_URI_ID = 'urn:relay-resource:id:interaction'
 
 
-def construct(resource_type: str, id_type: str, id_or_name: str):
+def _construct(resource_type: str, id_type: str, id_or_name: str):
     """Constructs a URN based off of the resource type, id type, and
     id/name.  Used by methods that need to create a URN when given a
     name or ID of a device or group.
@@ -185,7 +185,7 @@ def group_id(gid: str):
     Returns:
         str: the newly constructed URN.
     """
-    return construct(GROUP, ID, urllib.parse.quote(gid))
+    return _construct(GROUP, ID, urllib.parse.quote(gid))
 
 
 def group_name(name: str):
@@ -197,7 +197,7 @@ def group_name(name: str):
     Returns:
         str: the newly constructed URN.
     """
-    return construct(GROUP, NAME, urllib.parse.quote(name))
+    return _construct(GROUP, NAME, urllib.parse.quote(name))
 
 
 def device_name(name: str):
@@ -209,7 +209,7 @@ def device_name(name: str):
     Returns:
         str: the newly constructed URN.
     """
-    return construct(DEVICE, NAME, urllib.parse.quote(name))
+    return _construct(DEVICE, NAME, urllib.parse.quote(name))
 
 
 def interaction_name(name: str) -> str:
@@ -221,7 +221,7 @@ def interaction_name(name: str) -> str:
     Returns:
         str: the newly constructed URN.
     """
-    return construct(INTERACTION, NAME, urllib.parse.quote(name))
+    return _construct(INTERACTION, NAME, urllib.parse.quote(name))
 
 
 def group_member(group: str, device: str):
@@ -247,7 +247,7 @@ def device_id(gid: str):
     Returns:
         str: the newly constructed URN.
     """
-    return construct(DEVICE, ID, urllib.parse.quote(gid))
+    return _construct(DEVICE, ID, urllib.parse.quote(gid))
 
 
 def parse_group_name(uri: str):
@@ -676,15 +676,15 @@ class Relay:
         self.event_futures = {}
         self.logger = None
 
-    def get_cid(self):
+    def _get_cid(self):
         # correlation id
         return f'{self.workflow.name}:{id(self.websocket)}'
 
-    def from_json(self, websocket_message):
+    def _from_json(self, websocket_message):
         dict_message = json.loads(websocket_message)
-        return self.clean_int_arrays(dict_message)
+        return self._clean_int_arrays(dict_message)
 
-    def clean_int_arrays(self, dict_message):
+    def _clean_int_arrays(self, dict_message):
         # work around the JSON formatting issue in iBot
         # that gives us an array of ints instead of a string:
         # will be fixed in iBot 3.10 via PE-17571
@@ -692,7 +692,7 @@ class Relay:
         if isinstance(dict_message, dict):
             for key in dict_message.keys():
                 if isinstance(dict_message[key], (list, dict)):
-                    dict_message[key] = self.clean_int_arrays(dict_message[key])
+                    dict_message[key] = self._clean_int_arrays(dict_message[key])
         elif isinstance(dict_message, list):
             all_int = True
             for item in dict_message:
@@ -771,10 +771,10 @@ class Relay:
         }
         return targets
 
-    async def handle(self, websocket):
+    async def _handle(self, websocket):
 
         self.websocket = websocket
-        self.logger = CustomAdapter(logger, {'cid': self.get_cid()})
+        self.logger = CustomAdapter(logger, {'cid': self._get_cid()})
 
         self.logger.info(f'workflow instance started for {self.websocket.path}')
 
@@ -782,7 +782,7 @@ class Relay:
             async for m in websocket:
                 # TODO: restore after PE-17571
                 # self.logger.debug(f'recv raw: {m}')
-                e = self.from_json(m)
+                e = self._from_json(m)
                 self.logger.debug(f'recv: {e}')
 
                 _id = e.get('_id', None)
@@ -803,86 +803,86 @@ class Relay:
                     h = self.workflow.get_handler(e)
                     if h:
                         if _type == 'wf_api_start_event':
-                            asyncio.create_task(self.wrapper(h, e['trigger']))
+                            asyncio.create_task(self._wrapper(h, e['trigger']))
 
                         elif _type == 'wf_api_stop_event':
-                            asyncio.create_task(self.wrapper(h, e['reason']))
+                            asyncio.create_task(self._wrapper(h, e['reason']))
 
                         elif _type == 'wf_api_prompt_event':
-                            asyncio.create_task(self.wrapper(h, e['source_uri'], e['type']))
+                            asyncio.create_task(self._wrapper(h, e['source_uri'], e['type']))
 
                         elif _type == 'wf_api_button_event':
-                            asyncio.create_task(self.wrapper(h, e['button'], e['taps'], e['source_uri']))
+                            asyncio.create_task(self._wrapper(h, e['button'], e['taps'], e['source_uri']))
 
                         elif _type == 'wf_api_notification_event':
                             asyncio.create_task(
-                                self.wrapper(h, e['event'], e['name'], e['notification_state'], e['source_uri']))
+                                self._wrapper(h, e['event'], e['name'], e['notification_state'], e['source_uri']))
 
                         elif _type == 'wf_api_timer_event':
-                            asyncio.create_task(self.wrapper(h))
+                            asyncio.create_task(self._wrapper(h))
 
                         elif _type == 'wf_api_timer_fired_event':
-                            asyncio.create_task(self.wrapper(h, e['name']))
+                            asyncio.create_task(self._wrapper(h, e['name']))
 
                         elif _type == 'wf_api_speech_event':
                             text = e['text'] if 'text' in e else None
                             audio = e['audio'] if 'audio' in e else None
                             asyncio.create_task(
-                                self.wrapper(h, text, audio, e['lang'], e['request_id'], e['source_uri']))
+                                self._wrapper(h, text, audio, e['lang'], e['request_id'], e['source_uri']))
 
                         elif _type == 'wf_api_progress_event':
-                            asyncio.create_task(self.wrapper(h))
+                            asyncio.create_task(self._wrapper(h))
 
                         elif _type == 'wf_api_play_inbox_message_event':
-                            asyncio.create_task(self.wrapper(h, e['action']))
+                            asyncio.create_task(self._wrapper(h, e['action']))
 
                         elif _type == 'wf_api_call_connected_event':
                             asyncio.create_task(
-                                self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'],
-                                             e['uri'], e['onnet'], e['start_time_epoch'], e['connect_time_epoch']))
+                                self._wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'],
+                                              e['uri'], e['onnet'], e['start_time_epoch'], e['connect_time_epoch']))
 
                         elif _type == 'wf_api_call_disconnected_event':
                             asyncio.create_task(
-                                self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'],
-                                             e['uri'], e['onnet'], e['reason'], e['start_time_epoch'],
-                                             e['connect_time_epoch'], e['end_time_epoch']))
+                                self._wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'],
+                                              e['uri'], e['onnet'], e['reason'], e['start_time_epoch'],
+                                              e['connect_time_epoch'], e['end_time_epoch']))
 
                         elif _type == 'wf_api_call_failed_event':
                             asyncio.create_task(
-                                self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'],
-                                             e['uri'], e['onnet'], e['reason'], e['start_time_epoch'],
-                                             e['connect_time_epoch'], e['end_time_epoch']))
+                                self._wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'],
+                                              e['uri'], e['onnet'], e['reason'], e['start_time_epoch'],
+                                              e['connect_time_epoch'], e['end_time_epoch']))
 
                         elif _type == 'wf_api_call_received_event':
                             asyncio.create_task(
-                                self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'],
-                                             e['uri'], e['onnet'], e['start_time_epoch']))
+                                self._wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'],
+                                              e['uri'], e['onnet'], e['start_time_epoch']))
 
                         elif _type == 'wf_api_call_ringing_event':
                             asyncio.create_task(
-                                self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'],
-                                             e['uri'], e['onnet'], e['start_time_epoch']))
+                                self._wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'],
+                                              e['uri'], e['onnet'], e['start_time_epoch']))
 
                         elif _type == 'wf_api_call_progressing_event':
                             asyncio.create_task(
-                                self.wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'],
-                                             e['uri'], e['onnet'], e['start_time_epoch'], e['connect_time_epoch']))
+                                self._wrapper(h, e['call_id'], e['direction'], e['device_id'], e['device_name'],
+                                              e['uri'], e['onnet'], e['start_time_epoch'], e['connect_time_epoch']))
 
                         elif _type == 'wf_api_call_start_request_event':
-                            asyncio.create_task(self.wrapper(h, e['uri']))
+                            asyncio.create_task(self._wrapper(h, e['uri']))
 
                         elif _type == 'wf_api_sms_event':
-                            asyncio.create_task(self.wrapper(h, e['id'], e['event']))
+                            asyncio.create_task(self._wrapper(h, e['id'], e['event']))
 
                         elif _type == 'wf_api_incident_event':
-                            asyncio.create_task(self.wrapper(h, e['type'], e['incident_id'], e['reason']))
+                            asyncio.create_task(self._wrapper(h, e['type'], e['incident_id'], e['reason']))
 
                         elif _type == 'wf_api_interaction_lifecycle_event':
                             reason = e['reason'] if 'reason' in e else None
-                            asyncio.create_task(self.wrapper(h, e['type'], e['source_uri'], reason))
+                            asyncio.create_task(self._wrapper(h, e['type'], e['source_uri'], reason))
 
                         elif _type == 'wf_api_resume_event':
-                            asyncio.create_task(self.wrapper(h, e['trigger']))
+                            asyncio.create_task(self._wrapper(h, e['trigger']))
 
                     elif not handled:
                         if (_type == 'wf_api_prompt_event') or (_type == 'wf_api_speech_event') or (
@@ -903,28 +903,28 @@ class Relay:
             self.logger.info('workflow instance terminated')
 
     # run handlers with exception logging; needed since we cannot await handlers
-    async def wrapper(self, h, *args):
+    async def _wrapper(self, h, *args):
         try:
             await h(self, *args)
         except Exception as x:
             self.logger.error(f'{x}', exc_info=True)
 
-    async def send(self, obj):
+    async def _send(self, obj):
         _id = uuid.uuid4().hex
         obj['_id'] = _id
 
         # TODO: ibot add responses to all _request events? if so, await them here ... and check for error responses
 
-        await self._send(json.dumps(obj))
+        await self._send_str(json.dumps(obj))
 
-    async def send_receive(self, obj, uid=None):
+    async def _send_receive(self, obj, uid=None):
         _id = uid if uid else uuid.uuid4().hex
         obj['_id'] = _id
         fut = asyncio.get_event_loop().create_future()
         self.id_futures[_id] = fut
 
         # TODO: ibot currently loads null as the string 'null'
-        await self._send(json.dumps(remove_null(obj)))
+        await self._send_str(json.dumps(remove_null(obj)))
         # wait on the response
         await fut
         rsp = fut.result()
@@ -932,7 +932,7 @@ class Relay:
             raise WorkflowException(rsp['error'])
         return fut.result()
 
-    async def _send(self, s):
+    async def _send_str(self, s):
         self.logger.debug(f'send: {s}')
         await self.websocket.send(s)
 
@@ -953,7 +953,7 @@ class Relay:
             '_type': 'wf_api_get_var_request',
             'name': name
         }
-        v = await self.send_receive(event)
+        v = await self._send_receive(event)
         return v.get('value', default)
 
     async def get_number_var(self, name: str, default=None):
@@ -983,7 +983,7 @@ class Relay:
             'name': name,
             'value': value
         }
-        response = await self.send_receive(event)
+        response = await self._send_receive(event)
         return response['value']
 
     async def unset_var(self, name: str):
@@ -996,7 +996,7 @@ class Relay:
             '_type': 'wf_api_unset_var_request',
             'name': name
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
     @staticmethod
     def interaction_options(color: str = "0000ff", input_types: list = None, home_channel: str = "suspend"):
@@ -1035,7 +1035,7 @@ class Relay:
             'name': name,
             'options': options
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
     async def end_interaction(self, target):
         """Ends an interaction with the user.  Triggers an INTERACTION_ENDED event to signify
@@ -1048,7 +1048,7 @@ class Relay:
             '_type': 'wf_api_end_interaction_request',
             '_target': self.targets_from_source_uri(target)
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
     def _set_event_match(self, criteria: dict):
         if not isinstance(criteria, dict):
@@ -1131,9 +1131,9 @@ class Relay:
             '_type': 'wf_api_speech_event',
             'request_id': _id
         }
-        # need to add this before sendReceive to avoid race condition
+        # need to add this before _send_receive to avoid race condition
         event_future = self._set_event_match(criteria)
-        await self.send_receive(event, _id)
+        await self._send_receive(event, _id)
         speech_event = await self._wait_for_event_match(event_future, timeout)
 
         if transcribe:
@@ -1156,7 +1156,7 @@ class Relay:
             '_target': self.targets_from_source_uri(target),
             'filename': filename
         }
-        response = await self.send_receive(event)
+        response = await self._send_receive(event)
         return response['id']
 
     async def play_and_wait(self, target, filename: str):
@@ -1185,7 +1185,7 @@ class Relay:
         }
 
         event_future = self._set_event_match(criteria)
-        response = await self.send_receive(event, _id)
+        response = await self._send_receive(event, _id)
         await self._wait_for_event_match(event_future, 30)
         return response['id']
 
@@ -1206,7 +1206,7 @@ class Relay:
             'text': text,
             'lang': lang
         }
-        response = await self.send_receive(event)
+        response = await self._send_receive(event)
         return response['id']
 
     async def say_and_wait(self, target, text: str, lang: str = 'en-US'):
@@ -1235,7 +1235,7 @@ class Relay:
             'id': _id}
 
         event_future = self._set_event_match(criteria)
-        response = await self.send_receive(event, _id)
+        response = await self._send_receive(event, _id)
         await self._wait_for_event_match(event_future, 30)
         logger.debug(f'wait complete for {target}')
         return response['id']
@@ -1343,7 +1343,7 @@ class Relay:
             'target': self.targets_from_source_uri(target),
             'push_opts': push_opts
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
     async def set_channel(self, target, channel_name: str, suppress_tts: bool = False,
                           disable_home_channel: bool = False):
@@ -1364,7 +1364,7 @@ class Relay:
             'suppress_tts': suppress_tts,
             'disable_home_channel': disable_home_channel
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
     async def get_device_name(self, target):
         """Returns the name of a targeted device.
@@ -1524,7 +1524,7 @@ class Relay:
             'query': query,
             'refresh': refresh
         }
-        v = await self.send_receive(event)
+        v = await self._send_receive(event)
         return v
 
     async def set_device_name(self, target, name: str):
@@ -1587,7 +1587,7 @@ class Relay:
             'field': field,
             'value': value
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
         return event
 
     # set_device_mode is currently not supported
@@ -1604,7 +1604,7 @@ class Relay:
     #         'target': target,
     #         'mode': mode,
     #     }
-    #     await self.sendReceive(event)
+    #     await self._send_receive(event)
     #     # await self._set_device_info(target, )
 
     @staticmethod
@@ -1655,7 +1655,7 @@ class Relay:
             'effect': effect,
             'args': args
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
     async def switch_all_led_on(self, target, color: str = '0000ff'):
         """Switches all the LEDs on a device on to a specified color.
@@ -1749,7 +1749,7 @@ class Relay:
             '_target': self.targets_from_source_uri(target),
             'pattern': pattern
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
     async def start_timer(self, timeout: int = 60):
         """Starts an unnamed timer, meaning this will be the only timer on your device.
@@ -1762,7 +1762,7 @@ class Relay:
             '_type': 'wf_api_start_timer_request',
             'timeout': timeout
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
     async def stop_timer(self):
         """Stops an unnamed timer.
@@ -1770,7 +1770,7 @@ class Relay:
         event = {
             '_type': 'wf_api_stop_timer_request'
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
     async def terminate(self):
         """Terminates a workflow.  This method is usually called
@@ -1782,7 +1782,7 @@ class Relay:
             '_type': 'wf_api_terminate_request'
         }
         # there is no response
-        await self.send(event)
+        await self._send(event)
 
     async def create_incident(self, originator, itype: str):
         """Creates an incident that will alert the Relay Dash.
@@ -1800,7 +1800,7 @@ class Relay:
             'type': itype,
             'originator_uri': originator
         }
-        v = await self.send_receive(event)
+        v = await self._send_receive(event)
         return v['incident_id']
 
     async def resolve_incident(self, incident_id: str, reason: str):
@@ -1815,13 +1815,13 @@ class Relay:
             'incident_id': incident_id,
             'reason': reason
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
     # restart/powering down device is currently not supported
 
     # async def restart_device(self, target):
     #     """Restarts a device during a workflow, without having
-    #     to physically restart the device via hodling down the '-' button.
+    #     to physically restart the device via holding down the '-' button.
     #
     #     Args:
     #         target (str): the URN of the device you would like to restart.
@@ -1832,7 +1832,7 @@ class Relay:
     #         '_target': self.targets_from_source_uri(target),
     #         'restart': True
     #     }
-    #     await self.sendReceive(event)
+    #     await self._send_receive(event)
 
     # async def power_down_device(self, target):
     #     """Powers down a device during a workflow, without
@@ -1846,7 +1846,7 @@ class Relay:
     #         '_target': self.targets_from_source_uri(target),
     #         'restart': False
     #     }
-    #     await self.sendReceive(event)
+    #     await self._send_receive(event)
 
     async def stop_playback(self, target, pb_id: str = None):
         event = None
@@ -1868,7 +1868,7 @@ class Relay:
                 '_type': 'wf_api_stop_playback_request',
                 '_target': self.targets_from_source_uri(target)
             }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
     async def translate(self, text: str, from_lang: str = 'en-US', to_lang: str = 'es-ES'):
         """Translates text from one language to another.
@@ -1887,7 +1887,7 @@ class Relay:
             'from_lang': from_lang,
             'to_lang': to_lang
         }
-        response = await self.send_receive(event)
+        response = await self._send_receive(event)
         return response['text']
 
     # target can have only one item
@@ -1906,7 +1906,7 @@ class Relay:
             '_target': self.targets_from_source_uri(target),
             'uri': callee_uri
         }
-        response = await self.send_receive(event)
+        response = await self._send_receive(event)
         return response['call_id']
 
     # target can have only one item
@@ -1922,7 +1922,7 @@ class Relay:
             '_target': self.targets_from_source_uri(target),
             'call_id': call_id
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
     # target can have only one item
     async def hangup_call(self, target, call_id: str):
@@ -1937,7 +1937,7 @@ class Relay:
             '_target': self.targets_from_source_uri(target),
             'call_id': call_id
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
     async def get_group_members(self, group_uri: str):
         """Returns the members of a particular group.
@@ -1953,7 +1953,7 @@ class Relay:
             'query': 'list_members',
             'group_uri': group_uri
         }
-        response = await self.send_receive(event)
+        response = await self._send_receive(event)
         return response['member_uris']
 
     async def is_group_member(self, group_name_uri: str, potential_member_name_uri: str):
@@ -1974,7 +1974,7 @@ class Relay:
             'query': 'is_member',
             'group_uri': this_group_uri
         }
-        response = await self.send_receive(event)
+        response = await self._send_receive(event)
         return response['is_member']
 
     # target can have only one item
@@ -1992,7 +1992,7 @@ class Relay:
             'username': username,
             'force': force
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
     # target can have only one item
     async def get_unread_inbox_size(self, target):
@@ -2008,7 +2008,7 @@ class Relay:
             '_type': 'wf_api_inbox_count_request',
             '_target': self.targets_from_source_uri(target)
         }
-        response = await self.send_receive(event)
+        response = await self._send_receive(event)
         return response['count']
 
     async def play_unread_inbox_messages(self, target):
@@ -2021,7 +2021,7 @@ class Relay:
             '_type': 'wf_api_play_inbox_messages_request',
             '_target': self.targets_from_source_uri(target)
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
     async def log_message(self, message: str, category: Optional[str] = 'default', target: Optional[str] = None,
                           content_type: Optional[str] = 'text/plain'):
@@ -2042,7 +2042,7 @@ class Relay:
             'category': category,
             'device_uri': target
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
     async def log_user_message(self, message: str, target, category: str):
         """Log an analytic event from a workflow with the specified content and
@@ -2061,7 +2061,7 @@ class Relay:
             'category': category,
             'device_uri': target
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
     async def set_timer(self, name: str, timer_type: str = 'timeout', timeout: int = 60, timeout_type: str = 'secs'):
         """ Serves as a named timer that can be either interval or timeout.  Allows you to specify
@@ -2080,7 +2080,7 @@ class Relay:
             'timeout': timeout,
             'timeout_type': timeout_type
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
     async def clear_timer(self, name: str):
         """Clears the specified timer.
@@ -2092,7 +2092,7 @@ class Relay:
             '_type': 'wf_api_clear_timer_request',
             'name': name
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
     async def sms(self, stype: str, text: str, uri: str):
         event = {
@@ -2101,7 +2101,7 @@ class Relay:
             'text': text,
             'uri': uri
         }
-        response = await self.send_receive(event)
+        response = await self._send_receive(event)
         return response['message_id']
 
     async def enable_home_channel(self, target):
@@ -2116,7 +2116,7 @@ class Relay:
             '_target': self.targets_from_source_uri(target),
             'enabled': enabled
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
     # target can have only one item
     async def register(self, target, uri: str, password: str, expires: int):
@@ -2127,30 +2127,30 @@ class Relay:
             'password': password,
             'expires': expires
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
     # invalid_type and missing_type are just for internal testing of error handling
 
-    async def invalid_type(self):
+    async def _invalid_type(self):
         event = {
             '_type': 'wf_api_mkinard_breakage',
             'device_id': 'TheQuickBrownFoxJumpedOverTheLazyDog',
             'call_id': 'you can\'t catch me'
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
-    async def missing_type(self):
+    async def _missing_type(self):
         event = {
             'device_id': 'NowIsTheTimeForAllGoodMenToComeToTheAidOfYourCountry',
             'call_id': 'you can\'t catch me'
         }
-        await self.send_receive(event)
+        await self._send_receive(event)
 
 
 # static methods
 
 def _update_access_token(refresh_token: str, client_id: str):
-    grant_url = f'https://{auth_hostname}/oauth2/token'
+    grant_url = f'https://{AUTH_HOSTNAME}/oauth2/token'
     grant_headers = {
         'User-Agent': VERSION
     }
@@ -2211,7 +2211,7 @@ def trigger_workflow(access_token: str, refresh_token: str, client_id: str, work
         to pass in to the workflow that gets started by this trigger.
     """
 
-    url = f'https://{server_hostname}/ibot/workflow/{workflow_id}'
+    url = f'https://{SERVER_HOSTNAME}/ibot/workflow/{workflow_id}'
     headers = {
         'Authorization': f'Bearer {access_token}',
         'User-Agent': VERSION
@@ -2259,7 +2259,7 @@ def fetch_device(access_token: str, refresh_token: str, client_id: str, subscrib
 
         user_id(str): the IMEI of the target device, such as 990007560023456.
     """
-    url = f'https://{server_hostname}/relaypro/api/v1/device/{user_id}'
+    url = f'https://{SERVER_HOSTNAME}/relaypro/api/v1/device/{user_id}'
     headers = {
         'Authorization': f'Bearer {access_token}',
         'User-Agent': VERSION
