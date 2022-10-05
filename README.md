@@ -16,9 +16,7 @@ Install into a virtual environment (Python 3.6.1+).
 
     python3 -m venv venv
     . venv/bin/activate
-    pip3 install git+ssh://git@github.com/relaypro/relay-py.git#egg=relay-py
-    cd relay-py
-    pip3 install -e .
+    pip3 install git+https://git@github.com/relaypro/relay-py.git#egg=relay-py
 
 ## Usage
 
@@ -54,18 +52,16 @@ wf_server.start()
 
 ## Development
 
-    bash
+Setup:
+
     git clone git@github.com:relaypro/relay-py.git
     cd relay-py
-    virtualenv venv
+    python3 -m venv venv
     . venv/bin/activate
     pip3 install -e .
 
-Start demo workflow server:
+Start demo workflow server (after setup):
 
-    bash
-    cd relay-py
-    . venv/bin/activate
     cd samples
     python3 hello_world_wf.py
 
@@ -73,11 +69,9 @@ If your workflow process ends very shortly after starting and without any
 error messages, check that your workflow didn't forget to invoke
 `relay.workflow.Server.start()`.
 
-Run tests:
+Run tests (after setup):
 
-    bash
-    cd relay-py
-    . venv/bin/activate
+    # start inside the relay-py directory
     pip3 install -e .[testing]
     pytest
 
