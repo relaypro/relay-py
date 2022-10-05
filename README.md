@@ -14,9 +14,10 @@ The generated pydoc documentation is available at https://relaypro.github.io/rel
 
 Install into a virtual environment (Python 3.6.1+).
 
-    python3 -m venv venv
-    . venv/bin/activate
-    pip3 install git+https://git@github.com/relaypro/relay-py.git#egg=relay-py
+    $ python3 -m venv venv
+    $ . venv/bin/activate
+    (venv)$ pip install --upgrade pip
+    (venv)$ pip install git+https://git@github.com/relaypro/relay-py.git#egg=relay-py
 
 ## Usage
 
@@ -54,16 +55,17 @@ wf_server.start()
 
 Setup:
 
-    git clone git@github.com:relaypro/relay-py.git
-    cd relay-py
-    python3 -m venv venv
-    . venv/bin/activate
-    pip3 install -e .
+    $ git clone git@github.com:relaypro/relay-py.git
+    $ cd relay-py
+    $ python3 -m venv venv
+    $ . venv/bin/activate
+    (venv)$ pip install --upgrade pip
+    (venv)$ pip install --editable .
 
 Start demo workflow server (after setup):
 
-    cd samples
-    python3 hello_world_wf.py
+    (venv)$ cd samples
+    (venv)$ python hello_world_wf.py
 
 If your workflow process ends very shortly after starting and without any
 error messages, check that your workflow didn't forget to invoke
@@ -72,8 +74,8 @@ error messages, check that your workflow didn't forget to invoke
 Run tests (after setup):
 
     # start inside the relay-py directory
-    pip3 install -e .[testing]
-    pytest
+    (venv)$ pip install --editable .[testing]
+    (venv)$ pytest
 
 
 ## Additional Instructions for Deployment on Heroku
@@ -105,6 +107,7 @@ with the following contents that describe how to start your application
 
 <pre>
     websockets
+    requests
     pyyaml
 </pre>
 
