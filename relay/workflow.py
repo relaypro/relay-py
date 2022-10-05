@@ -159,6 +159,24 @@ INTERACTION_URI_NAME = 'urn:relay-resource:name:interaction'
 # Beginning of an interaction URN that uses the ID of a device.
 INTERACTION_URI_ID = 'urn:relay-resource:id:interaction'
 
+# a possible button value returned in on_button_press
+BUTTON_ACTION = 'action'
+
+# a possible button value returned in on_button_press
+BUTTON_CHANNEL = 'channel'
+
+# a possible taps value returned in on_button_press
+TAPS_SINGLE = 'single'
+
+# a possible taps value returned in on_button_press
+TAPS_DOUBLE = 'double'
+
+# a possible taps value returned in on_button_press
+TAPS_TRIPLE = 'triple'
+
+# a possible taps value returned in on_button_press
+TAPS_LONG = 'long'
+
 
 def _construct(resource_type: str, id_type: str, id_or_name: str):
     """Constructs a URN based off of the resource type, id type, and
@@ -334,8 +352,8 @@ def parse_interaction(uri: str):
     uri = urllib.parse.unquote(uri)
     if is_interaction_uri(uri):
         scheme, root, id_type, resource_type, i_name, i_root, i_id_type, i_resource_type, name = uri.split(':')
-        interaction_name, discard = i_name.split('?')
-        return interaction_name
+        result, discard = i_name.split('?')
+        return result
     logger.error('not an interaction urn')
 
 
@@ -936,33 +954,6 @@ class Relay:
         self.logger.debug(f'send: {s}')
         await self.websocket.send(s)
 
-    @staticmethod
-    def _convert_target(unverified) -> dict:
-        # check if this is a start event
-        if isinstance(unverified, dict) and 'trigger' in unverified:
-            args = unverified['trigger']
-            if 'source_uri' in args:
-                unverified = args['source_uri']
-            else:
-                raise WorkflowException(f"proposed target trigger does not have a source_uri")
-        if isinstance(unverified, str):
-            # raw single item like a URN string
-            unverified = [unverified]
-        if isinstance(unverified, list):
-            # check that each item in the list is a relay-resource urn
-            for item in unverified:
-                if not isinstance(item, str):
-                    raise WorkflowException(f"proposed target item {item} is not a string")
-                if not item.startswith(SCHEME + ":" + ROOT):
-                    raise WorkflowException(f"proposed target item {item} does not appear to be a Relay URN")
-            unverified = {'uris': unverified}
-        if isinstance(unverified, dict):
-            if not 'uris' in unverified:
-                raise WorkflowException(f"proposed target dict does not have a 'uris' element")
-            return unverified
-        else:
-            raise WorkflowException(f"proposed target is not a dict")
-
     async def get_var(self, name: str, default=None):
         """Retrieves a variable that was set either during workflow registration
         or through the set_var() function.  The variable can be retrieved anywhere
@@ -1058,7 +1049,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_start_interaction_request',
-            '_target': Relay._convert_target(target),
+            '_target': _convert_target_object(target),
             'name': name,
             'options': options
         }
@@ -1073,7 +1064,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_end_interaction_request',
-            '_target': Relay._convert_target(target)
+            '_target': _convert_target_object(target)
         }
         await self._send_receive(event)
 
@@ -1147,7 +1138,7 @@ class Relay:
         _id = uuid.uuid4().hex
         event = {
             '_type': 'wf_api_listen_request',
-            '_target': Relay._convert_target(target),
+            '_target': _convert_target_object(target),
             'phrases': phrases,
             'transcribe': transcribe,
             'timeout': timeout,
@@ -1180,7 +1171,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_play_request',
-            '_target': Relay._convert_target(target),
+            '_target': _convert_target_object(target),
             'filename': filename
         }
         response = await self._send_receive(event)
@@ -1201,7 +1192,7 @@ class Relay:
         _id = uuid.uuid4().hex
         event = {
             '_type': 'wf_api_play_request',
-            '_target': Relay._convert_target(target),
+            '_target': _convert_target_object(target),
             'filename': filename
         }
 
@@ -1229,7 +1220,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_say_request',
-            '_target': Relay._convert_target(target),
+            '_target': _convert_target_object(target),
             'text': text,
             'lang': lang
         }
@@ -1251,7 +1242,7 @@ class Relay:
         _id = uuid.uuid4().hex
         event = {
             '_type': 'wf_api_say_request',
-            '_target': Relay._convert_target(target),
+            '_target': _convert_target_object(target),
             'text': text,
             'lang': lang
         }
@@ -1362,12 +1353,12 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_notification_request',
-            '_target': Relay._convert_target(target),
+            '_target': _convert_target_object(target),
             'originator': originator,
             'type': ntype,
             'name': name,
             'text': text,
-            'target': Relay._convert_target(target),
+            'target': _convert_target_object(target),
             'push_opts': push_opts
         }
         await self._send_receive(event)
@@ -1386,7 +1377,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_set_channel_request',
-            '_target': Relay._convert_target(target),
+            '_target': _convert_target_object(target),
             'channel_name': channel_name,
             'suppress_tts': suppress_tts,
             'disable_home_channel': disable_home_channel
@@ -1547,7 +1538,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_get_device_info_request',
-            '_target': Relay._convert_target(target),
+            '_target': _convert_target_object(target),
             'query': query,
             'refresh': refresh
         }
@@ -1610,7 +1601,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_set_device_info_request',
-            '_target': Relay._convert_target(target),
+            '_target': _convert_target_object(target),
             'field': field,
             'value': value
         }
@@ -1678,7 +1669,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_set_led_request',
-            '_target': Relay._convert_target(target),
+            '_target': _convert_target_object(target),
             'effect': effect,
             'args': args
         }
@@ -1773,7 +1764,7 @@ class Relay:
 
         event = {
             '_type': 'wf_api_vibrate_request',
-            '_target': Relay._convert_target(target),
+            '_target': _convert_target_object(target),
             'pattern': pattern
         }
         await self._send_receive(event)
@@ -1880,20 +1871,20 @@ class Relay:
         if type(pb_id) == list:
             event = {
                 '_type': 'wf_api_stop_playback_request',
-                '_target': Relay._convert_target(target),
+                '_target': _convert_target_object(target),
                 'ids': pb_id
             }
         elif type(pb_id) == str:
             pb_id = [pb_id]
             event = {
                 '_type': 'wf_api_stop_playback_request',
-                '_target': Relay._convert_target(target),
+                '_target': _convert_target_object(target),
                 'ids': pb_id
             }
         elif pb_id is None:
             event = {
                 '_type': 'wf_api_stop_playback_request',
-                '_target': Relay._convert_target(target)
+                '_target': _convert_target_object(target)
             }
         await self._send_receive(event)
 
@@ -1930,7 +1921,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_call_request',
-            '_target': Relay._convert_target(target),
+            '_target': _convert_target_object(target),
             'uri': callee_uri
         }
         response = await self._send_receive(event)
@@ -1946,7 +1937,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_answer_request',
-            '_target': Relay._convert_target(target),
+            '_target': _convert_target_object(target),
             'call_id': call_id
         }
         await self._send_receive(event)
@@ -1961,7 +1952,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_hangup_request',
-            '_target': Relay._convert_target(target),
+            '_target': _convert_target_object(target),
             'call_id': call_id
         }
         await self._send_receive(event)
@@ -2015,7 +2006,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_set_user_profile_request',
-            '_target': Relay._convert_target(target),
+            '_target': _convert_target_object(target),
             'username': username,
             'force': force
         }
@@ -2033,7 +2024,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_inbox_count_request',
-            '_target': Relay._convert_target(target)
+            '_target': _convert_target_object(target)
         }
         response = await self._send_receive(event)
         return response['count']
@@ -2046,7 +2037,7 @@ class Relay:
         """
         event = {
             '_type': 'wf_api_play_inbox_messages_request',
-            '_target': Relay._convert_target(target)
+            '_target': _convert_target_object(target)
         }
         await self._send_receive(event)
 
@@ -2140,7 +2131,7 @@ class Relay:
     async def _set_home_channel_state(self, target, enabled: bool = True):
         event = {
             '_type': 'wf_api_set_home_channel_state_request',
-            '_target': Relay._convert_target(target),
+            '_target': _convert_target_object(target),
             'enabled': enabled
         }
         await self._send_receive(event)
@@ -2149,7 +2140,7 @@ class Relay:
     async def register(self, target, uri: str, password: str, expires: int):
         event = {
             '_type': 'wf_api_register_request',
-            '_target': Relay._convert_target(target),
+            '_target': _convert_target_object(target),
             'uri': uri,
             'password': password,
             'expires': expires
@@ -2172,6 +2163,50 @@ class Relay:
             'call_id': 'you can\'t catch me'
         }
         await self._send_receive(event)
+
+
+def _convert_target_object(guessable) -> dict:
+    """
+    Convert a number of guessable values into a properly-formed target object
+    that looks like { 'uris': [ device_urn1, device_urn2... ] }
+    Args:
+        guessable: a trigger from on_start, a device name URN, an array of
+        device name URNs, or an already-proper target object.
+
+    Returns:
+        a properly-formed target object that can be used in a workflow API call.
+
+    Throws:
+        a WorkflowException in the parameter doesn't appear to be compatible or
+        is missing some data or structure.
+    """
+    # check if this is a start event
+    if isinstance(guessable, dict) and 'args' in guessable:
+        args = guessable['args']
+        if 'source_uri' in args:
+            logger.debug("from trigger to object")
+            guessable = args['source_uri']
+        else:
+            raise WorkflowException(f"proposed target trigger does not have a source_uri")
+    if isinstance(guessable, str) \
+            and guessable.startswith(SCHEME + ":" + ROOT):
+        logger.debug("from device urn to array")
+        guessable = [guessable]
+    if isinstance(guessable, list):
+        # check that each item in the list is a relay-resource urn
+        for item in guessable:
+            if not isinstance(item, str):
+                raise WorkflowException(f"proposed target item {item} is not a string")
+            if not item.startswith(SCHEME + ":" + ROOT):
+                raise WorkflowException(f"proposed target item {item} does not appear to be a Relay URN")
+        logger.debug("from array to object")
+        guessable = {'uris': guessable}
+    if isinstance(guessable, dict):
+        if 'uris' not in guessable:
+            raise WorkflowException(f"proposed target dict does not have a 'uris' element")
+        return guessable
+    else:
+        raise WorkflowException(f"proposed target is not a dict or any other guessable value")
 
 
 # static methods
