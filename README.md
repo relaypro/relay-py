@@ -14,11 +14,10 @@ The generated pydoc documentation is available at https://relaypro.github.io/rel
 
 Install into a virtual environment (Python 3.6.1+).
 
-    python3 -m venv venv
-    . venv/bin/activate
-    pip3 install git+ssh://git@github.com/relaypro/relay-py.git#egg=relay-py
-    cd relay-py
-    pip3 install -e .
+    $ python3 -m venv venv
+    $ . venv/bin/activate
+    (venv)$ pip install --upgrade pip
+    (venv)$ pip install git+https://git@github.com/relaypro/relay-py.git#egg=relay-py
 
 ## Usage
 
@@ -54,32 +53,29 @@ wf_server.start()
 
 ## Development
 
-    bash
-    git clone git@github.com:relaypro/relay-py.git
-    cd relay-py
-    virtualenv venv
-    . venv/bin/activate
-    pip3 install -e .
+Setup:
 
-Start demo workflow server:
+    $ git clone git@github.com:relaypro/relay-py.git
+    $ cd relay-py
+    $ python3 -m venv venv
+    $ . venv/bin/activate
+    (venv)$ pip install --upgrade pip
+    (venv)$ pip install --editable .
 
-    bash
-    cd relay-py
-    . venv/bin/activate
-    cd samples
-    python3 hello_world_wf.py
+Start demo workflow server (after setup):
+
+    (venv)$ cd samples
+    (venv)$ python hello_world_wf.py
 
 If your workflow process ends very shortly after starting and without any
 error messages, check that your workflow didn't forget to invoke
 `relay.workflow.Server.start()`.
 
-Run tests:
+Run tests (after setup):
 
-    bash
-    cd relay-py
-    . venv/bin/activate
-    pip3 install -e .[testing]
-    pytest
+    # start inside the relay-py directory
+    (venv)$ pip install --editable .[testing]
+    (venv)$ pytest
 
 
 ## Additional Instructions for Deployment on Heroku
@@ -111,6 +107,7 @@ with the following contents that describe how to start your application
 
 <pre>
     websockets
+    requests
     pyyaml
 </pre>
 
