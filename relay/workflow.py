@@ -1322,12 +1322,12 @@ class Relay:
     async def _send_notification(self, target, originator: Union[str, None], ntype: str,
                                  text: Union[str, None], name: str, push_opts: dict = None):
         """Used for sending a notification on the server.  Private method that is
-        used by alert(), broadcast(), and notify().
+        used by alert() and broadcast().
 
         Args:
             target (str): the group URN that you are sending a notification to.
             originator (str): the device that triggered the notification.
-            ntype (str): the type of notification, either 'alert', 'broadcast', or 'notify'.
+            ntype (str): the type of notification, either 'alert' or 'broadcast'.
             name (str): a name for your notification.
             text (str): the text of your notification.
             push_opts (dict, optional): allows you to customize the push notification sent to a virtual device.
