@@ -24,12 +24,11 @@ jobs:
 
       - name: generate markdown and concatenate
         run: |
-          cd src
-          pip3 install relay
-          cd relay
+          cd src/relay
           sudo apt install python3-pip
           pip3 install websockets
           pip3 install requests
+          cd ../docs
           python generate_docs.py
       - uses: actions/checkout@v3
         with:
