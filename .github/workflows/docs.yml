@@ -2,7 +2,7 @@ name: docs
 
 on:
   push:
-    branches: [ main ]
+    branches: [ fix-404 ]
 
   workflow_dispatch:
 
@@ -24,11 +24,11 @@ jobs:
 
       - name: generate markdown and concatenate
         run: |
-          cd src/relay
+          cd src
           sudo apt install python3-pip
           pip3 install websockets
           pip3 install requests
-          pydoc3 -w workflow
+          pydoc3 -w relay
       - uses: actions/checkout@v3
         with:
           ref: 'gh-pages'
@@ -37,7 +37,7 @@ jobs:
       - name: promote
         run: |
           cd web
-          cp -rp ../src/relay/workflow.html index.html
+          cp -rp ../src/relay/relay.html index.html
       - uses: EndBug/add-and-commit@v9
         with:
           message: 'publish generated docs'
