@@ -37,7 +37,7 @@ jobs:
       - name: promote
         run: |
           cd web
-          cp -rp ../src/relay/relay.html index.html
+          cp -rp ../src/relay.html index.html
       - uses: EndBug/add-and-commit@v9
         with:
           message: 'publish generated docs'
