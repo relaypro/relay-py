@@ -1,6 +1,5 @@
 import inspect
 import os
-import relay
 from relay import workflow
 
 os.system('pydoc3 -w workflow')
