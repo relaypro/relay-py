@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: class Workflow</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><strong>workflow.Workflow</strong> = <a name="workflow.Workflow">class Workflow</a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>workflow.Workflow(name:&nbsp;str)<br>
+&nbsp;<br>
+<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Workflow-__init__"><strong>__init__</strong></a>(self, name: str)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="Workflow-get_handler"><strong>get_handler</strong></a>(self, event: dict)</dt></dl>
+
+<dl><dt><a name="Workflow-on_button"><strong>on_button</strong></a>(self, _func=None, *, button='*', taps='*')</dt><dd><tt>A&nbsp;decorator&nbsp;for&nbsp;a&nbsp;handler&nbsp;method&nbsp;for&nbsp;the&nbsp;BUTTON&nbsp;event&nbsp;(the&nbsp;Talk&nbsp;button&nbsp;was&nbsp;pressed).<br>
+&nbsp;<br>
+async&nbsp;def&nbsp;button_handler(workflow:relay.workflow.Workflow,&nbsp;button:str,&nbsp;taps:str,&nbsp;source_uri:str)</tt></dd></dl>
+
+<dl><dt><a name="Workflow-on_call_connected"><strong>on_call_connected</strong></a>(self, func)</dt><dd><tt>A&nbsp;decorator&nbsp;for&nbsp;a&nbsp;handler&nbsp;method&nbsp;for&nbsp;the&nbsp;CALL_CONNECTED&nbsp;event.<br>
+A&nbsp;call&nbsp;attempt&nbsp;that&nbsp;was&nbsp;ringing,&nbsp;progressing,&nbsp;or&nbsp;incoming&nbsp;is&nbsp;now&nbsp;fully<br>
+connected.&nbsp;This&nbsp;event&nbsp;can&nbsp;occur&nbsp;on&nbsp;both&nbsp;the&nbsp;caller&nbsp;and&nbsp;the&nbsp;callee.<br>
+&nbsp;<br>
+async&nbsp;def&nbsp;call_connected_handler(workflow:relay.workflow.Workflow,&nbsp;call_id:str,&nbsp;direction:str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;other_device_id:str,&nbsp;other_device_name:str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;uri:str,&nbsp;onnet:bool,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;start_time_epoch:int,&nbsp;connect_time_epoch:int)</tt></dd></dl>
+
+<dl><dt><a name="Workflow-on_call_disconnected"><strong>on_call_disconnected</strong></a>(self, func)</dt><dd><tt>A&nbsp;decorator&nbsp;for&nbsp;a&nbsp;handler&nbsp;method&nbsp;for&nbsp;the&nbsp;CALL_DISCONNECTED&nbsp;event.<br>
+A&nbsp;call&nbsp;that&nbsp;was&nbsp;once&nbsp;connected&nbsp;has&nbsp;become&nbsp;disconnected.&nbsp;This&nbsp;event&nbsp;can<br>
+occur&nbsp;on&nbsp;both&nbsp;the&nbsp;caller&nbsp;and&nbsp;the&nbsp;callee.<br>
+&nbsp;<br>
+async&nbsp;def&nbsp;call_disconnected_handler(workflow:relay.workflow.Workflow,&nbsp;call_id:str,&nbsp;direction:str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;other_device_id:str,&nbsp;other_device_name:str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;uri:str,&nbsp;onnet:bool,&nbsp;reason:str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;start_time_epoch:int,&nbsp;connect_time_epoch:int,&nbsp;end_time_epoch:int)</tt></dd></dl>
+
+<dl><dt><a name="Workflow-on_call_failed"><strong>on_call_failed</strong></a>(self, func)</dt><dd><tt>A&nbsp;decorator&nbsp;for&nbsp;a&nbsp;handler&nbsp;method&nbsp;for&nbsp;the&nbsp;CALL_FAILED&nbsp;event.<br>
+A&nbsp;call&nbsp;failed&nbsp;to&nbsp;get&nbsp;connected.&nbsp;This&nbsp;event&nbsp;can&nbsp;occur&nbsp;on&nbsp;both&nbsp;the&nbsp;caller<br>
+and&nbsp;the&nbsp;callee.<br>
+&nbsp;<br>
+async&nbsp;def&nbsp;call_failed_handler(workflow:relay.workflow.Workflow,&nbsp;call_id:str,&nbsp;direction:str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;other_device_id:str,&nbsp;other_device_name:str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;uri:str,&nbsp;onnet:bool,&nbsp;reason:str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;start_time_epoch:int,&nbsp;connect_time_epoch:int,&nbsp;end_time_epoch:int)</tt></dd></dl>
+
+<dl><dt><a name="Workflow-on_call_progressing"><strong>on_call_progressing</strong></a>(self, func)</dt><dd><tt>A&nbsp;decorator&nbsp;for&nbsp;a&nbsp;handler&nbsp;method&nbsp;for&nbsp;the&nbsp;CALL_PROGRESSING&nbsp;event.<br>
+The&nbsp;device&nbsp;we&nbsp;called&nbsp;is&nbsp;making&nbsp;progress&nbsp;on&nbsp;getting&nbsp;connected.&nbsp;This&nbsp;may<br>
+be&nbsp;interspersed&nbsp;with&nbsp;on_call_ringing.&nbsp;This&nbsp;event&nbsp;can&nbsp;occur&nbsp;on&nbsp;the&nbsp;caller.<br>
+&nbsp;<br>
+async&nbsp;def&nbsp;call_progressing_handler(workflow:relay.workflow.Workflow,&nbsp;call_id:str,&nbsp;direction:str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;other_device_id:str,&nbsp;other_device_name:str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;uri:str,&nbsp;onnet:bool,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;start_time_epoch:int,&nbsp;connect_time_epoch:int)</tt></dd></dl>
+
+<dl><dt><a name="Workflow-on_call_received"><strong>on_call_received</strong></a>(self, func)</dt><dd><tt>A&nbsp;decorator&nbsp;for&nbsp;a&nbsp;handler&nbsp;method&nbsp;for&nbsp;the&nbsp;CALL_RECEIVED&nbsp;event.<br>
+The&nbsp;device&nbsp;is&nbsp;receiving&nbsp;an&nbsp;inbound&nbsp;call&nbsp;request.&nbsp;This&nbsp;event&nbsp;can&nbsp;occur<br>
+on&nbsp;the&nbsp;callee.<br>
+&nbsp;<br>
+async&nbsp;def&nbsp;call_received_handler(workflow:relay.workflow.Workflow,&nbsp;call_id:str,&nbsp;direction:str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;other_device_id:str,&nbsp;other_device_name:str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;uri:str,&nbsp;onnet:bool,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;start_time_epoch:int)</tt></dd></dl>
+
+<dl><dt><a name="Workflow-on_call_ringing"><strong>on_call_ringing</strong></a>(self, func)</dt><dd><tt>A&nbsp;decorator&nbsp;for&nbsp;a&nbsp;handler&nbsp;method&nbsp;for&nbsp;the&nbsp;CALL_RINGING&nbsp;event.<br>
+The&nbsp;device&nbsp;we&nbsp;called&nbsp;is&nbsp;ringing.&nbsp;We&nbsp;are&nbsp;waiting&nbsp;for&nbsp;them&nbsp;to&nbsp;answer.<br>
+This&nbsp;event&nbsp;can&nbsp;occur&nbsp;on&nbsp;the&nbsp;caller.<br>
+&nbsp;<br>
+async&nbsp;def&nbsp;call_ringing_handler(workflow:relay.workflow.Workflow,&nbsp;call_id:str,&nbsp;direction:str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;other_device_id:str,&nbsp;other_device_name:str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;uri:str,&nbsp;onnet:bool,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;start_time_epoch:int)</tt></dd></dl>
+
+<dl><dt><a name="Workflow-on_call_start_request"><strong>on_call_start_request</strong></a>(self, func)</dt><dd><tt>A&nbsp;decorator&nbsp;for&nbsp;a&nbsp;handler&nbsp;method&nbsp;for&nbsp;the&nbsp;CALL_START_REQUEST&nbsp;event.<br>
+There&nbsp;is&nbsp;a&nbsp;request&nbsp;to&nbsp;make&nbsp;an&nbsp;outbound&nbsp;call.&nbsp;This&nbsp;event&nbsp;can&nbsp;occur&nbsp;on<br>
+the&nbsp;caller&nbsp;after&nbsp;using&nbsp;the&nbsp;"Call&nbsp;X"&nbsp;voice&nbsp;command&nbsp;on&nbsp;the&nbsp;Assistant.<br>
+&nbsp;<br>
+async&nbsp;def&nbsp;call_start_request_handler(workflow:relay.workflow.Workflow,&nbsp;destination_uri:str)</tt></dd></dl>
+
+<dl><dt><a name="Workflow-on_incident"><strong>on_incident</strong></a>(self, func)</dt><dd><tt>A&nbsp;decorator&nbsp;for&nbsp;a&nbsp;handler&nbsp;method&nbsp;for&nbsp;the&nbsp;INCIDENT&nbsp;event&nbsp;(an&nbsp;incident&nbsp;has&nbsp;been&nbsp;created).<br>
+&nbsp;<br>
+async&nbsp;def&nbsp;incident_handler(workflow:relay.workflow.Workflow,&nbsp;type:str,&nbsp;incident_id:str,&nbsp;reason:str)</tt></dd></dl>
+
+<dl><dt><a name="Workflow-on_interaction_lifecycle"><strong>on_interaction_lifecycle</strong></a>(self, func)</dt><dd><tt>A&nbsp;decorator&nbsp;for&nbsp;a&nbsp;handler&nbsp;method&nbsp;for&nbsp;the&nbsp;INTERACTION_LIFECYCLE&nbsp;event&nbsp;(an&nbsp;interaction<br>
+is&nbsp;starting,&nbsp;resuming,&nbsp;or&nbsp;ending).<br>
+&nbsp;<br>
+async&nbsp;def&nbsp;interaction_lifecycle_handler(workflow:relay.workflow.Workflow,&nbsp;itype:str,&nbsp;source_uri:str,&nbsp;reason:str)</tt></dd></dl>
+
+<dl><dt><a name="Workflow-on_notification"><strong>on_notification</strong></a>(self, _func=None, *, name='*', event='*')</dt><dd><tt>A&nbsp;decorator&nbsp;for&nbsp;a&nbsp;handler&nbsp;method&nbsp;for&nbsp;the&nbsp;NOTIFICATION&nbsp;event&nbsp;(a&nbsp;broadcast&nbsp;or&nbsp;alert&nbsp;was&nbsp;sent).<br>
+&nbsp;<br>
+async&nbsp;def&nbsp;button_handler(workflow:relay.workflow.Workflow,&nbsp;button:str,&nbsp;taps:str,&nbsp;source_uri:str)</tt></dd></dl>
+
+<dl><dt><a name="Workflow-on_play_inbox_message"><strong>on_play_inbox_message</strong></a>(self, func)</dt><dd><tt>A&nbsp;decorator&nbsp;for&nbsp;a&nbsp;handler&nbsp;method&nbsp;for&nbsp;the&nbsp;PLAY_INBOX_MESSAGE&nbsp;event&nbsp;(a&nbsp;missed&nbsp;message<br>
+is&nbsp;being&nbsp;played).<br>
+&nbsp;<br>
+async&nbsp;def&nbsp;play_inbox_message_handler(workflow:relay.workflow.Workflow,&nbsp;action:str)</tt></dd></dl>
+
+<dl><dt><a name="Workflow-on_progress"><strong>on_progress</strong></a>(self, func)</dt><dd><tt>A&nbsp;decorator&nbsp;for&nbsp;a&nbsp;handler&nbsp;method&nbsp;for&nbsp;the&nbsp;PROGRESS&nbsp;event&nbsp;(a&nbsp;long&nbsp;running&nbsp;action&nbsp;is&nbsp;being<br>
+performed&nbsp;across&nbsp;a&nbsp;large&nbsp;number&nbsp;of&nbsp;devices,&nbsp;may&nbsp;get&nbsp;called&nbsp;multiple&nbsp;times).<br>
+&nbsp;<br>
+async&nbsp;def&nbsp;progress_handler(workflow:relay.workflow.Workflow)</tt></dd></dl>
+
+<dl><dt><a name="Workflow-on_prompt"><strong>on_prompt</strong></a>(self, func)</dt><dd><tt>A&nbsp;decorator&nbsp;for&nbsp;a&nbsp;handler&nbsp;method&nbsp;for&nbsp;the&nbsp;PROMPT&nbsp;event&nbsp;(text-to-speech&nbsp;is&nbsp;streaming&nbsp;in).<br>
+&nbsp;<br>
+async&nbsp;def&nbsp;prompt_handler(workflow:relay.workflow.Workflow,&nbsp;source_uri:str,&nbsp;prompt_type:str)</tt></dd></dl>
+
+<dl><dt><a name="Workflow-on_resume"><strong>on_resume</strong></a>(self, func)</dt><dd><tt>A&nbsp;decorator&nbsp;for&nbsp;a&nbsp;handler&nbsp;method&nbsp;for&nbsp;the&nbsp;RESUME&nbsp;event&nbsp;(TBD).<br>
+&nbsp;<br>
+async&nbsp;def&nbsp;resume_handler(workflow:relay.workflow.Workflow,&nbsp;trigger:dict)</tt></dd></dl>
+
+<dl><dt><a name="Workflow-on_sms"><strong>on_sms</strong></a>(self, func)</dt><dd><tt>A&nbsp;decorator&nbsp;for&nbsp;a&nbsp;handler&nbsp;method&nbsp;for&nbsp;the&nbsp;SMS&nbsp;event&nbsp;(TBD).<br>
+&nbsp;<br>
+async&nbsp;def&nbsp;sms_handler(workflow:relay.workflow.Workflow,&nbsp;id:str,&nbsp;event:dict)</tt></dd></dl>
+
+<dl><dt><a name="Workflow-on_speech"><strong>on_speech</strong></a>(self, func)</dt><dd><tt>A&nbsp;decorator&nbsp;for&nbsp;a&nbsp;handler&nbsp;method&nbsp;for&nbsp;the&nbsp;SPEECH&nbsp;event&nbsp;(the&nbsp;listen()&nbsp;function&nbsp;is&nbsp;running).<br>
+&nbsp;<br>
+async&nbsp;def&nbsp;speech_handler(workflow:relay.workflow.Workflow,&nbsp;transcribed_text:str,&nbsp;audio:bytes,&nbsp;language:str,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;request_id:str,&nbsp;source_uri:str)</tt></dd></dl>
+
+<dl><dt><a name="Workflow-on_start"><strong>on_start</strong></a>(self, func)</dt><dd><tt>A&nbsp;decorator&nbsp;for&nbsp;a&nbsp;handler&nbsp;method&nbsp;for&nbsp;the&nbsp;START&nbsp;event&nbsp;(workflow&nbsp;is&nbsp;starting).<br>
+&nbsp;<br>
+async&nbsp;def&nbsp;start_handler(workflow:relay.workflow.Workflow,&nbsp;trigger:dict)</tt></dd></dl>
+
+<dl><dt><a name="Workflow-on_stop"><strong>on_stop</strong></a>(self, func)</dt><dd><tt>A&nbsp;decorator&nbsp;for&nbsp;a&nbsp;handler&nbsp;method&nbsp;for&nbsp;the&nbsp;STOP&nbsp;event&nbsp;(workflow&nbsp;is&nbsp;stopping).<br>
+&nbsp;<br>
+async&nbsp;def&nbsp;stop_handler(workflow:relay.workflow.Workflow,&nbsp;reason:str)</tt></dd></dl>
+
+<dl><dt><a name="Workflow-on_timer"><strong>on_timer</strong></a>(self, func)</dt><dd><tt>A&nbsp;decorator&nbsp;for&nbsp;a&nbsp;handler&nbsp;method&nbsp;for&nbsp;the&nbsp;TIMER&nbsp;event&nbsp;(the&nbsp;unnamed&nbsp;timer&nbsp;fired).<br>
+&nbsp;<br>
+async&nbsp;def&nbsp;timer_handler(workflow:relay.workflow.Workflow)</tt></dd></dl>
+
+<dl><dt><a name="Workflow-on_timer_fired"><strong>on_timer_fired</strong></a>(self, func)</dt><dd><tt>A&nbsp;decorator&nbsp;for&nbsp;a&nbsp;handler&nbsp;method&nbsp;for&nbsp;the&nbsp;TIMER_FIRED&nbsp;event&nbsp;(a&nbsp;named&nbsp;timer&nbsp;fired).<br>
+&nbsp;<br>
+async&nbsp;def&nbsp;timer_fired_handler(workflow:relay.workflow.Workflow,&nbsp;timer_name:str)</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table>
+</body></html>
