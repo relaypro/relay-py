@@ -1,10 +1,8 @@
 import inspect
 import os
-import relay.workflow
+import workflow
 
-os.chdir('../relay')
-os.system('ls')
 os.system('pydoc3 -w workflow')
-for name, obj in inspect.getmembers(relay.workflow):
+for name, obj in inspect.getmembers(workflow):
     if inspect.isclass(obj):
         os.system('pydoc3 -w workflow.%s' % name)
