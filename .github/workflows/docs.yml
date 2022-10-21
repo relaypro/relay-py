@@ -28,7 +28,6 @@ jobs:
           sudo apt install python3-pip
           pip3 install websockets
           pip3 install requests
-          pip3 install relay
           python generate_docs.py
       - uses: actions/checkout@v3
         with:
