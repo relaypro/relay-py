@@ -2,7 +2,7 @@ name: docs
 
 on:
   push:
-    branches: [ fix-404 ]
+    branches: [ main ]
 
   workflow_dispatch:
 
