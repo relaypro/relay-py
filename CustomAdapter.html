@@ -1,0 +1,79 @@
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="CustomAdapter">class <strong>CustomAdapter</strong></a>(<a href="logging.html#LoggerAdapter">logging.LoggerAdapter</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>CustomAdapter(logger,&nbsp;extra=None)<br>
+&nbsp;<br>
+<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="workflow.html#CustomAdapter">CustomAdapter</a></dd>
+<dd><a href="logging.html#LoggerAdapter">logging.LoggerAdapter</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="CustomAdapter-process"><strong>process</strong></a>(self, msg, kwargs)</dt><dd><tt>Process&nbsp;the&nbsp;logging&nbsp;message&nbsp;and&nbsp;keyword&nbsp;arguments&nbsp;passed&nbsp;in&nbsp;to<br>
+a&nbsp;logging&nbsp;call&nbsp;to&nbsp;insert&nbsp;contextual&nbsp;information.&nbsp;You&nbsp;can&nbsp;either<br>
+manipulate&nbsp;the&nbsp;message&nbsp;itself,&nbsp;the&nbsp;keyword&nbsp;args&nbsp;or&nbsp;both.&nbsp;Return<br>
+the&nbsp;message&nbsp;and&nbsp;kwargs&nbsp;modified&nbsp;(or&nbsp;not)&nbsp;to&nbsp;suit&nbsp;your&nbsp;needs.<br>
+&nbsp;<br>
+Normally,&nbsp;you'll&nbsp;only&nbsp;need&nbsp;to&nbsp;override&nbsp;this&nbsp;one&nbsp;method&nbsp;in&nbsp;a<br>
+LoggerAdapter&nbsp;subclass&nbsp;for&nbsp;your&nbsp;specific&nbsp;needs.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="logging.html#LoggerAdapter">logging.LoggerAdapter</a>:<br>
+<dl><dt><a name="CustomAdapter-__init__"><strong>__init__</strong></a>(self, logger, extra=None)</dt><dd><tt>Initialize&nbsp;the&nbsp;adapter&nbsp;with&nbsp;a&nbsp;logger&nbsp;and&nbsp;a&nbsp;dict-like&nbsp;object&nbsp;which<br>
+provides&nbsp;contextual&nbsp;information.&nbsp;This&nbsp;constructor&nbsp;signature&nbsp;allows<br>
+easy&nbsp;stacking&nbsp;of&nbsp;LoggerAdapters,&nbsp;if&nbsp;so&nbsp;desired.<br>
+&nbsp;<br>
+You&nbsp;can&nbsp;effectively&nbsp;pass&nbsp;keyword&nbsp;arguments&nbsp;as&nbsp;shown&nbsp;in&nbsp;the<br>
+following&nbsp;example:<br>
+&nbsp;<br>
+adapter&nbsp;=&nbsp;LoggerAdapter(someLogger,&nbsp;dict(p1=v1,&nbsp;p2="v2"))</tt></dd></dl>
+
+<dl><dt><a name="CustomAdapter-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
+
+<dl><dt><a name="CustomAdapter-critical"><strong>critical</strong></a>(self, msg, *args, **kwargs)</dt><dd><tt>Delegate&nbsp;a&nbsp;critical&nbsp;call&nbsp;to&nbsp;the&nbsp;underlying&nbsp;logger.</tt></dd></dl>
+
+<dl><dt><a name="CustomAdapter-debug"><strong>debug</strong></a>(self, msg, *args, **kwargs)</dt><dd><tt>Delegate&nbsp;a&nbsp;debug&nbsp;call&nbsp;to&nbsp;the&nbsp;underlying&nbsp;logger.</tt></dd></dl>
+
+<dl><dt><a name="CustomAdapter-error"><strong>error</strong></a>(self, msg, *args, **kwargs)</dt><dd><tt>Delegate&nbsp;an&nbsp;error&nbsp;call&nbsp;to&nbsp;the&nbsp;underlying&nbsp;logger.</tt></dd></dl>
+
+<dl><dt><a name="CustomAdapter-exception"><strong>exception</strong></a>(self, msg, *args, exc_info=True, **kwargs)</dt><dd><tt>Delegate&nbsp;an&nbsp;exception&nbsp;call&nbsp;to&nbsp;the&nbsp;underlying&nbsp;logger.</tt></dd></dl>
+
+<dl><dt><a name="CustomAdapter-getEffectiveLevel"><strong>getEffectiveLevel</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;effective&nbsp;level&nbsp;for&nbsp;the&nbsp;underlying&nbsp;logger.</tt></dd></dl>
+
+<dl><dt><a name="CustomAdapter-hasHandlers"><strong>hasHandlers</strong></a>(self)</dt><dd><tt>See&nbsp;if&nbsp;the&nbsp;underlying&nbsp;logger&nbsp;has&nbsp;any&nbsp;handlers.</tt></dd></dl>
+
+<dl><dt><a name="CustomAdapter-info"><strong>info</strong></a>(self, msg, *args, **kwargs)</dt><dd><tt>Delegate&nbsp;an&nbsp;info&nbsp;call&nbsp;to&nbsp;the&nbsp;underlying&nbsp;logger.</tt></dd></dl>
+
+<dl><dt><a name="CustomAdapter-isEnabledFor"><strong>isEnabledFor</strong></a>(self, level)</dt><dd><tt>Is&nbsp;this&nbsp;logger&nbsp;enabled&nbsp;for&nbsp;level&nbsp;'level'?</tt></dd></dl>
+
+<dl><dt><a name="CustomAdapter-log"><strong>log</strong></a>(self, level, msg, *args, **kwargs)</dt><dd><tt>Delegate&nbsp;a&nbsp;log&nbsp;call&nbsp;to&nbsp;the&nbsp;underlying&nbsp;logger,&nbsp;after&nbsp;adding<br>
+contextual&nbsp;information&nbsp;from&nbsp;this&nbsp;adapter&nbsp;instance.</tt></dd></dl>
+
+<dl><dt><a name="CustomAdapter-setLevel"><strong>setLevel</strong></a>(self, level)</dt><dd><tt>Set&nbsp;the&nbsp;specified&nbsp;level&nbsp;on&nbsp;the&nbsp;underlying&nbsp;logger.</tt></dd></dl>
+
+<dl><dt><a name="CustomAdapter-warn"><strong>warn</strong></a>(self, msg, *args, **kwargs)</dt></dl>
+
+<dl><dt><a name="CustomAdapter-warning"><strong>warning</strong></a>(self, msg, *args, **kwargs)</dt><dd><tt>Delegate&nbsp;a&nbsp;warning&nbsp;call&nbsp;to&nbsp;the&nbsp;underlying&nbsp;logger.</tt></dd></dl>
+
+<hr>
+Readonly properties inherited from <a href="logging.html#LoggerAdapter">logging.LoggerAdapter</a>:<br>
+<dl><dt><strong>name</strong></dt>
+</dl>
+<hr>
+Data descriptors inherited from <a href="logging.html#LoggerAdapter">logging.LoggerAdapter</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>manager</strong></dt>
+</dl>
+</td></tr></table>
