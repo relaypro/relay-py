@@ -5,12 +5,10 @@ import pydoc
 
 p = pydoc.HTMLDoc()
 
-write_html = open("workflow.html", "w")
-write_html.write(p.docmodule(sys.modules["workflow"]))
-write_html.close()
+with open("workflow.html", "w") as write_html:
+    write_html.write(p.docmodule(sys.modules["workflow"]))
 
 for name, obj in inspect.getmembers(workflow):
     if inspect.isclass(obj):
-        write_html = open(name + ".html", "w")
-        write_html.write(p.docclass(obj))
-        write_html.close()
+        with open(name + ".html", "w") as write_html:
+            write_html.write(p.docclass(obj))
