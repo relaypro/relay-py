@@ -28,7 +28,7 @@ jobs:
           sudo apt install python3-pip
           pip3 install websockets
           pip3 install requests
-          pydoc3 -w workflow
+          python generate_docs.py
       - uses: actions/checkout@v3
         with:
           ref: 'gh-pages'
@@ -37,12 +37,13 @@ jobs:
       - name: promote
         run: |
           cd web
-          cp -rp ../src/relay/workflow.html index.html
+          cp -rpv ../src/relay/*.html .
+          cp -pv ../src/relay/workflow.html index.html
       - uses: EndBug/add-and-commit@v9
         with:
           message: 'publish generated docs'
-          add: 'index.html'
           cwd: './web/'
+          add: '.'
           author_name: 'Relay Pro builder'
           author_email: 'info@relaypro.com'
           push: true
