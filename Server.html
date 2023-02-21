@@ -1,19 +1,18 @@
 <p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#ffc8d8">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="Server">class <strong>Server</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="Server">class <strong>Server</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
     
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>Server(host:&nbsp;str,&nbsp;port:&nbsp;int,&nbsp;**kwargs)<br>
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">Server(host:&nbsp;str,&nbsp;port:&nbsp;int,&nbsp;**kwargs)<br>
 &nbsp;<br>
 A&nbsp;websocket&nbsp;server&nbsp;that&nbsp;gets&nbsp;connected&nbsp;to&nbsp;when&nbsp;a&nbsp;new&nbsp;workflow<br>
 is&nbsp;instantiated&nbsp;via&nbsp;a&nbsp;trigger.<br>
 &nbsp;<br>
-Events&nbsp;are&nbsp;sent&nbsp;here,&nbsp;and&nbsp;the&nbsp;connection&nbsp;is&nbsp;also&nbsp;used&nbsp;to&nbsp;send&nbsp;actions&nbsp;to&nbsp;the&nbsp;Relay&nbsp;server.<br>&nbsp;</tt></td></tr>
+Events&nbsp;are&nbsp;sent&nbsp;here,&nbsp;and&nbsp;the&nbsp;connection&nbsp;is&nbsp;also&nbsp;used&nbsp;to&nbsp;send&nbsp;actions&nbsp;to&nbsp;the&nbsp;Relay&nbsp;server.<br>&nbsp;</span></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="Server-__init__"><strong>__init__</strong></a>(self, host: str, port: int, **kwargs)</dt><dd><tt>Args:<br>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="Server-__init__"><strong>__init__</strong></a>(self, host: str, port: int, **kwargs)</dt><dd><span class="code">Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;host:&nbsp;the&nbsp;IP&nbsp;address&nbsp;of&nbsp;the&nbsp;interface&nbsp;that&nbsp;this&nbsp;server&nbsp;should<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;listen&nbsp;on.&nbsp;Typically&nbsp;is&nbsp;"0.0.0.0",&nbsp;which&nbsp;represents&nbsp;all&nbsp;interfaces.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;port:&nbsp;the&nbsp;port&nbsp;number&nbsp;that&nbsp;this&nbsp;server&nbsp;should&nbsp;listen&nbsp;on.<br>
@@ -28,18 +27,20 @@ Keyword&nbsp;Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Should&nbsp;also&nbsp;use&nbsp;ssl_cert_filename&nbsp;if&nbsp;this&nbsp;is&nbsp;specified.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;ssl_cert_filename:&nbsp;if&nbsp;an&nbsp;SSLContext&nbsp;is&nbsp;desired&nbsp;for&nbsp;this&nbsp;server,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;is&nbsp;the&nbsp;filename&nbsp;where&nbsp;the&nbsp;certificate&nbsp;in&nbsp;PEM&nbsp;format&nbsp;can<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;found.&nbsp;Should&nbsp;also&nbsp;use&nbsp;ssl_key_filename&nbsp;if&nbsp;this&nbsp;is&nbsp;specified.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;found.&nbsp;Should&nbsp;also&nbsp;use&nbsp;ssl_key_filename&nbsp;if&nbsp;this&nbsp;is&nbsp;specified.</span></dd></dl>
 
 <dl><dt><a name="Server-register"><strong>register</strong></a>(self, workflow, path: str)</dt></dl>
 
 <dl><dt><a name="Server-start"><strong>start</strong></a>(self)</dt></dl>
 
+<dl><dt><a name="Server-total_connections"><strong>total_connections</strong></a>(self)</dt></dl>
+
 <hr>
 Data descriptors defined here:<br>
 <dl><dt><strong>__dict__</strong></dt>
-<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</span></dd>
 </dl>
 <dl><dt><strong>__weakref__</strong></dt>
-<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</span></dd>
 </dl>
 </td></tr></table>
