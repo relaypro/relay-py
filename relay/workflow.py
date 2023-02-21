@@ -61,6 +61,7 @@ class Server:
         self.host = host
         self.port = port
         self.workflows = {}  # {path: workflow}
+        self.conn_count = 0
         for key in kwargs:
             if key == 'ssl_key_filename':
                 self.ssl_key_filename = kwargs[key]
@@ -108,13 +109,21 @@ class Server:
         except KeyboardInterrupt:
             logger.debug('server terminated')
 
+    def total_connections(self):
+        return self.conn_count
+
     async def _handler(self, websocket, path: str):
 
         workflow = self.workflows.get(path, None)
         if workflow:
             logger.debug(f'handling request on path {path}')
             relay = Relay(workflow)
-            await relay._handle(websocket)
+            try:
+                self.conn_count += 1
+                await relay._handle(websocket)
+
+            finally:
+                self.conn_count -= 1
 
         else:
             logger.warning(f'ignoring request for unregistered path {path}')
