@@ -2072,6 +2072,19 @@ class Relay:
         }
         await self._send_receive(event)
 
+    async def debug_log(self, message: str):
+        """Log a debug message that is visible with the CLI command
+        `relay workflow debug`. This is helpful for debugging workflows.
+
+        Args:
+            message (str): what you want to appear in the log stream.
+        """
+        event = {
+            '_type': 'wf_api_debug_log_request',
+            'content': message,
+        }
+        await self._send_receive(event)
+
     async def set_timer(self, name: str, timer_type: str = 'timeout', timeout: int = 60, timeout_type: str = 'secs'):
         """ Serves as a named timer that can be either interval or timeout.  Allows you to specify
         the unit of time.
