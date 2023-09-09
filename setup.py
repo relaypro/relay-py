@@ -3,6 +3,7 @@ import setuptools
 # Copyright © 2022 Relay Inc.
 
 # for tests: (venv)$ pip install -e '.[testing]'
+# for docs:  (venv)$ pip install -e '.[docs]'
 
 setuptools.setup(
     name='relay-py',

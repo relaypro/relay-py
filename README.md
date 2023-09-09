@@ -74,9 +74,15 @@ error messages, check that your workflow didn't forget to invoke
 Run tests (after setup):
 
     # start inside the relay-py directory
-    (venv)$ pip install --editable .[testing]
+    (venv)$ pip install --editable '.[testing]'
     (venv)$ pytest
 
+Build docs (locally):
+    # start inside the relay-py directory
+    (venv)$ pip install --editable '.[docs]'
+    (venv)$ mkdocs serve
+    # open browser to http://127.0.0.1:8000
+    # ctrl-c to quit local doc server
 
 ## Additional Instructions for Deployment on Heroku
 
