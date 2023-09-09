@@ -11,13 +11,18 @@ setuptools.setup(
     install_requires=[
         'requests',
         'websockets',
-        'pyyaml'
+        'pyyaml',
     ],
     extras_require={
         'testing': [
             'pytest',
-            'pytest-asyncio'
-        ]
+            'pytest-asyncio',
+        ],
+        'docs': [
+            'mkdocs',
+            'mkdocs-material',
+            'mkdocstrings[python]',
+        ],
     },
     python_requires='>=3.6.1',
 )
