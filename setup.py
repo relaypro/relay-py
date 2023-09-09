@@ -3,6 +3,7 @@ import setuptools
 # Copyright © 2022 Relay Inc.
 
 # for tests: (venv)$ pip install -e '.[testing]'
+# for docs:  (venv)$ pip install -e '.[docs]'
 
 setuptools.setup(
     name='relay-py',
@@ -11,13 +12,18 @@ setuptools.setup(
     install_requires=[
         'requests',
         'websockets',
-        'pyyaml'
+        'pyyaml',
     ],
     extras_require={
         'testing': [
             'pytest',
-            'pytest-asyncio'
-        ]
+            'pytest-asyncio',
+        ],
+        'docs': [
+            'mkdocs',
+            'mkdocs-material',
+            'mkdocstrings[python]',
+        ],
     },
     python_requires='>=3.6.1',
 )

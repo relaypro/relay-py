@@ -4,3 +4,5 @@ relay_py.egg-info/
 *.swp
 build/
 .python-version
+
+**/.DS_Store

@@ -1,0 +1,18 @@
+site_name: relay-py
+site_description: Build workflows for your Relays
+repo_url: https://github.com/relaypro/relay-py
+repo_name: relaypro/relay-py
+
+theme:
+  name: "material"
+
+plugins:
+  - search
+  - mkdocstrings
+
+markdown_extensions:
+  # convert plaintext urls into hyperlinks
+  - pymdownx.magiclink
+
+nav:
+  - index.md

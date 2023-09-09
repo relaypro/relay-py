@@ -8,42 +8,23 @@ on:
 
 jobs:
   build:
-    env:
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
         with:
-          path: './src/'
+          fetch-depth: 0
 
       - uses: actions/setup-python@v3
         with:
-          python-version: '3.x'
+          python-version: 3.x
 
-      - name: generate markdown and concatenate
+      - name: 'Configure git'
         run: |
-          cd src/relay
-          sudo apt install python3-pip
-          pip3 install websockets
-          pip3 install requests
-          python generate_docs.py
-      - uses: actions/checkout@v3
-        with:
-          ref: 'gh-pages'
-          path: './web/'
+          git config user.name 'Relay Pro builder'
+          git config user.email 'info@relaypro.com'
 
-      - name: promote
-        run: |
-          cd web
-          cp -rpv ../src/relay/*.html .
-          cp -pv ../src/relay/workflow.html index.html
-      - uses: EndBug/add-and-commit@v9
-        with:
-          message: 'publish generated docs'
-          cwd: './web/'
-          add: '.'
-          author_name: 'Relay Pro builder'
-          author_email: 'info@relaypro.com'
-          push: true
+      - name: 'Install mkdocs venv'
+        run: make venv
+
+      - name: 'Build mkdocs'
+        run: make gh-deploy
